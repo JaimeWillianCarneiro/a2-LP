@@ -76,7 +76,9 @@ class Fase:
     
     def check_end(self):
         """  Verifica se o player passou pela fase (chama a próxima fase e encerra a atual) """
-        pass
+        if pg.sprite.collide_rect(self.player, self.scooby_snacks):
+            return True
+        return False
     
     def check_lost(self):
         """ Verifica se o player falhou (seja por tempo, seja por vida, seja por falha em algum evento da fase, etc) """
@@ -88,13 +90,34 @@ class Fase:
     def update(self, movement):
         self.screen.fill((0, 0, 0))
         pg.draw.rect(self.screen, (255,255,255), self.background)
+                    
+        # Caso o player tenha passado de fase, encerra-a e inicia a proxima
+        if self.check_end():
+            # Exemplo de nova fase: ###############################
+            game_objects = []
+            npcs = []
+            for i in range(3):
+                x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
+                y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
+                width = 23
+                height = 40
+                game_objects.append(GameObject(x,y, width, height))
+
+                x = random.choice(range(SCREEN_DIMENSIONS[0]))
+                y = random.choice(range(SCREEN_DIMENSIONS[1]))
+                width = 67
+                height = 100
+                npcs.append(GameObject(x,y, width, height))
+            ##################################################
+            
+            return Fase(self.screen, self.background, npcs, game_objects, [], [])
+            
+            
         # Verifica se o player continua no jogo
         if not self.check_lost():
             # Atualiza as variaveis da fase que estao no campo de visao do personagem
             self.fase_elements.update(movement)
-            
-            # Caso o player tenha passado de fase, encerra-a e inicia a proxima
-            # check_end():
+                
             self.player.life -= 0.01
         
         self.render_camera()
