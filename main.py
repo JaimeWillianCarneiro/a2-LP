@@ -1,29 +1,8 @@
 import pygame as pg
-from src.classes.fase import Fase
+from src.classes.fase import Fase, GameObject
 from src.settings import SCREEN_DIMENSIONS, GAME_TITLE
+
 import random
-
-class GameObject(pg.sprite.Sprite):
-    def __init__(self, x, y, width, height):
-        super().__init__()
-        self.x_position = x
-        self.y_position = y
-        self.width = width
-        self.height = height
-        self.image = pg.image.load('shaggy_right_1.png')
-        self.image = pg.transform.scale(self.image, (self.width, self.height))
-        self.rect = self.image.get_rect()
-        self.rect.center = self.x_position, self.y_position
-    
-    def setPosition(self, movement):
-        self.x_position -= movement['x_moved']
-        self.y_position -= movement['y_moved']
-        self.rect.center = self.x_position, self.y_position
-    
-    def update(self, movement):
-        self.setPosition(movement)
-
-
 
 pg.init()
 
