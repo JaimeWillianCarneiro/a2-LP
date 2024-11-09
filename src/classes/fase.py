@@ -15,13 +15,39 @@ class GameObject(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.x_position, self.y_position
     
-    def setPosition(self, movement):
+    def set_position(self, movement):
         self.x_position -= movement['x_moved']
         self.y_position -= movement['y_moved']
         self.rect.center = self.x_position, self.y_position
     
     def update(self, movement):
         self.setPosition(movement)
+
+
+
+
+class Event(pg.sprite.Sprite):
+    def __init__(self, player, start_zone, event_zone, end_zone, is_obrigatory, time):
+        super().__init__()
+        self.in_execution = False
+        self.player = player
+        self.start_zone = pg.Rect(*start_zone)
+        self.event_zone = pg.Rect(*event_zone)
+        self.end_zone = pg.Rect(*end_zone)
+        self.is_obrigatory = is_obrigatory
+        self.time = time
+        self.rect = self.start_zone
+        
+    def can_start():
+        pass
+    
+    def check_lost():
+        pass
+    
+    def update():
+        pass
+        
+        
 
 
 class Fase:
