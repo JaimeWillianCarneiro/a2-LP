@@ -2,18 +2,13 @@ import pygame as pg
 from src.classes.fase import Fase
 from src.settings import SCREEN_DIMENSIONS, GAME_TITLE
 
-import random
-
 pg.init()
 
 screen = pg.display.set_mode((0, 0))
 pg.display.set_caption(GAME_TITLE)
 clock = pg.time.Clock()
 
-
 fase_atual = Fase(screen)
-
-
 
 movement = {'x_moved': 0, 'y_moved': 0}
 

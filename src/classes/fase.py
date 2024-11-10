@@ -82,9 +82,12 @@ class Fase:
         height = 150
         self.player = GameObject(SCREEN_DIMENSIONS[0]//2, SCREEN_DIMENSIONS[1]//2, width, height)
         self.monster = GameObject(x,y, width, height)
-        self.scooby_snacks = GameObject(y, x, 50, 50)
+        
+        x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
+        y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
+        self.scooby_snacks = GameObject(x, y, 50, 50)
         self.background = background
-        self.fase_elements.add(self.background)
+        
         self.fase_elements.add(self.monster)
         self.accessible_elements.add(self.monster)
         self.fase_elements.add(self.scooby_snacks)
@@ -97,14 +100,19 @@ class Fase:
             width = 23
             height = 40
             game_objects.append(GameObject(x,y, width, height))
-            mandatory_events.append(Event(self.player, (y, x, 100, 75), (y, x, 300, 150), (y+100, x+75, 100, 75), True, 30*60))
+            x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
+            y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
+            mandatory_events.append(Event(self.player, (x, y, 100, 75), (x, y, 300, 150), (x+100, y+75, 100, 75), True, 30*60))
 
-            x = random.choice(range(SCREEN_DIMENSIONS[0]))
-            y = random.choice(range(SCREEN_DIMENSIONS[1]))
+
+            x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
+            y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
             width = 67
             height = 100
             npcs.append(GameObject(x,y, width, height))
-            optional_events.append(Event(self.player, (y, x, 50, 25), (y, x, 150, 50), (y+50, x, 50, 25), False, 30*60))
+            x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
+            y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
+            optional_events.append(Event(self.player, (x, y, 50, 25), (x, y, 150, 50), (x+50, y, 50, 25), False, 30*60))
         #################################################
         
         self.npcs = pg.sprite.Group()
@@ -170,11 +178,11 @@ class Fase:
             
         # Verifica se o player continua no jogo
         if not self.check_lost():
+            non_player_movement, player_movement = self.background.update(movement)
+            
             # Atualiza as variaveis da fase que estao no campo de visao do personagem (e nao sao obrigatorias)
-            self.fase_elements.update(movement)
-            
-            self
-            
+            self.fase_elements.update(non_player_movement)
+            self.player.set_position(player_movement)
             # Atualizacao do evento obrigatorio atual
             if self.current_mandatory_event.started:
                 if not self.current_mandatory_event.in_execution:
@@ -190,7 +198,7 @@ class Fase:
                     self.optional_events.remove(optional_event)
                     self.accessible_elements.remove(optional_event)
             
-            self.player.life -= 0.01
+            self.player.life -= 0.001
         
         self.render_camera()
             
