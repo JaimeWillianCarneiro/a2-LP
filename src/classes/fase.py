@@ -1,6 +1,7 @@
 import pygame as pg
 from src.settings import SCREEN_DIMENSIONS, GAME_TITLE
 from src.classes.gameobejcts import GameObject, Collectible
+from src.classes.background import Background
 import random
 
 class Event(pg.sprite.Sprite):
@@ -66,33 +67,33 @@ class Fase:
         self.screen = screen
         self.fase_elements = pg.sprite.Group()
         self.accessible_elements = pg.sprite.Group()
-        # self.unaccessible_elements = pg.sprite.Group()
         
         # Variavéis fictias para testar a classe Fase ##############
-        background = GameObject(SCREEN_DIMENSIONS[0]//2, SCREEN_DIMENSIONS[1]//2, *SCREEN_DIMENSIONS)
+        background = Background(self.screen, 'Lua.webp', SCREEN_DIMENSIONS[0]//2, SCREEN_DIMENSIONS[1]//2, 4000, 2000, 'backmusic.mp3', 0.05, [])
+        # background = GameObject(SCREEN_DIMENSIONS[0]//2, SCREEN_DIMENSIONS[1]//2, *SCREEN_DIMENSIONS)
         game_objects = []
         npcs = []
         mandatory_events = []
         optional_events = []
             
-        x = random.choice(range(SCREEN_DIMENSIONS[0]))
-        y = random.choice(range(SCREEN_DIMENSIONS[1]))
+        x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
+        y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         width = 100
         height = 150
         self.player = GameObject(SCREEN_DIMENSIONS[0]//2, SCREEN_DIMENSIONS[1]//2, width, height)
         self.monster = GameObject(x,y, width, height)
         self.scooby_snacks = GameObject(y, x, 50, 50)
         self.background = background
+        self.fase_elements.add(self.background)
         self.fase_elements.add(self.monster)
         self.accessible_elements.add(self.monster)
         self.fase_elements.add(self.scooby_snacks)
         self.accessible_elements.add(self.scooby_snacks)
-        # self.unaccessible_elements.add(self.scooby_snacks)
         
         
         for i in range(2):
-            x = random.choice(range(SCREEN_DIMENSIONS[0]))
-            y = random.choice(range(SCREEN_DIMENSIONS[1]))
+            x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
+            y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
             width = 23
             height = 40
             game_objects.append(GameObject(x,y, width, height))
@@ -131,6 +132,8 @@ class Fase:
         self.current_mandatory_event = next(iter(self.mandatory_events), None)
         
         self.accessible_elements.add(self.current_mandatory_event)
+        
+        self.background.play_music()
 
     def render_camera(self):
         """ Avalia quais elementos do jogo sao acessiveis e estao no campo de visao do protagonista para serem renderizados """
@@ -159,7 +162,6 @@ class Fase:
     
     def update(self, movement):
         self.screen.fill((0, 0, 0))
-        pg.draw.rect(self.screen, (255,255,255), self.background)
                     
         # Caso o player tenha passado de fase, encerra-a e inicia a proxima
         if self.check_end():
@@ -170,6 +172,8 @@ class Fase:
         if not self.check_lost():
             # Atualiza as variaveis da fase que estao no campo de visao do personagem (e nao sao obrigatorias)
             self.fase_elements.update(movement)
+            
+            self
             
             # Atualizacao do evento obrigatorio atual
             if self.current_mandatory_event.started:
