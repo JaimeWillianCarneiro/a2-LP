@@ -65,7 +65,8 @@ class Event(pg.sprite.Sprite):
 class Fase:
     def __init__(self, screen):
         self.screen = screen
-        self.fase_elements = pg.sprite.Group()
+        self.immobile_elements = pg.sprite.Group()
+        self.mobile_elements = pg.sprite.Group()
         self.accessible_elements = pg.sprite.Group()
         
         # Variavéis fictias para testar a classe Fase ##############
@@ -88,9 +89,9 @@ class Fase:
         self.scooby_snacks = GameObject(x, y, 50, 50)
         self.background = background
         
-        self.fase_elements.add(self.monster)
+        self.mobile_elements.add(self.monster)
         self.accessible_elements.add(self.monster)
-        self.fase_elements.add(self.scooby_snacks)
+        self.mobile_elements.add(self.scooby_snacks)
         self.accessible_elements.add(self.scooby_snacks)
         
         
@@ -115,26 +116,20 @@ class Fase:
             optional_events.append(Event(self.player, (x, y, 50, 25), (x, y, 150, 50), (x+50, y, 50, 25), False, 30*60))
         #################################################
         
-        self.npcs = pg.sprite.Group()
-        for npc in npcs:
-            self.npcs.add(npc)
-            self.fase_elements.add(npc)
-            self.accessible_elements.add(npc)
+        self.npcs = pg.sprite.Group(npcs)
+        self.mobile_elements.add(self.npcs)
+        self.accessible_elements.add(self.npcs)
             
+        self.game_objects = pg.sprite.Group(game_objects)
+        self.mobile_elements.add(self.game_objects)
+        self.accessible_elements.add(self.game_objects)
         
-        self.game_objects = pg.sprite.Group()
-        for game_object in game_objects:
-            self.game_objects.add(game_object)
-            self.fase_elements.add(game_object)
-            self.accessible_elements.add(game_object)
-        
-        self.mandatory_events = pg.sprite.Group()
-        for mandatory_event in mandatory_events:
-            self.mandatory_events.add(mandatory_event)
-            self.fase_elements.add(mandatory_event)
+        self.mandatory_events = pg.sprite.Group(mandatory_events)
+        self.mandatory_events.add(self.mandatory_events)
+        self.immobile_elements.add(self.mandatory_events)
         
         self.optional_events = pg.sprite.Group(optional_events)
-        self.fase_elements.add(self.optional_events)
+        self.immobile_elements.add(self.optional_events)
         self.accessible_elements.add(self.optional_events)
 
         self.current_mandatory_event = next(iter(self.mandatory_events), None)
@@ -178,11 +173,13 @@ class Fase:
             
         # Verifica se o player continua no jogo
         if not self.check_lost():
-            non_player_movement, player_movement = self.background.update(movement)
+            non_player_movement, player_movement, map_limits_inf, map_limits_sup = self.background.update(movement)
             
-            # Atualiza as variaveis da fase que estao no campo de visao do personagem (e nao sao obrigatorias)
-            self.fase_elements.update(non_player_movement)
-            self.player.set_position(player_movement)
+            # Atualiza as variaveis da fase que estao no campo de visao do personagem
+            self.mobile_elements.update(non_player_movement, map_limits_inf, map_limits_sup)
+            self.immobile_elements.update(non_player_movement)
+            self.player.apply_movement(player_movement, map_limits_inf, map_limits_sup)
+            
             # Atualizacao do evento obrigatorio atual
             if self.current_mandatory_event.started:
                 if not self.current_mandatory_event.in_execution:

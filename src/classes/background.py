@@ -25,9 +25,12 @@ class Background(pg.sprite.Sprite):
         self.y_limit_inf = 0
         self.y_limit_sup = self.height - SCREEN_DIMENSIONS[1]
         
-        # Valores que o player andou para fora dos limites da camera
+        # Valores que o player andou para fora dos limites da camera (nao ultrapassam metade das dimensoes da tela)
         self.x_rest = 0
         self.y_rest = 0
+        
+        # Coordenadas x e y dos limites superiores do mapa, considerando o background
+        self.map_limits_sup = [self.width - self.x_position, self.height - self.y_position]
         
         
     def set_position(self, movement):
@@ -48,6 +51,7 @@ class Background(pg.sprite.Sprite):
             self.x_rest += movement['x_moved']
         else:
             x_limited = False
+            self.x_rest = 0
         
         if self.y_position <= self.y_limit_inf:
             self.y_position = self.y_limit_inf
@@ -57,6 +61,17 @@ class Background(pg.sprite.Sprite):
             self.y_rest += movement['y_moved']
         else:
             y_limited = False
+            self.y_rest = 0
+        
+        if self.x_rest < -SCREEN_DIMENSIONS[0]/2:
+            self.x_rest = -SCREEN_DIMENSIONS[0]/2
+        elif self.x_rest > SCREEN_DIMENSIONS[0]/2:
+            self.x_rest = SCREEN_DIMENSIONS[0]/2
+        
+        if self.y_rest < -SCREEN_DIMENSIONS[1]/2:
+            self.y_rest = -SCREEN_DIMENSIONS[1]/2
+        elif self.y_rest > SCREEN_DIMENSIONS[1]/2:
+            self.y_rest = SCREEN_DIMENSIONS[1]/2
         
         self.image = self.sprite.subsurface((self.x_position, self.y_position, *SCREEN_DIMENSIONS))
         
@@ -70,8 +85,6 @@ class Background(pg.sprite.Sprite):
             player_movement['y_moved'] = -movement['y_moved']
             
         return non_player_movement, player_movement
-            
-            
         
     def play_music(self):
         pg.mixer.music.play(-1)
@@ -85,5 +98,6 @@ class Background(pg.sprite.Sprite):
     
     def update(self, movement):
         non_player_movement, player_movement = self.set_position(movement)
+        self.map_limits_sup = [self.width - self.x_position, self.height - self.y_position]
         self.draw_background_image()
-        return non_player_movement, player_movement
+        return non_player_movement, player_movement, [-self.x_position, -self.y_position], self.map_limits_sup
