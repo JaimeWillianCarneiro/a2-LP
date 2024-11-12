@@ -7,8 +7,8 @@ class Background(pg.sprite.Sprite):
         self.screen = screen
         self.sprite = pg.image.load(sprite)
         self.sprite = pg.transform.scale(self.sprite, (width, height))
-        self.x_position = x_position
-        self.y_position = y_position
+        self.x_position = x_position - SCREEN_DIMENSIONS[0]//2
+        self.y_position = y_position - SCREEN_DIMENSIONS[1]//2
         self.width = width
         self.height = height
         self.music = music
@@ -20,71 +20,44 @@ class Background(pg.sprite.Sprite):
         pg.mixer.music.set_volume(self.volume)
         
         # Limites, ate aonde a camera vai
-        self.x_limit_inf = 0
         self.x_limit_sup = self.width - SCREEN_DIMENSIONS[0]
-        self.y_limit_inf = 0
         self.y_limit_sup = self.height - SCREEN_DIMENSIONS[1]
         
-        # Valores que o player andou para fora dos limites da camera (nao ultrapassam metade das dimensoes da tela)
-        self.x_rest = 0
-        self.y_rest = 0
+    def get_origin(self):
+        return self.x_position+SCREEN_DIMENSIONS[0], self.y_position+SCREEN_DIMENSIONS[1]  
+    
+    def get_shape(self):
+        return self.width, self.height
+    
+    def get_position(self):
+        return self.x_position, self.y_position
         
-        # Coordenadas x e y dos limites superiores do mapa, considerando o background
-        self.map_limits_sup = [self.width - self.x_position, self.height - self.y_position]
+    def set_position(self, x_new, y_new):
+        self.x_position = x_new
+        self.y_position = y_new
         
+    def to_frame(self,x_player, y_player):
+        x_position = x_player - SCREEN_DIMENSIONS[0]//2
+        y_position = y_player - SCREEN_DIMENSIONS[1]//2
+        # Verificacao dos limites da camera
+        if x_position < 0:
+            x_position = 0
+        elif x_position > self.x_limit_sup:
+            x_position = self.x_limit_sup
         
-    def set_position(self, movement):
-        self.x_position += movement['x_moved'] + self.x_rest
-        self.y_position += movement['y_moved'] + self.y_rest
-        x_limited = True
-        y_limited = True
-        
-        non_player_movement = {'x_moved': movement['x_moved'], 'y_moved': movement['y_moved'],}
-        player_movement = {'x_moved': 0, 'y_moved': 0}
-        
-        # Verificacao dos limites
-        if self.x_position <= self.x_limit_inf:
-            self.x_position = self.x_limit_inf
-            self.x_rest += movement['x_moved']
-        elif self.x_position >= self.x_limit_sup:
-            self.x_position = self.x_limit_sup
-            self.x_rest += movement['x_moved']
-        else:
-            x_limited = False
-            self.x_rest = 0
-        
-        if self.y_position <= self.y_limit_inf:
-            self.y_position = self.y_limit_inf
-            self.y_rest += movement['y_moved']
-        elif self.y_position >= self.y_limit_sup:
-            self.y_position = self.y_limit_sup
-            self.y_rest += movement['y_moved']
-        else:
-            y_limited = False
-            self.y_rest = 0
-        
-        if self.x_rest < -SCREEN_DIMENSIONS[0]/2:
-            self.x_rest = -SCREEN_DIMENSIONS[0]/2
-        elif self.x_rest > SCREEN_DIMENSIONS[0]/2:
-            self.x_rest = SCREEN_DIMENSIONS[0]/2
-        
-        if self.y_rest < -SCREEN_DIMENSIONS[1]/2:
-            self.y_rest = -SCREEN_DIMENSIONS[1]/2
-        elif self.y_rest > SCREEN_DIMENSIONS[1]/2:
-            self.y_rest = SCREEN_DIMENSIONS[1]/2
-        
-        self.image = self.sprite.subsurface((self.x_position, self.y_position, *SCREEN_DIMENSIONS))
-        
-        # Caso tenha sido limitado, so o player se movimenta no eixo
-        if x_limited:
-            non_player_movement['x_moved'] = 0
-            player_movement['x_moved'] = -movement['x_moved']
+        if y_position < 0:
+            y_position = 0
+        elif y_position > self.y_limit_sup:
+            y_position = self.y_limit_sup
             
-        if y_limited:
-            non_player_movement['y_moved'] = 0
-            player_movement['y_moved'] = -movement['y_moved']
-            
-        return non_player_movement, player_movement
+        return x_position, y_position
+        
+        
+    def center(self, x_player, y_player):
+        # Centraliza a camera no personagem
+        x_new, y_new = self.to_frame(x_player, y_player)
+        self.set_position(x_new, y_new)
+        self.image = self.sprite.subsurface((*self.get_position(), *SCREEN_DIMENSIONS))
         
     def play_music(self):
         pg.mixer.music.play(-1)
@@ -96,8 +69,6 @@ class Background(pg.sprite.Sprite):
     def draw_background_image(self):
         self.screen.blit(self.image, self.rect)
     
-    def update(self, movement):
-        non_player_movement, player_movement = self.set_position(movement)
-        self.map_limits_sup = [self.width - self.x_position, self.height - self.y_position]
+    def update(self, x_player, y_player):
+        self.center(x_player, y_player)
         self.draw_background_image()
-        return non_player_movement, player_movement, [-self.x_position, -self.y_position], self.map_limits_sup

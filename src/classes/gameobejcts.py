@@ -4,9 +4,7 @@ from src.settings import SCREEN_DIMENSIONS
 class GameObject(pg.sprite.Sprite):
     def __init__(self, x, y, width, height):
         super().__init__()
-        # Dados Ficticios para testar a Fase
-        self.life = 3
-        
+        self.life = 3 # Variavel fiticia para testar o fim do jogo por life (Eliminar depois)
         self.x_position = x
         self.y_position = y
         self.width = width
@@ -21,7 +19,6 @@ class GameObject(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = self.x_position, self.y_position
     
-    
     def set_position(self, x_new, y_new):
         self.x_position = x_new
         self.y_position = y_new
@@ -29,10 +26,8 @@ class GameObject(pg.sprite.Sprite):
     def get_position(self):
         return self.x_position, self.y_position
     
-    
-    def to_frame(self, map_limits_inf, map_limits_sup):
+    def to_frame(self, x_position, y_position, map_limits_inf, map_limits_sup):
         # Enquadra o objeto para que ele nao ultrapasse nenhum limite do mapa
-        x_position, y_position = self.get_position()
         far_left = (map_limits_inf[0] + self.width/2)
         far_right = (map_limits_sup[0] - self.width/2)
         if x_position < far_left:
@@ -51,13 +46,17 @@ class GameObject(pg.sprite.Sprite):
         
     
     def apply_movement(self, movement, map_limits_inf, map_limits_sup):
-        x_new = self.x_position - movement['x_moved']
-        y_new = self.y_position - movement['y_moved']
+        x_new = self.x_position + movement['x_moved']
+        y_new = self.y_position + movement['y_moved']
+        x_new, y_new = self.to_frame(x_new, y_new, map_limits_inf, map_limits_sup)
         self.set_position(x_new, y_new)
-        x_new, y_new = self.to_frame(map_limits_inf, map_limits_sup)
-        self.set_position(x_new, y_new)
-        self.rect.center = self.x_position, self.y_position
         
+    def apply_translation(self, x_origin, y_origin):
+        x_position, y_position = self.get_position()
+        # Aplica uma translacao no plano, considerando o sistema de coordenadas na qual o jogo sera desenhado
+        x_new = x_position - x_origin
+        y_new = y_position - y_origin
+        self.rect.center = x_new, y_new
     
     def animate(self):
         if self.sprites_quantity > 1:
@@ -66,8 +65,8 @@ class GameObject(pg.sprite.Sprite):
             self.image = self.sprite_sheet.subsurface((int(self.sprite_actual_x), self.sprite_actual_y, self.width, self.height))
     
     
-    def update(self, movement, map_limits_inf, map_limits_sup):
-        self.apply_movement(movement, map_limits_inf, map_limits_sup)
+    def update(self, x_origin, y_origin):
+        self.apply_translation(x_origin, y_origin)
         self.animate()
 
 
