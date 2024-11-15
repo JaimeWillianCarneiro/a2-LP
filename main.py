@@ -9,8 +9,10 @@ screen = pg.display.set_mode((0, 0))
 pg.display.set_caption(GAME_TITLE)
 clock = pg.time.Clock()
 
+
 fase_atual = Fase(screen)
-interface = Interface()
+interface = Interface(screen, fase_atual, [])
+
 
 movement = {'x_moved': 0, 'y_moved': 0}
 
@@ -45,5 +47,5 @@ while True:
         movement['y_moved'] += 10
     
     fase_atual = fase_atual.update(movement)    
-    
+    interface.update()
     pg.display.flip()

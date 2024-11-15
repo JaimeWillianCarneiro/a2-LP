@@ -230,20 +230,20 @@ class Fase:
         
         self.render_camera()
         
-        font = pg.font.SysFont('arial', 40, True, False)
+        # font = pg.font.SysFont('arial', 40, True, False)
         
-        title = font.render(GAME_TITLE, True, (123, 123, 123))
-        if self.current_mandatory_event:
-            if self.current_mandatory_event.in_execution:
-                if self.current_mandatory_event.out_zone:
-                    warning = font.render('Volte para a Zona', True, (255, 255, 255))
-                    self.screen.blit(warning, (SCREEN_DIMENSIONS[0]/2, 50))
-                time = str(self.current_mandatory_event.time)
-                time = font.render(time, True, (255, 255, 255))
-                self.screen.blit(time, (SCREEN_DIMENSIONS[0]/2, 150))
-        self.screen.blit(title, (50, 50))
-        life = str(int(self.player.life))
-        life = font.render(life, True, (255, 255, 255))
-        self.screen.blit(life, (SCREEN_DIMENSIONS[0]-100, 150))
+        # title = font.render(GAME_TITLE, True, (123, 123, 123))
+        # if self.current_mandatory_event:
+        #     if self.current_mandatory_event.in_execution:
+        #         if self.current_mandatory_event.out_zone:
+        #             warning = font.render('Volte para a Zona', True, (255, 255, 255))
+        #             self.screen.blit(warning, (SCREEN_DIMENSIONS[0]/2, 50))
+        #         time = str(self.current_mandatory_event.time)
+        #         time = font.render(time, True, (255, 255, 255))
+        #         self.screen.blit(time, (SCREEN_DIMENSIONS[0]/2, 150))
+        # self.screen.blit(title, (50, 50))
+        # life = str(int(self.player.life))
+        # life = font.render(life, True, (255, 255, 255))
+        # self.screen.blit(life, (SCREEN_DIMENSIONS[0]-100, 150))
             
         return self

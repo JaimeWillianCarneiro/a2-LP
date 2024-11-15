@@ -6,6 +6,7 @@ class GameObject(pg.sprite.Sprite):
     def __init__(self, x_position, y_position, width, height, map_limits_sup):
         super().__init__()
         self.life = 3 # Variavel ficticia para testar o fim do jogo por life (Eliminar depois)
+        self.name = 'Shaggy' # Variavel ficticia para testar a interface (Eliminar depois)
         self.position_controller = PositionController(map_limits_sup, width, height)
         self.x_position = x_position
         self.y_position = y_position

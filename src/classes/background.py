@@ -1,6 +1,5 @@
 import pygame as pg
-from src.settings import SCREEN_DIMENSIONS
-import math
+from src.settings import SCREEN_DIMENSIONS, Fonts
 
 class Background(pg.sprite.Sprite):
     def __init__(self, screen, sprite, x_position, y_position, width, height, music, volume, sounds):
@@ -63,9 +62,41 @@ class Background(pg.sprite.Sprite):
         
 
 class Interface():
-    def __init__(self, fonts, fase_atual, interface_elements):
-        pass
-    
+    def __init__(self, screen, fase_atual, interface_elements):
+        self.screen = screen
+        self.fase_atual = fase_atual
+        self.interface_elements = interface_elements
+        self.player_name = Fonts.PLAYER_NAME.value.render('Player :'+str(self.fase_atual.player.name), True, (123, 173, 123))
+        self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(self.fase_atual.player.life), True, (123, 173, 223))
+        self.event_warning =  Fonts.EVENT_WARNING.value.render('Volte para a Zona!', True, (255, 255, 255))
+        self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.fase_atual.current_mandatory_event.time), True, (123, 173, 223))
+        self.player_name_location = (50, 50)
+        self.player_life_location = (300, 50)
+        self.event_warning_location = ((SCREEN_DIMENSIONS[0]*2)//5, 100)
+        self.event_time_location = (SCREEN_DIMENSIONS[0]//2-50, 50)
+        
+    def set_fase_atual(self, new_fase):
+        self.fase_atual = new_fase
+        
+    def draw_interface(self):
+        # Desenha os atributos do player no canto superior esquerdo
+        self.screen.blit(self.player_name, self.player_name_location)
+        self.screen.blit(self.player_life, self.player_life_location)
+        
+        # Desenha avisos e informacoes da fase no centro superior da tela
+        if self.fase_atual.current_mandatory_event:
+            if self.fase_atual.current_mandatory_event.in_execution:
+                if self.fase_atual.current_mandatory_event.out_zone:
+                    self.screen.blit(self.event_warning, self.event_warning_location)
+                self.event_time = self.fase_atual.current_mandatory_event.time
+                self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.event_time), True, (123, 173, 223))
+                self.screen.blit(self.event_time, self.event_time_location)
+        
+        # Desenha o minimapa e as configuracoes no canto superior direito
+        
+    def update(self):
+        self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(self.fase_atual.player.life), True, (123, 173, 223))
+        self.draw_interface()
     
 class PositionController():
     x_origin = 0
