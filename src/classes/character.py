@@ -3,24 +3,22 @@ from abc import ABC, abstractmethod
 
 
 class Character(pg.sprite.Sprite, ABC):
-    def __init__(self, name, speed, perception, pos_x, pos_y, width, height, direction, sprite_sheet):
+    def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, sprite_sheet):
         super().__init__()
         self._name = name
         self._speed = speed
         self._perception = perception
-        self._pos_x = pos_x
-        self._pos_y = pos_y
+        self._x_position = x_position
+        self._y_position = y_position
         self._width = width
         self._height = height
         self._direction = direction
-        self._rect = pg.Rect(self._pos_x, self._pos_y, self._width, self._height).center(()) # Como pegar o tamanho da tela? Essa é a melhor abordagem?
         self._sprite_sheet = sprite_sheet
         self._current_sprite_x = 0
         self._current_sprite_y = 0
-        self.image = self.sprite_sheet.subsurface(pg.Rect(self.sprite_current_x * self.width, 
-                                                          self.sprite_current_y * self.height, 
-                                                          self.width, self.height))
-        
+        self.image = self.sprite_sheet.subsurface((self._current_sprite_x * self.width, self._current_sprite_y * self.height, self.width, self.height))
+        self.rect = self.image.get_rect()
+        self.rect.center = self._x_position, self._y_position      
 
     @property
     def name(self):
@@ -47,21 +45,21 @@ class Character(pg.sprite.Sprite, ABC):
         self._perception = value
 
     @property
-    def pos_x(self):
-        return self._pos_x
+    def x_position(self):
+        return self._x_position
 
-    @pos_x.setter
-    def pos_x(self, value):
-        self._pos_x = value
+    @x_position.setter
+    def x_position(self, value):
+        self._x_position = value
         self._rect.x = value
 
     @property
-    def pos_y(self):
-        return self._pos_y
+    def y_position(self):
+        return self._y_position
 
-    @pos_y.setter
-    def pos_y(self, value):
-        self._pos_y = value
+    @y_position.setter
+    def y_position(self, value):
+        self._y_position = value
         self._rect.y = value
 
     @property
@@ -128,11 +126,13 @@ class Character(pg.sprite.Sprite, ABC):
     def current_sprite_y(self, value):
         self._current_sprite_y = value
 
+        
+    def apply_movement(self, movement, map_limits_inf, map_limits_sup):
+        x_new = self.x_position + movement['x_moved']
+        y_new = self.y_position + movement['y_moved']
+        x_new, y_new = self.to_frame(x_new, y_new, map_limits_inf, map_limits_sup)
+        self.set_position(x_new, y_new)
+
     @abstractmethod
     def update(self):
         pass
-
-    @abstractmethod
-    def set_position(self, x, y):
-        self.pos_x = x
-        self.pos_y = y

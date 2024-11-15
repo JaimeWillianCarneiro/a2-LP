@@ -1,5 +1,6 @@
 import pygame as pg
 from src.classes.fase import Fase
+from src.classes.background import Interface
 from src.settings import SCREEN_DIMENSIONS, GAME_TITLE
 
 pg.init()
@@ -9,6 +10,7 @@ pg.display.set_caption(GAME_TITLE)
 clock = pg.time.Clock()
 
 fase_atual = Fase(screen)
+interface = Interface()
 
 movement = {'x_moved': 0, 'y_moved': 0}
 

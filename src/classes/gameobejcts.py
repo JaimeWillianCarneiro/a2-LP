@@ -1,12 +1,14 @@
 import pygame as pg
 from src.settings import SCREEN_DIMENSIONS
+from src.classes.background import PositionController
 
 class GameObject(pg.sprite.Sprite):
-    def __init__(self, x, y, width, height):
+    def __init__(self, x_position, y_position, width, height, map_limits_sup):
         super().__init__()
-        self.life = 3 # Variavel fiticia para testar o fim do jogo por life (Eliminar depois)
-        self.x_position = x
-        self.y_position = y
+        self.life = 3 # Variavel ficticia para testar o fim do jogo por life (Eliminar depois)
+        self.position_controller = PositionController(map_limits_sup, width, height)
+        self.x_position = x_position
+        self.y_position = y_position
         self.width = width
         self.height = height
         self.sprite_sheet = pg.image.load('shaggy_right_1.png')
@@ -25,38 +27,15 @@ class GameObject(pg.sprite.Sprite):
         
     def get_position(self):
         return self.x_position, self.y_position
-    
-    def to_frame(self, x_position, y_position, map_limits_inf, map_limits_sup):
-        # Enquadra o objeto para que ele nao ultrapasse nenhum limite do mapa
-        far_left = (map_limits_inf[0] + self.width/2)
-        far_right = (map_limits_sup[0] - self.width/2)
-        if x_position < far_left:
-            x_position = far_left
-        elif x_position > far_right:
-            x_position = far_right
-            
-        far_top = (map_limits_inf[1] + self.height/2)
-        far_bottom = (map_limits_sup[1] - self.height/2)
-        if y_position < far_top:
-            y_position = far_top
-        if y_position > far_bottom:
-            y_position = far_bottom
-            
-        return x_position, y_position
+
+    def set_position_rect(self, x_new, y_new):
+        self.rect.center = (x_new, y_new)
         
-    
-    def apply_movement(self, movement, map_limits_inf, map_limits_sup):
+    def apply_movement(self, movement):
         x_new = self.x_position + movement['x_moved']
         y_new = self.y_position + movement['y_moved']
-        x_new, y_new = self.to_frame(x_new, y_new, map_limits_inf, map_limits_sup)
-        self.set_position(x_new, y_new)
-        
-    def apply_translation(self, x_origin, y_origin):
-        x_position, y_position = self.get_position()
-        # Aplica uma translacao no plano, considerando o sistema de coordenadas na qual o jogo sera desenhado
-        x_new = x_position - x_origin
-        y_new = y_position - y_origin
-        self.rect.center = x_new, y_new
+        x_new, y_new = self.position_controller.to_frame(x_new, y_new)
+        self.set_position(x_new, y_new)     
     
     def animate(self):
         if self.sprites_quantity > 1:
@@ -64,9 +43,10 @@ class GameObject(pg.sprite.Sprite):
             self.sprite_actual_x %= self.sprites_quantity
             self.image = self.sprite_sheet.subsurface((int(self.sprite_actual_x), self.sprite_actual_y, self.width, self.height))
     
-    
-    def update(self, x_origin, y_origin):
-        self.apply_translation(x_origin, y_origin)
+    def update(self):
+        x_position, y_position = self.get_position()
+        x_new, y_new = self.position_controller.apply_translation(x_position, y_position)
+        self.set_position_rect(x_new, y_new)
         self.animate()
 
 

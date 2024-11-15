@@ -1,5 +1,6 @@
 import pygame as pg
 from src.settings import SCREEN_DIMENSIONS
+import math
 
 class Background(pg.sprite.Sprite):
     def __init__(self, screen, sprite, x_position, y_position, width, height, music, volume, sounds):
@@ -7,6 +8,7 @@ class Background(pg.sprite.Sprite):
         self.screen = screen
         self.sprite = pg.image.load(sprite)
         self.sprite = pg.transform.scale(self.sprite, (width, height))
+        self.position_controller = PositionController([width, height], SCREEN_DIMENSIONS[0], SCREEN_DIMENSIONS[1])
         self.x_position = x_position - SCREEN_DIMENSIONS[0]//2
         self.y_position = y_position - SCREEN_DIMENSIONS[1]//2
         self.width = width
@@ -36,26 +38,11 @@ class Background(pg.sprite.Sprite):
         self.x_position = x_new
         self.y_position = y_new
         
-    def to_frame(self,x_player, y_player):
-        x_position = x_player - SCREEN_DIMENSIONS[0]//2
-        y_position = y_player - SCREEN_DIMENSIONS[1]//2
-        # Verificacao dos limites da camera
-        if x_position < 0:
-            x_position = 0
-        elif x_position > self.x_limit_sup:
-            x_position = self.x_limit_sup
-        
-        if y_position < 0:
-            y_position = 0
-        elif y_position > self.y_limit_sup:
-            y_position = self.y_limit_sup
-            
-        return x_position, y_position
-        
-        
     def center(self, x_player, y_player):
         # Centraliza a camera no personagem
-        x_new, y_new = self.to_frame(x_player, y_player)
+        x_new, y_new = self.position_controller.to_frame(x_player, y_player)
+        x_new -= SCREEN_DIMENSIONS[0]/2
+        y_new -= SCREEN_DIMENSIONS[1]/2
         self.set_position(x_new, y_new)
         self.image = self.sprite.subsurface((*self.get_position(), *SCREEN_DIMENSIONS))
         
@@ -71,4 +58,54 @@ class Background(pg.sprite.Sprite):
     
     def update(self, x_player, y_player):
         self.center(x_player, y_player)
+        self.position_controller.set_origin(*self.get_position())
         self.draw_background_image()
+        
+
+class Interface():
+    def __init__(self, fonts, fase_atual, interface_elements):
+        pass
+    
+    
+class PositionController():
+    x_origin = 0
+    y_origin = 0
+    def __init__(self, map_limits_sup, width, height):
+        self.map_limits_inf = [width/2, height/2]
+        self.map_limits_sup = map_limits_sup.copy()
+        self.map_limits_sup[0] -= width/2
+        self.map_limits_sup[1] -= height/2
+        
+    @classmethod
+    def set_origin(cls, x_new, y_new):
+        cls.x_origin = x_new
+        cls.y_origin = y_new  
+
+    @staticmethod
+    def normalize_movement(movement):
+        if movement['x_moved'] and movement['y_moved']:
+                norma = movement['x_moved']**2
+                moved = (norma/2)**(1/2)
+                movement['x_moved'] = moved * movement['x_moved']/abs(movement['x_moved'])
+                movement['y_moved'] = moved * movement['y_moved']/abs(movement['y_moved'])
+        return movement
+    
+    def to_frame(self, x_position, y_position):
+        # Enquadra objeto para que ele nao ultrapasse nenhum limite do mapa
+        if x_position < self.map_limits_inf[0]:
+            x_position = self.map_limits_inf[0]
+        elif x_position > self.map_limits_sup[0]:
+            x_position = self.map_limits_sup[0]
+            
+        if y_position < self.map_limits_inf[1]:
+            y_position = self.map_limits_inf[1]
+        if y_position > self.map_limits_sup[1]:
+            y_position = self.map_limits_sup[1]
+            
+        return x_position, y_position
+    
+    def apply_translation(self, x_position, y_position):
+        # Aplica uma translacao no plano, considerando o sistema de coordenadas na qual o jogo sera desenhado
+        x_new = x_position - self.x_origin
+        y_new = y_position - self.y_origin
+        return x_new, y_new
