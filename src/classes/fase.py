@@ -186,7 +186,7 @@ class Fase:
                     self.optional_events.remove(optional_event)
                     self.accessible_elements.remove(optional_event)
             
-            self.player.life -= 0.01
+            self.player.life -= 0.001
         
         self.render_camera()
             
