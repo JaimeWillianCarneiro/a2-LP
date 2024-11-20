@@ -23,3 +23,5 @@ FONTE = 'arial'
 #Audios
 MUSICA_START = 'abertura.wav'
 TECLA_START = 'munch_1.wav'
+
+VIDEO_BACKGROUND = 'videos/background.mp4'

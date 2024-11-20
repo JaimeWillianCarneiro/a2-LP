@@ -1,5 +1,2 @@
-<<<<<<< HEAD
 pygame==2.6.1
-=======
-pygame
->>>>>>> 1554deeeb0c7be71ae21c0fc81b0c961f119485a
+opencv-python==4.10.0.84
