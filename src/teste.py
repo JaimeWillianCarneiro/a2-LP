@@ -1,49 +1,56 @@
 import pygame
-import moviepy.editor
-# Inicializar o pygame
+import sys
+
+# Inicialização do Pygame
 pygame.init()
 
-# Configurações da janela do jogo
+# Configurações da tela
 screen_width, screen_height = 800, 600
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Tela Inicial - Jogo")
+pygame.display.set_caption("Animação com Frames")
 
+# Carregar a imagem com os frames
+sprite_sheet = pygame.image.load("imagens/framestest.png").convert_alpha()
 
+# Configurações dos frames
+frame_width = 61  # Largura de cada frame
+frame_height = 55  # Altura de cada frame
+columns = 3  # Quantidade de colunas
+rows = 5  # Quantidade de linhas
 
-# Carregar o vídeo
-video_clip = VideoFileClip("audios/video abertura.mp4")
+# Extrair e redimensionar frames da imagem
+frames = []
+for row in range(rows):
+    for col in range(columns):
+        x = col * frame_width
+        y = row * frame_height
+        frame = sprite_sheet.subsurface(pygame.Rect(x, y, frame_width, frame_height))
+        # Redimensionar o frame para o tamanho da tela
+        frame = pygame.transform.scale(frame, (screen_width, screen_height))
+        frames.append(frame)
 
-# Redimensionar usando argumentos nomeados
-video_clip = video_clip.resize(width=screen_width, height=screen_height)  # Ajusta para o tamanho da tela
+# Variáveis de controle da animação
+current_frame = 0
+frame_delay = 100  # Tempo (ms) entre os frames
+last_update_time = pygame.time.get_ticks()
 
-# Clock para controlar o FPS do pygame
-clock = pygame.time.Clock()
-
-# Loop principal
+# Loop principal do jogo
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    
-    # Calcular o tempo atual do vídeo (loop infinito)
-    current_time = pygame.time.get_ticks() / 1000  # Tempo em segundos
-    video_time = current_time % video_clip.duration
-    
-    # Obter o quadro atual do vídeo
-    frame = video_clip.get_frame(video_time)
-    
-    # Converter o quadro para uma superfície do Pygame
-    frame_surface = pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-    
-    # Desenhar o quadro na tela
-    screen.blit(frame_surface, (0, 0))
-    
-    # Atualizar a janela
-    pygame.display.flip()
-    
-    # Controlar FPS
-    clock.tick(30)
 
-# Encerrar o pygame
+    # Atualizar o frame da animação
+    now = pygame.time.get_ticks()
+    if now - last_update_time > frame_delay:
+        current_frame = (current_frame + 1) % len(frames)
+        last_update_time = now
+
+    # Desenhar na tela
+    screen.blit(frames[current_frame], (0, 0))  # O frame ocupa toda a tela
+    pygame.display.flip()
+
+# Encerrar o Pygame
 pygame.quit()
+sys.exit()
