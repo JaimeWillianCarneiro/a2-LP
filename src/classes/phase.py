@@ -8,7 +8,7 @@ import random
 import numpy as np
 
 def random_data(background):
-    # Variavéis fictias para testar a classe Fase ##############
+    # Variavéis fictias para testar a classe phase ##############
     map_limits_sup = list(background.get_shape())
     collectibles = []
     npcs = []
@@ -43,7 +43,6 @@ def random_data(background):
         collectibles.append(Collectible(x_position=x, y_position=y, width=width, height=height, map_limits_sup=map_limits_sup, spritesheet='shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, visible=True, description=description))
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-        # mandatory_events.append(Event(1, player=player, start_zone=(x, y, 100, 75), event_zone=(x, y, 700, 350), end_zone=(x+600, y, 100, 75), is_obrigatory=True, map_limits_sup=map_limits_sup))
         mandatory_events.append(Minigame(id_event=1, player=player, start_zone=(x, y, 100, 75), event_zone=(x, y, 700, 350), end_zone=(x+600, y, 100, 75), is_obrigatory=True, map_limits_sup=map_limits_sup, villains=monster, npcs=npcs, time=4*FRAME_RATE))
 
 
@@ -54,7 +53,6 @@ def random_data(background):
         npcs.append(GameObject(x,y, width, height, map_limits_sup, spritesheet='shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1))
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-        # optional_events.append(Event(player, (x, y, 50, 25), (x, y, 150, 50), (x+50, y, 50, 25), False, 30*60, map_limits_sup))
         optional_events.append(Event(1, player=player, start_zone=(x, y, 50, 25), event_zone=(x, y, 150, 50), end_zone=(x+50, y, 50, 25), is_obrigatory=False, map_limits_sup=map_limits_sup))
         
     return npcs, collectibles, mandatory_events, optional_events, player, monster, scooby_snacks
@@ -233,12 +231,17 @@ class Minigame(Event):
             elif not pg.sprite.collide_rect(self, self.player):
                 self.player.life -= 0.005
                 self.out_zone = True
-                
 
-class Fase:
+class Dialog(Event):
+    def __init__(self):
+        pass
+        
+                        
+
+class Phase:
     def __init__(self, screen):
         self.screen = screen
-        self.fase_elements = pg.sprite.Group()
+        self.phase_elements = pg.sprite.Group()
         self.accessible_elements = pg.sprite.Group()
         self.collectibles = pg.sprite.Group()
         self.fired = pg.sprite.Group()
@@ -248,31 +251,31 @@ class Fase:
         
         npcs, collectibles, mandatory_events, optional_events, self.player, self.monster, self.scooby_snacks = random_data(background)
         
-        self.fase_elements.add(self.player)
-        # self.fase_elements.add(self.monster)
-        self.fase_elements.add(self.scooby_snacks)
+        self.phase_elements.add(self.player)
+        # self.phase_elements.add(self.monster)
+        self.phase_elements.add(self.scooby_snacks)
         self.accessible_elements.add(self.monster)
         # self.accessible_elements.add(self.scooby_snacks)
         
         
         self.npcs = pg.sprite.Group(npcs)
         self.accessible_elements.add(self.npcs)
-        self.fase_elements.add(self.npcs)
+        self.phase_elements.add(self.npcs)
             
         self.collectibles = pg.sprite.Group(collectibles)
         self.accessible_elements.add(self.collectibles)
-        self.fase_elements.add(self.collectibles)
+        self.phase_elements.add(self.collectibles)
         
         self.mandatory_events = pg.sprite.Group(mandatory_events)
         self.mandatory_events.add(self.mandatory_events)
-        self.fase_elements.add(self.mandatory_events)
+        self.phase_elements.add(self.mandatory_events)
         self.current_mandatory_event = next(iter(self.mandatory_events), None)
         self.accessible_elements.add(self.current_mandatory_event)
-        self.fase_elements.add(self.current_mandatory_event)
+        self.phase_elements.add(self.current_mandatory_event)
         
         self.optional_events = pg.sprite.Group(optional_events)
         self.accessible_elements.add(self.optional_events)
-        self.fase_elements.add(self.optional_events)
+        self.phase_elements.add(self.optional_events)
         
         self.background.play_music()
 
@@ -288,7 +291,7 @@ class Fase:
          
     
     def check_end(self):
-        """  Verifica se o player passou pela fase (chama a próxima fase e encerra a atual) """
+        """  Verifica se o player passou pela phase (chama a próxima phase e encerra a atual) """
         if pg.sprite.collide_rect(self.player, self.scooby_snacks) and self.scooby_snacks.visible:
             return True
         if not self.current_mandatory_event:
@@ -297,7 +300,7 @@ class Fase:
     
     
     def check_lost(self):
-        """ Verifica se o player falhou (seja por tempo, seja por vida, seja por falha em algum evento da fase, etc) """
+        """ Verifica se o player falhou (seja por tempo, seja por vida, seja por falha em algum evento da phase, etc) """
         if self.player.life <= 0:
             return True
         return False
@@ -322,9 +325,9 @@ class Fase:
             del each_fired
     
     def update(self, movement, attack):    
-        # Caso o player tenha passado de fase, encerra-a e inicia a proxima
+        # Caso o player tenha passado de phase, encerra-a e inicia a proxima
         if self.check_end():
-            return Fase(self.screen)
+            return Phase(self.screen)
             
         # Verifica se o player continua no jogo
         if not self.check_lost():
@@ -332,17 +335,17 @@ class Fase:
             self.player.aim = np.array(attack)
             # print(self.player.aim)
             # Aplica o movimento do player e atualiza o background, obtendo o centro do mapa
-            movement = self.player.position_controller.normalize_movement(movement)
+            movement = self.player.position_controller.normalize_movement(movement, self.player.speed)
             self.player.apply_movement(movement)
             self.background.update(self.player.x_position, self.player.y_position)
             monster_bullets = self.monster.update(self.player)
             fired.extend(monster_bullets)
-            self.fase_elements.add(fired)
+            self.phase_elements.add(fired)
             self.accessible_elements.add(fired)
             self.fired.add(fired)
             
-            # Atualiza todos os elementos da fase, aplicando a translacao para o novo sistema de coordenadas
-            self.fase_elements.update()
+            # Atualiza todos os elementos da phase, aplicando a translacao para o novo sistema de coordenadas
+            self.phase_elements.update()
             
             # Atualizacao do evento obrigatorio atual
             if self.current_mandatory_event.started:
@@ -374,3 +377,14 @@ class Fase:
             pg.draw.line(self.screen, (0, 0, 0), self.monster.rect.center, np.array(self.monster.rect.center) + self.monster.aim*self.monster.scope/np.linalg.norm(self.monster.aim))
             
         return self
+    
+# Gerenciador()
+#     __init__:
+#         # count_fase = 0
+#         #{'vilao': {'name': 'fred', }
+#         # Ler os dados da fase 0
+#         self.fase_atual = Phase
+#     # if Fase_Atual.check_end():
+#         count_fase += 1
+#         # Ler os dados da proxima fase
+#         fase_atual = Phase(self.scren, #dados da fase)

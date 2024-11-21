@@ -34,8 +34,8 @@ class GameObject(pg.sprite.Sprite):
         self.rect.center = (x_new, y_new)
         
     def apply_movement(self, movement):
-        x_new = self.x_position + movement['x_moved']
-        y_new = self.y_position + movement['y_moved']
+        x_new = self.x_position + movement[0]
+        y_new = self.y_position + movement[1]
         x_new, y_new = self.position_controller.to_frame(x_new, y_new)
         self.set_position(x_new, y_new)     
     

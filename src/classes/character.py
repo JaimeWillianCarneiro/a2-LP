@@ -6,6 +6,7 @@ import numpy as np
 class Character(pg.sprite.Sprite, ABC):
     def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time):
         super().__init__()
+        # self.life = 5 TODO
         self._name = name
         self._speed = speed
         self._perception = perception
@@ -173,13 +174,13 @@ class Character(pg.sprite.Sprite, ABC):
             self.current_sprite_x = 0   
 
     def apply_movement(self, movement):
-        if movement['x_moved'] > 0:
+        if movement[0] > 0:
             current_sprite_y = 2
-        elif movement['x_moved'] < 0:
+        elif movement[0] < 0:
             current_sprite_y = 3
-        elif movement['y_moved'] < 0:
+        elif movement[1] < 0:
             current_sprite_y = 1
-        elif movement['y_moved'] > 0:
+        elif movement[1] > 0:
             current_sprite_y = 0
         else:
             current_sprite_y = (self.current_sprite_y+1)%4
@@ -189,8 +190,8 @@ class Character(pg.sprite.Sprite, ABC):
             
         self.redefine_direction(current_sprite_y)
         
-        x_new = self.x_position + movement['x_moved']
-        y_new = self.y_position + movement['y_moved']
+        x_new = self.x_position + movement[0]
+        y_new = self.y_position + movement[1]
         x_new, y_new = self.position_controller.to_frame(x_new, y_new)
         self.x_position = x_new
         self.y_position = y_new

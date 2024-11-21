@@ -4,6 +4,7 @@ from src.classes.gameobejcts import Ammunition
 from src.settings import FRAME_RATE
 import numpy as np
 
+
 class Villain(Character):
     def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin,
                  life, damage, mem_size, vision_field, attack_field, sprites_quantity, background, scooby_snacks, scope, ammunition, bullets, reload_time):
@@ -19,7 +20,7 @@ class Villain(Character):
 
     def aim_function(self, player, movement):
         fired = []
-        self.aim = np.array([movement['x_moved'], movement['y_moved']])
+        self.aim = movement
         # Atira no personagem caso ele esteja na mira e tenha recarregado
         self.reload += 1
         if self.aim.any():
@@ -122,7 +123,7 @@ class Villain(Character):
         else:
             vector[1] *= self.speed/abs(vector[1])
         
-        return vector
+        return np.array(vector)
             
 
     def attack(self, player):
@@ -142,9 +143,8 @@ class Villain(Character):
         if self.attack_field.colliderect(player.rect):
             self.attack(player)
             
-        vector = self.define_direction()
-        movement = {'x_moved': vector[0], 'y_moved': vector[1]}
-        movement = self.position_controller.normalize_movement(movement)
+        movement = self.define_direction()
+        movement = self.position_controller.normalize_movement(movement, self.speed)
         self.apply_movement(movement)
         fired = self.aim_function(player, movement)
         
