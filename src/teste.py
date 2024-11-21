@@ -9,6 +9,14 @@ screen_width, screen_height = 800, 600  # Resolva alterar conforme sua preferên
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Animação com Frames")
 
+
+# Configuração do mixer (áudio)
+pygame.mixer.init()
+pygame.mixer.music.load("assets/sounds/backmusic.mp3")  # Substitua pelo nome do arquivo de áudio
+pygame.mixer.music.set_volume(0.5)  # Volume (0.0 a 1.0)
+pygame.mixer.music.play(-1)  # Reproduzir em loop infinito (-1)
+
+
 # Carregar a imagem com os frames
 sprite_sheet = pygame.image.load("assets/title screen/title screen.png").convert_alpha()
 dimensions = (sprite_sheet.get_width(), sprite_sheet.get_height())
