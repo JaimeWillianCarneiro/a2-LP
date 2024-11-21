@@ -22,12 +22,12 @@ def random_data(background):
     width = 95
     height = 75
     
-    ammunition = Ammunition(x_position=x, y_position=y, width=30, height=30, map_limits_sup=map_limits_sup, spritesheet='shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, damage=1, effects=[], direction=np.zeros(2, dtype=float), recochet=False, speed=7)
+    ammunition = Ammunition(x_position=x, y_position=y, width=30, height=30, map_limits_sup=map_limits_sup, spritesheet='assets/backgrounds/lua.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, damage=1, effects=[], direction=np.zeros(2, dtype=float), recochet=False, speed=7)
     player = Group1Protagonist(name='Scooby', speed=10, perception=23, x_position=SCREEN_DIMENSIONS[0], y_position=SCREEN_DIMENSIONS[1], width=width, height=height, direction=0, skin='default', life=5, inventory=[], ability=1, damage=0.003, trap_power=5, sprites_quantity=4, map_limits_sup=map_limits_sup, scope=300, ammunition=ammunition, bullets=100, reload_time=3)
     
     x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
     y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-    scooby_snacks = Collectible(x, y, 50, 50, map_limits_sup, spritesheet='shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, visible=False, description='Scooby Snacks')
+    scooby_snacks = Collectible(x, y, 50, 50, map_limits_sup, spritesheet='assets/backgrounds/lua.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, visible=False, description='Scooby Snacks')
     
     width = 75
     height = 100
@@ -40,7 +40,7 @@ def random_data(background):
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         width = 23
         height = 40
-        collectibles.append(Collectible(x_position=x, y_position=y, width=width, height=height, map_limits_sup=map_limits_sup, spritesheet='shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, visible=True, description=description))
+        collectibles.append(Collectible(x_position=x, y_position=y, width=width, height=height, map_limits_sup=map_limits_sup, spritesheet='assets/backgrounds/lua.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, visible=True, description=description))
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         # mandatory_events.append(Event(1, player=player, start_zone=(x, y, 100, 75), event_zone=(x, y, 700, 350), end_zone=(x+600, y, 100, 75), is_obrigatory=True, map_limits_sup=map_limits_sup))
@@ -51,7 +51,7 @@ def random_data(background):
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         width = 67
         height = 100
-        npcs.append(GameObject(x,y, width, height, map_limits_sup, spritesheet='shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1))
+        npcs.append(GameObject(x,y, width, height, map_limits_sup, spritesheet='assets/backgrounds/lua.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1))
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         # optional_events.append(Event(player, (x, y, 50, 25), (x, y, 150, 50), (x+50, y, 50, 25), False, 30*60, map_limits_sup))

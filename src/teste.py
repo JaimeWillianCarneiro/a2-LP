@@ -3,6 +3,8 @@ import sys
 
 # Inicialização do Pygame
 pygame.init()
+clock = pygame.time.Clock()
+
 
 # Configurações da tela
 screen_width, screen_height = 800, 600  # Resolva alterar conforme sua preferência
@@ -12,7 +14,7 @@ pygame.display.set_caption("Animação com Frames")
 
 # Configuração do mixer (áudio)
 pygame.mixer.init()
-pygame.mixer.music.load("assets/sounds/backmusic.mp3")  # Substitua pelo nome do arquivo de áudio
+pygame.mixer.music.load("audios/abertura_inicial.wav")  # Substitua pelo nome do arquivo de áudio
 pygame.mixer.music.set_volume(0.5)  # Volume (0.0 a 1.0)
 pygame.mixer.music.play(-1)  # Reproduzir em loop infinito (-1)
 
@@ -40,24 +42,30 @@ for row in range(rows):
 
 # Variáveis de controle da animação
 current_frame = 0
-frame_delay = 100  # Tempo (ms) entre os frames
+frame_delay = 10  # Tempo (ms) entre os frames
 last_update_time = pygame.time.get_ticks()
 
 # Loop principal do jogo
 running = True
 while running:
+    clock.tick(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
     # Atualizar o frame da animação
-    now = pygame.time.get_ticks()
-    if now - last_update_time > frame_delay:
-        current_frame = (current_frame + 1) % len(frames)
-        last_update_time = now
+    # now = pygame.time.get_ticks()
+    # if now - last_update_time > frame_delay:
+    #     current_frame = (current_frame + 1) % len(frames)
+    #     last_update_time = now
 
+    current_frame +=0.7
+    if current_frame >= len(frames):
+        current_frame= 0
+    # current_frame_2   = int(current_frame)
+    
     # Desenhar na tela
-    screen.blit(frames[current_frame], (0, 0))  # O frame ocupa toda a tela
+    screen.blit(frames[int(current_frame)], (0, 0))  # O frame ocupa toda a tela
     pygame.display.flip()
 
 # Encerrar o Pygame

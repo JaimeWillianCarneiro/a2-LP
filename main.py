@@ -5,7 +5,7 @@ from src.settings import SCREEN_DIMENSIONS, GAME_TITLE, FRAME_RATE
 
 pg.init()
 print(SCREEN_DIMENSIONS)
-screen = pg.display.set_mode((0, 0))
+screen = pg.display.set_mode((0, 0)) #tela cheia
 pg.display.set_caption(GAME_TITLE)
 clock = pg.time.Clock()
 
