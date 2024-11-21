@@ -16,8 +16,10 @@ class Menu:
     screen: pygame.display
         Screen shown to the player
     """
-    def __init__(self, screen)-> None:
-        self.screen = screen
+    def __init__(self)-> None:
+        
+        
+        pygame.init()
         
         self.clock = pygame.time.Clock()
         
