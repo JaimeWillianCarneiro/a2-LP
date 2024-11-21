@@ -5,18 +5,19 @@ import sys
 pygame.init()
 
 # Configurações da tela
-screen_width, screen_height = 800, 600
+screen_width, screen_height = 800, 600  # Resolva alterar conforme sua preferência
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Animação com Frames")
 
 # Carregar a imagem com os frames
-sprite_sheet = pygame.image.load("imagens/framestest.png").convert_alpha()
+sprite_sheet = pygame.image.load("assets/title screen/title screen.png").convert_alpha()
+dimensions = (sprite_sheet.get_width(), sprite_sheet.get_height())
 
 # Configurações dos frames
-frame_width = 61  # Largura de cada frame
-frame_height = 55  # Altura de cada frame
-columns = 3  # Quantidade de colunas
-rows = 5  # Quantidade de linhas
+columns = 12  # Número de colunas
+rows = 20  # Número de linhas
+frame_width = dimensions[0] // columns  # Largura de cada frame 
+frame_height = dimensions[1] // rows  # Altura de cada frame 
 
 # Extrair e redimensionar frames da imagem
 frames = []
