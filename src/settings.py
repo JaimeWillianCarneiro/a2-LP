@@ -1,4 +1,5 @@
 import pygame as pg
+import numpy as np
 from enum import Enum
 
 pg.init()
@@ -12,3 +13,11 @@ class Fonts(Enum):
     EVENT_TIME = pg.font.SysFont('showcardgothic', 25, False, False)
     
 FRAME_RATE = 30
+
+# SAIR = pg.K_ESCAPE
+class WASD_Keys(Enum):
+    TOP = pg.K_w
+    LEFT = pg.K_a
+    DOWN = pg.K_s
+    RIGHT = pg.K_d
+    
