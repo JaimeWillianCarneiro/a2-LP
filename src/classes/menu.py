@@ -82,5 +82,6 @@ class Menu:
                 # Desenhar na tela
                 self.screen.blit(self.frames[int(self.current_frame)], (0, 0))
                 pygame.display.flip()
-        
+    
+    
     
