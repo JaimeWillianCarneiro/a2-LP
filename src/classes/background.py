@@ -69,7 +69,7 @@ class Interface():
         self.player_name = Fonts.PLAYER_NAME.value.render('Player :'+str(self.fase_atual.player.name), True, (123, 173, 123))
         self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(self.fase_atual.player.life), True, (123, 173, 223))
         self.event_warning =  Fonts.EVENT_WARNING.value.render('Volte para a Zona!', True, (255, 255, 255))
-        self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.fase_atual.current_mandatory_event.time), True, (123, 173, 223))
+        # self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.fase_atual.current_mandatory_event.time), True, (123, 173, 223))
         self.player_name_location = (50, 50)
         self.player_life_location = (300, 50)
         self.event_warning_location = ((SCREEN_DIMENSIONS[0]*2)//5, 100)
@@ -88,14 +88,14 @@ class Interface():
             if self.fase_atual.current_mandatory_event.in_execution:
                 if self.fase_atual.current_mandatory_event.out_zone:
                     self.screen.blit(self.event_warning, self.event_warning_location)
-                self.event_time = self.fase_atual.current_mandatory_event.time
-                self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.event_time), True, (123, 173, 223))
-                self.screen.blit(self.event_time, self.event_time_location)
+                # self.event_time = self.fase_atual.current_mandatory_event.time
+                # self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.event_time), True, (123, 173, 223))
+                # self.screen.blit(self.event_time, self.event_time_location)
         
         # Desenha o minimapa e as configuracoes no canto superior direito
         
     def update(self):
-        self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(self.fase_atual.player.life), True, (123, 173, 223))
+        self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(int(self.fase_atual.player.life)), True, (123, 173, 223))
         self.draw_interface()
     
 class PositionController():
@@ -106,6 +106,7 @@ class PositionController():
         self.map_limits_sup = map_limits_sup.copy()
         self.map_limits_sup[0] -= width/2
         self.map_limits_sup[1] -= height/2
+        self.map = pg.Rect(*self.map_limits_inf, *self.map_limits_sup)
         
     @classmethod
     def set_origin(cls, x_new, y_new):
@@ -115,10 +116,10 @@ class PositionController():
     @staticmethod
     def normalize_movement(movement):
         if movement['x_moved'] and movement['y_moved']:
-                norma = movement['x_moved']**2
-                moved = (norma/2)**(1/2)
-                movement['x_moved'] = moved * movement['x_moved']/abs(movement['x_moved'])
-                movement['y_moved'] = moved * movement['y_moved']/abs(movement['y_moved'])
+            norma = movement['x_moved']**2
+            moved = (norma/2)**(1/2)
+            movement['x_moved'] = moved * movement['x_moved']/abs(movement['x_moved'])
+            movement['y_moved'] = moved * movement['y_moved']/abs(movement['y_moved'])
         return movement
     
     def to_frame(self, x_position, y_position):
@@ -134,6 +135,10 @@ class PositionController():
             y_position = self.map_limits_sup[1]
             
         return x_position, y_position
+    
+    def out_game(self, object):
+        if not self.map.contains(object.rect):
+            object.kill()
     
     def apply_translation(self, x_position, y_position):
         # Aplica uma translacao no plano, considerando o sistema de coordenadas na qual o jogo sera desenhado

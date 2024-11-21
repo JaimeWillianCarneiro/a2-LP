@@ -10,3 +10,5 @@ class Fonts(Enum):
     PLAYER_LIFE = pg.font.SysFont('franklingothicheavy', 25, True, False)
     EVENT_WARNING = pg.font.SysFont('impact', 50, False, True)
     EVENT_TIME = pg.font.SysFont('showcardgothic', 25, False, False)
+    
+FRAME_RATE = 30
