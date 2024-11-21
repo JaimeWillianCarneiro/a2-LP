@@ -37,7 +37,6 @@ class Character(pg.sprite.Sprite, ABC):
         bullet.direction = direction
         return bullet
         
-
     def check_load(self):
         if self.reload_time < self.reload:
             self.reload = 0
@@ -99,6 +98,7 @@ class Character(pg.sprite.Sprite, ABC):
         self._height = value
         self.rect.height = value
         self.image = pg.transform.scale(self.image, (self.rect.width, self.rect.height))
+
 
     @property
     def image(self):
@@ -171,7 +171,7 @@ class Character(pg.sprite.Sprite, ABC):
         if self.current_sprite_y != current_sprite_y:
             self.current_sprite_y = current_sprite_y
             self.current_sprite_x = 0   
-    
+
     def apply_movement(self, movement):
         if movement['x_moved'] > 0:
             current_sprite_y = 2
