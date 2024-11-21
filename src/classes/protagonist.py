@@ -1,16 +1,15 @@
 import pygame as pg
 from abc import ABC, abstractmethod
-from character import Character
+from src.classes.character import Character
 
 
 class Protagonist(Character, ABC):
-    def __init__(self, name, speed, perception, pos_x, pos_y, width, height, direction, sprite_sheet,
-                 life, inventory, ability, movement):
-        super().__init__(name, speed, perception, pos_x, pos_y, width, height, direction, sprite_sheet)
+    def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin,
+                 life, inventory, ability, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time):
+        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time)
         self._life = life
         self._inventory = inventory
         self._ability = ability
-        self._movement = movement
 
     @property
     def life(self):
@@ -36,14 +35,6 @@ class Protagonist(Character, ABC):
     def ability(self, value):
         self._ability = value
 
-    @property
-    def movement(self):
-        return self._movement
-
-    @movement.setter
-    def movement(self, value):
-        self._movement = value
-
     @abstractmethod
     def update(self):
         pass
@@ -54,12 +45,11 @@ class Protagonist(Character, ABC):
     def check_ability(self):
         print("Checking ability...")
 
-
 class Group1Protagonist(Protagonist):
-    def __init__(self, name, speed, perception, pos_x, pos_y, width, height, direction, sprite_sheet,
-                 life, inventory, ability, movement, damage, trap_power):
-        super().__init__(name, speed, perception, pos_x, pos_y, width, height, direction, sprite_sheet,
-                         life, inventory, ability, movement)
+    def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin,
+                 life, inventory, ability, damage, trap_power, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time):
+        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin,
+                         life, inventory, ability, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time)
         self._damage = damage
         self._trap_power = trap_power
 
@@ -80,14 +70,16 @@ class Group1Protagonist(Protagonist):
         self._trap_power = value
 
     def update(self):
-        pass
+        x_new, y_new = self.position_controller.apply_translation(self.x_position, self.y_position)
+        self.set_position_rect(x_new, y_new)
+        self.animate()
 
 
 class Group2Protagonist(Protagonist):
-    def __init__(self, name, speed, perception, pos_x, pos_y, width, height, direction, sprite_sheet,
-                 life, inventory, ability, movement, deceive_power):
-        super().__init__(name, speed, perception, pos_x, pos_y, width, height, direction, sprite_sheet,
-                         life, inventory, ability, movement)
+    def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin,
+                 life, inventory, ability, movement, deceive_power, map_limits_sup, scope, ammunition, bullets, reload_time):
+        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin,
+                         life, inventory, ability, movement, map_limits_sup, scope, ammunition, bullets, reload_time)
         self._deceive_power = deceive_power
 
     @property
