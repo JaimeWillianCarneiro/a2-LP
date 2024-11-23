@@ -2,7 +2,7 @@ import pygame as pg
 from src.settings import SCREEN_DIMENSIONS, FRAME_RATE
 from src.classes.gameobejcts import GameObject, Collectible, Ammunition
 from src.classes.protagonist import Group1Protagonist
-from src.classes.background import Background, PositionController
+from src.classes.background import Background, PositionController, Interface
 from src.classes.villain import Villain
 import random
 import numpy as np
@@ -297,12 +297,9 @@ class Phase:
             return True
         return False
     
-    
     def check_lost(self):
         """ Verifica se o player falhou (seja por tempo, seja por vida, seja por falha em algum evento da phase, etc) """
-        if self.player.life <= 0:
-            return True
-        return False
+        return self.player.life <= 0
             
     def check_collectibles(self):
         to_collectible = pg.sprite.spritecollide(self.player, self.collectibles, False)
@@ -324,57 +321,51 @@ class Phase:
             each_fired.kill()
             del each_fired
     
-    def update(self, movement, attack):    
-        # Caso o player tenha passado de phase, encerra-a e inicia a proxima
-        if self.check_end():
-            return Phase(self.screen)
-            
-        # Verifica se o player continua no jogo
-        if not self.check_lost():
-            fired = []
-            self.player.aim = np.array(attack)
-            # print(self.player.aim)
-            # Aplica o movimento do player e atualiza o background, obtendo o centro do mapa
-            movement = self.player.position_controller.normalize_movement(movement, self.player.speed)
-            self.player.apply_movement(movement)
-            self.background.update(self.player.x_position, self.player.y_position)
-            monster_bullets = self.monster.update(self.player)
-            fired.extend(monster_bullets)
-            self.phase_elements.add(fired)
-            self.accessible_elements.add(fired) #TODO Fase gerencia colisao de player e monstro para animar o ataque
-            self.fired.add(fired)
-            
-            # Atualiza todos os elementos da phase, aplicando a translacao para o novo sistema de coordenadas
-            self.phase_elements.update()
-            
-            # Atualizacao do evento obrigatorio atual
-            if self.current_mandatory_event.started:
-                if not self.current_mandatory_event.in_execution:
-                    self.current_mandatory_event.kill()
-                    self.current_mandatory_event = next(iter(self.mandatory_events), None)
-                    if self.current_mandatory_event:
-                        self.accessible_elements.add(self.current_mandatory_event)
-            if len(self.mandatory_events.sprites()) == 1:
-                self.scooby_snacks.visible = True
-                self.accessible_elements.add(self.scooby_snacks)
-            
-            # Atualizacao dos eventos opcionais
-            for optional_event in self.optional_events.sprites():
-                if optional_event.started and not optional_event.in_execution:
-                    optional_event.kill()
-                    
-            # Coleta os coletaveis possiveis
-            self.check_collectibles()
-            
-            # Verifa colisao com projeteis
-            self.check_fired()
+    def update(self, movement, attack):            
+
+        fired = []
+        self.player.aim = np.array(attack)
+
+        # Aplica o movimento do player e atualiza o background, obtendo o centro do mapa
+        movement = self.player.position_controller.normalize_movement(movement, self.player.speed)
+        self.player.apply_movement(movement)
+        self.background.update(self.player.x_position, self.player.y_position)
+        monster_bullets = self.monster.update(self.player)
+        fired.extend(monster_bullets)
+        self.phase_elements.add(fired)
+        self.accessible_elements.add(fired) #TODO Fase gerencia colisao de player e monstro para animar o ataque
+        self.fired.add(fired)
         
+        # Atualiza todos os elementos da phase, aplicando a translacao para o novo sistema de coordenadas
+        self.phase_elements.update()
+        
+        # Atualizacao do evento obrigatorio atual
+        if self.current_mandatory_event.started:
+            if not self.current_mandatory_event.in_execution:
+                self.current_mandatory_event.kill()
+                self.current_mandatory_event = next(iter(self.mandatory_events), None)
+                if self.current_mandatory_event:
+                    self.accessible_elements.add(self.current_mandatory_event)
+        if len(self.mandatory_events.sprites()) == 1:
+            self.scooby_snacks.visible = True
+            self.accessible_elements.add(self.scooby_snacks)
+        
+        # Atualizacao dos eventos opcionais
+        for optional_event in self.optional_events.sprites():
+            if optional_event.started and not optional_event.in_execution:
+                optional_event.kill()
+                
+        # Coleta os coletaveis possiveis
+        self.check_collectibles()
+        
+        # Verifa colisao com projeteis
+        self.check_fired()
+    
         self.render_camera()
         pg.draw.line(self.screen, (0, 0, 0), self.player.rect.center, (np.array(self.player.rect.center)+self.player.aim*50))
         if self.monster.aim.any():
             pg.draw.line(self.screen, (0, 0, 0), self.monster.rect.center, np.array(self.monster.rect.center) + self.monster.aim*self.monster.scope/np.linalg.norm(self.monster.aim))
             
-        return self
     
 # Gerenciador()
 #     __init__:
@@ -389,17 +380,25 @@ class Phase:
 
 
 class PhaseManager:
-    def __init__(self, screen, interface, phase_counter = 0):
+    def __init__(self, screen, phase_counter = 0):
         self.screen = screen
-        self.interface = interface
-        self.phase_counter = phase_counter
-        
+        self._phase_counter = phase_counter        
         # Inicia a primeira fase
         self._current_phase = Phase(self.screen)
+        self.interface = Interface(self.screen, self.current_phase, []) 
         
     
     def start_phase(self):
-        pass
+        self.current_phase = Phase(self.screen)
+        self.interface = Interface(self.screen, self.current_phase, [])
+    
+    @property
+    def phase_counter(self):
+        return self._phase_counter
+    
+    @phase_counter.setter
+    def phase_counter(self, new_phase_counter):
+        self._phase_counter = new_phase_counter
     
     @property
     def current_phase(self):
@@ -409,12 +408,15 @@ class PhaseManager:
     def current_phase(self, new_phase):
         self._current_phase = new_phase
         
-    def update(self):
+    def update(self, movement, attack):
         # Atualiza a fase atual
+        if not self.current_phase.check_lost():
+            self.current_phase.update(movement, attack)
         
         # Verifica a passagem de fase
+        if self.current_phase.check_end():
+            self.phase_counter += 1
+            self.start_phase()
          
         # Atualiza a interface
-        pass
-    
-    
+        self.interface.update() 
