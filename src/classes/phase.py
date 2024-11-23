@@ -22,7 +22,8 @@ def random_data(background):
     width = 95
     height = 75
     
-    ammunition = Ammunition(x_position=x, y_position=y, width=30, height=30, map_limits_sup=map_limits_sup, spritesheet='shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, damage=1, effects=[], direction=np.zeros(2, dtype=float), recochet=False, speed=7)
+    ammunition = Ammunition(x_position=x, y_position=y, width=30, height=30, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\lua.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, damage=1, effects=[], direction=np.zeros(2, dtype=float), recochet=False, speed=7)
+    
     player = Group1Protagonist(name='Scooby', speed=10, perception=23, x_position=SCREEN_DIMENSIONS[0], y_position=SCREEN_DIMENSIONS[1], width=width, height=height, direction=0, skin='default', life=5, inventory=[], ability=1, damage=0.003, trap_power=5, sprites_quantity=4, map_limits_sup=map_limits_sup, scope=300, ammunition=ammunition, bullets=100, reload_time=3)
     
     x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
@@ -227,6 +228,7 @@ class Minigame(Event):
             self.pass_time()
             self.out_zone = False
             if self.check_lost():
+                print('Cabou tempo\n')
                 self.player.life = 0
             elif not pg.sprite.collide_rect(self, self.player):
                 self.player.life -= 0.005
@@ -251,7 +253,7 @@ class Phase:
         
         npcs, collectibles, mandatory_events, optional_events, self.player, self.monster, self.scooby_snacks = random_data(background)
         
-        self.phase_elements.add(self.player)
+        self.phase_elements.add(self.player) # [player]
         # self.phase_elements.add(self.monster)
         self.phase_elements.add(self.scooby_snacks)
         self.accessible_elements.add(self.monster)
@@ -262,7 +264,7 @@ class Phase:
         self.accessible_elements.add(self.npcs)
         self.phase_elements.add(self.npcs)
             
-        self.collectibles = pg.sprite.Group(collectibles)
+        self.collectibles = pg.sprite.Group(collectibles) # [1, 2] [1, 2]
         self.accessible_elements.add(self.collectibles)
         self.phase_elements.add(self.collectibles)
         
@@ -284,12 +286,9 @@ class Phase:
         objects_to_render = pg.sprite.spritecollide(self.background, self.accessible_elements, False)
         to_render = pg.sprite.Group()
         to_render.add(self.player)
-        for sprite in objects_to_render:
-            to_render.add(sprite)
-        
+        to_render.add(objects_to_render)
         to_render.draw(self.screen)
          
-    
     def check_end(self):
         """  Verifica se o player passou pela phase (chama a próxima phase e encerra a atual) """
         if pg.sprite.collide_rect(self.player, self.scooby_snacks) and self.scooby_snacks.visible:
@@ -319,6 +318,7 @@ class Phase:
         to_fire = pg.sprite.spritecollide(self.player, self.fired, False)
         for each_fired in to_fire:
             # Atinge o jogador
+            print('Dano longo\n')
             self.player.life = self.player.life - each_fired.damage
             # Remove todas as referencias
             each_fired.kill()
@@ -341,7 +341,7 @@ class Phase:
             monster_bullets = self.monster.update(self.player)
             fired.extend(monster_bullets)
             self.phase_elements.add(fired)
-            self.accessible_elements.add(fired)
+            self.accessible_elements.add(fired) #TODO Fase gerencia colisao de player e monstro para animar o ataque
             self.fired.add(fired)
             
             # Atualiza todos os elementos da phase, aplicando a translacao para o novo sistema de coordenadas
@@ -350,8 +350,7 @@ class Phase:
             # Atualizacao do evento obrigatorio atual
             if self.current_mandatory_event.started:
                 if not self.current_mandatory_event.in_execution:
-                    self.mandatory_events.remove(self.current_mandatory_event)
-                    self.accessible_elements.remove(self.current_mandatory_event)
+                    self.current_mandatory_event.kill()
                     self.current_mandatory_event = next(iter(self.mandatory_events), None)
                     if self.current_mandatory_event:
                         self.accessible_elements.add(self.current_mandatory_event)
@@ -362,8 +361,7 @@ class Phase:
             # Atualizacao dos eventos opcionais
             for optional_event in self.optional_events.sprites():
                 if optional_event.started and not optional_event.in_execution:
-                    self.optional_events.remove(optional_event)
-                    self.accessible_elements.remove(optional_event)
+                    optional_event.kill()
                     
             # Coleta os coletaveis possiveis
             self.check_collectibles()
@@ -388,3 +386,35 @@ class Phase:
 #         count_fase += 1
 #         # Ler os dados da proxima fase
 #         fase_atual = Phase(self.scren, #dados da fase)
+
+
+class PhaseManager:
+    def __init__(self, screen, interface, phase_counter = 0):
+        self.screen = screen
+        self.interface = interface
+        self.phase_counter = phase_counter
+        
+        # Inicia a primeira fase
+        self._current_phase = Phase(self.screen)
+        
+    
+    def start_phase(self):
+        pass
+    
+    @property
+    def current_phase(self):
+        return self._current_phase
+    
+    @current_phase.setter
+    def current_phase(self, new_phase):
+        self._current_phase = new_phase
+        
+    def update(self):
+        # Atualiza a fase atual
+        
+        # Verifica a passagem de fase
+         
+        # Atualiza a interface
+        pass
+    
+    
