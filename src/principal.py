@@ -2,10 +2,11 @@ import pygame
 import constantes
 import sprites
 import os
+import cv2
 
 class Game:
     def __init__(self):
-        #criando a tela do jogo
+        # Criando a tela do jogo
         pygame.init()
         pygame.mixer.init()
         self.tela = pygame.display.set_mode((constantes.LARGURA, constantes.ALTURA))
@@ -14,7 +15,11 @@ class Game:
         self.esta_rodando = True
         self.fonte = pygame.font.match_font(constantes.FONTE)
         self.carregar_arquivos()
-    
+
+        # Configuração do vídeo
+        self.video = cv2.VideoCapture(constantes.VIDEO_BACKGROUND)
+        self.frame_atual = None
+
     def novo_jogo(self):
         #instancia as classes das sprites do jogo
         self.todas_as_sprites = pygame.sprite.Group()
