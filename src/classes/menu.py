@@ -16,7 +16,7 @@ class Menu:
     screen: pygame.display
         Screen shown to the player
     """
-    def __init__(self)-> None:
+    def __init__(self, level_instance)-> None:
         
         
         # pygame.init()
@@ -47,6 +47,9 @@ class Menu:
         self.frame_delay = 100  # Tempo entre frames em milissegundos
         self.last_update_time = pygame.time.get_ticks()
         
+        self.current_screen = "main_menu"
+        self.level= level_instance
+        
     def load_audio(self, audio_path):
         """Carregar e iniciar o áudio de fundo."""
         try:
@@ -68,7 +71,7 @@ class Menu:
                 frames.append(frame)
         return frames
     
-    def run(self):  
+    def main_menu(self):  
             running = True
             while running:
             # Limitar a 30 FPS
