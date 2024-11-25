@@ -1,6 +1,6 @@
 import unittest
 import pygame
-from src.menu import Menu  # Certifique-se de que o código foi refatorado em uma classe chamada Menu
+from src.classes.menu import Menu  # Certifique-se de que o código foi refatorado em uma classe chamada Menu
 #  TODO
 # Ver uma forma de testar sme parte visual
 

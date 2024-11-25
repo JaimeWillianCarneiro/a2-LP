@@ -26,3 +26,5 @@ class WASD_Keys(Enum):
     DOWN = pg.K_s
     RIGHT = pg.K_d
     
+    
+    
