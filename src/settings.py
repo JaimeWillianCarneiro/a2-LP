@@ -6,6 +6,11 @@ pg.init()
 SCREEN_DIMENSIONS = (pg.display.Info().current_w, pg.display.Info().current_h)
 GAME_TITLE = 'SCOOBY DOO'
 
+START_SOUND_MENU =  'assets/sounds/backmusic.mp3'
+START_BACKGROUND_MENU= 'assets/title screen/title screen.png'
+START_COLUMNS_MENU = 12
+START_ROWS_MENU = 20
+
 class Fonts(Enum):
     PLAYER_NAME = pg.font.SysFont('comicsansms', 30, True, False)
     PLAYER_LIFE = pg.font.SysFont('franklingothicheavy', 25, True, False)
@@ -20,4 +25,6 @@ class WASD_Keys(Enum):
     LEFT = pg.K_a
     DOWN = pg.K_s
     RIGHT = pg.K_d
+    
+    
     
