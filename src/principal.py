@@ -1,23 +1,28 @@
 import pygame
-import constantes
-import sprites
+import settings
+
 import os
 import cv2
 
 class Game:
-    def __init__(self):
+    """
+    Class represents a running instance of a game. Every time the game should run,
+    a instance of that class must be created. It holds a lot of instances from
+    other objects, aswell as the game loop.
+    """
+    def __init__(self, screen)-> None:
         # Criando a tela do jogo
-        pygame.init()
+
         pygame.mixer.init()
-        self.tela = pygame.display.set_mode((constantes.LARGURA, constantes.ALTURA))
-        pygame.display.set_caption(constantes.TITULO_JOGO)
+        self.tela = pygame.display.set_mode((settings.LARGURA, settings.ALTURA))
+        pygame.display.set_caption(settings.TITULO_JOGO)
         self.relogio = pygame.time.Clock()
         self.esta_rodando = True
-        self.fonte = pygame.font.match_font(constantes.FONTE)
+        self.fonte = pygame.font.match_font(settings.FONTE)
         self.carregar_arquivos()
 
         # Configuração do vídeo
-        self.video = cv2.VideoCapture(constantes.VIDEO_BACKGROUND)
+        self.video = cv2.VideoCapture(settings.VIDEO_BACKGROUND)
         self.frame_atual = None
 
     def novo_jogo(self):
@@ -29,7 +34,7 @@ class Game:
         #loop do jogo
         self.jogando = True
         while self.jogando:
-            self.relogio.tick(constantes.FPS)
+            self.relogio.tick(settings.FPS)
             self.eventos()
             self.atualizar_sprites()
             self.desenhar_sprites()
@@ -48,7 +53,7 @@ class Game:
     
     def desenhar_sprites(self):
         #desenhar sprites
-        self.tela.fill(constantes.PRETO) #limpando a tela
+        self.tela.fill(settings.PRETO) #limpando a tela
         self.todas_as_sprites.draw(self.tela) #desenhando as sprites
         pygame.display.flip()
     
@@ -56,8 +61,8 @@ class Game:
         #Carregar os arquivos de audio e imagens
         diretorio_imagens = os.path.join(os.getcwd(), 'imagens')
         self.diretorio_audios = os.path.join(os.getcwd(), 'audios')
-        self.spritesheet = os.path.join(diretorio_imagens, constantes.SPRITESHEET)
-        self.pacman_start_logo = os.path.join(diretorio_imagens, constantes.PACMAN_START_LOGO)
+        self.spritesheet = os.path.join(diretorio_imagens, settings.SPRITESHEET)
+        self.pacman_start_logo = os.path.join(diretorio_imagens, settings.PACMAN_START_LOGO)
         self.pacman_start_logo = pygame.image.load(self.pacman_start_logo).convert()
 
     def mostrar_texto(self, texto, tamanho, cor, x, y):
@@ -74,23 +79,23 @@ class Game:
         self.tela.blit(self.pacman_start_logo, start_logo_rect)
 
     def mostrar_tela_start(self):
-        pygame.mixer.music.load(os.path.join(self.diretorio_audios, constantes.MUSICA_START))
+        pygame.mixer.music.load(os.path.join(self.diretorio_audios, settings.MUSICA_START))
         pygame.mixer.music.play()
 
-        self.mostrar_start_logo(constantes.LARGURA / 2, 20)
+        self.mostrar_start_logo(settings.LARGURA / 2, 20)
 
         self.mostrar_texto( 
             '-Pressione uma tecla para jogar',
             32,
-            constantes.AMARELO,
-            constantes.LARGURA / 2,
+            settings.AMARELO,
+            settings.LARGURA / 2,
             320
         )   
         self.mostrar_texto( 
             'Desenvolvido por João Tinti',
             19,
-            constantes.BRANCO,
-            constantes.LARGURA / 2,
+            settings.BRANCO,
+            settings.LARGURA / 2,
             570
         )   
 
@@ -100,7 +105,7 @@ class Game:
     def esperar_por_jogador(self):
         esperando = True
         while esperando:
-            self.relogio.tick(constantes.FPS)
+            self.relogio.tick(settings.FPS)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     esperando = False
@@ -108,7 +113,7 @@ class Game:
                 if event.type == pygame.KEYUP:
                     esperando = False    
                     pygame.mixer.music.stop()         
-                    pygame.mixer.Sound(os.path.join(self.diretorio_audios, constantes.TECLA_START)).play()  
+                    pygame.mixer.Sound(os.path.join(self.diretorio_audios, settings.TECLA_START)).play()  
 
     def mostrar_tela_game_over(self):
         pass

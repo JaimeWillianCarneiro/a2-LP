@@ -19,8 +19,8 @@ class Menu:
     def __init__(self)-> None:
         
         
-        pygame.init()
-        
+        # pygame.init()
+
         self.clock = pygame.time.Clock()
         
         
