@@ -1,6 +1,6 @@
 import pygame as pg
 import numpy as np
-from src.classes.phase import Phase
+from src.classes.phase import Phase, PhaseManager
 from src.classes.background import Interface
 from src.settings import SCREEN_DIMENSIONS, GAME_TITLE, FRAME_RATE, WASD_Keys
 
@@ -10,9 +10,7 @@ pg.display.set_caption(GAME_TITLE)
 clock = pg.time.Clock()
 
 
-phase_atual = Phase(screen)
-interface = Interface(screen, phase_atual, [])
-
+phase_manager = PhaseManager(screen)
 
 movement = np.zeros(2)
 attack = np.zeros(2)
@@ -57,7 +55,5 @@ while True:
     if pg.key.get_pressed()[pg.K_DOWN]:
         attack[1] += 1
     
-    phase_atual = phase_atual.update(movement, attack)
-    interface.set_phase_atual(phase_atual)
-    interface.update()
+    phase_manager.update(movement, attack)
     pg.display.flip()
