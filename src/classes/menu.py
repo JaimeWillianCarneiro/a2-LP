@@ -74,11 +74,13 @@ class Menu:
     def main_menu(self):  
             running = True
             while running:
-            # Limitar a 30 FPS
+                # Limitar a 30 FPS
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
-
+                        pygame.quit()
+                        exit()
+                                
                 # Atualizar o frame da animação
                 self.current_frame += 0.7
                 if self.current_frame >= len(self.frames):
@@ -88,5 +90,5 @@ class Menu:
                 self.screen.blit(self.frames[int(self.current_frame)], (0, 0))
                 pygame.display.flip()
     
-    
+
     
