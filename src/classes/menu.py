@@ -7,6 +7,10 @@ from settings import  SCREEN_DIMENSIONS, START_SOUND_MENU, START_BACKGROUND_MENU
 
 import pygame
 
+class InterfaceElements:
+    def __init__(self):
+        pass
+
 class Menu:
     """
     Contains functions that create the menu and handle user interaction.
@@ -80,7 +84,8 @@ class Menu:
                         running = False
                         pygame.quit()
                         exit()
-                                
+                    
+
                 # Atualizar o frame da animação
                 self.current_frame += 0.7
                 if self.current_frame >= len(self.frames):
