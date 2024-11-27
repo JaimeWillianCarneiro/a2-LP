@@ -5,9 +5,8 @@ from src.classes.character import Character
 
 class Protagonist(Character, ABC):
     def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin,
-                 life, inventory, ability, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time):
-        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time)
-        self._life = life
+                 life, inventory, ability, sprites_quantity, map_limits_sup, bullets, weapon):
+        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin, life, sprites_quantity, map_limits_sup, bullets, weapon)
         self._inventory = inventory
         self._ability = ability
 
@@ -47,10 +46,8 @@ class Protagonist(Character, ABC):
 
 class Group1Protagonist(Protagonist):
     def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin,
-                 life, inventory, ability, damage, trap_power, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time):
-        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin,
-                         life, inventory, ability, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time)
-        self._damage = damage
+                 life, inventory, ability, sprites_quantity, map_limits_sup, bullets, weapon, trap_power):
+        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin, life, inventory, ability, sprites_quantity, map_limits_sup, bullets, weapon)
         self._trap_power = trap_power
 
     @property
@@ -77,9 +74,8 @@ class Group1Protagonist(Protagonist):
 
 class Group2Protagonist(Protagonist):
     def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin,
-                 life, inventory, ability, movement, deceive_power, map_limits_sup, scope, ammunition, bullets, reload_time):
-        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin,
-                         life, inventory, ability, movement, map_limits_sup, scope, ammunition, bullets, reload_time)
+                 life, inventory, ability, sprites_quantity, map_limits_sup, bullets, weapon, deceive_power):
+        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin, life, inventory, ability, sprites_quantity, map_limits_sup, bullets, weapon)
         self._deceive_power = deceive_power
 
     @property

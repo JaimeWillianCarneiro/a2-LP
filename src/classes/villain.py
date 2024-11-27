@@ -1,34 +1,20 @@
 import pygame as pg
 from src.classes.character import Character
-from src.classes.gameobejcts import Ammunition
+from src.classes.gameobejcts import Ammo
 from src.settings import FRAME_RATE
 import numpy as np
 
 
 class Villain(Character):
     def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin,
-                 life, damage, mem_size, vision_field, attack_field, sprites_quantity, background, scooby_snacks, scope, ammunition, bullets, reload_time):
-        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin, sprites_quantity, list(background.get_shape()), scope, ammunition, bullets, reload_time)
+                 life, sprites_quantity, map_limits_sup, bullets, weapon, mem_size, vision_field, background, scooby_snacks):
+        super().__init__(name, speed, perception, x_position, y_position, width, height, direction, skin, life, sprites_quantity, map_limits_sup, bullets, weapon)
         self._life = life
-        self._damage = damage
         self._memories = []
         self._mem_size = mem_size
         self._vision_field = pg.Rect(x_position - vision_field, y_position - vision_field, 2*vision_field, 2*vision_field)
-        self._attack_field = pg.Rect(x_position - attack_field, y_position - attack_field, 2*attack_field, 2*attack_field)
         self.scooby_snacks = scooby_snacks
         self.map_limits_sup = list(background.get_shape())
-
-    def aim_function(self, player, movement):
-        fired = []
-        self.aim = movement
-        # Atira no personagem caso ele esteja na mira e tenha recarregado
-        self.reload += 1
-        if self.aim.any():
-            if player.rect.clipline(self.rect.center, np.array(self.rect.center) + self.aim*self.scope/np.linalg.norm(self.aim)) and self.check_load():
-                bullet = self.instanciate_bullet(x_position=self.x_position, y_position=self.y_position, direction=self.aim)
-                fired.append(bullet)
-        return fired
-            
 
     @property
     def life(self):
@@ -39,25 +25,8 @@ class Villain(Character):
         self._life = value
 
     @property
-    def damage(self):
-        return self._damage
-
-    @damage.setter
-    def damage(self, value):
-        self._damage = value
-
-    @property
     def memories(self):
         return self._memories
-    
-    def memories_append(self, memory):
-        self._memories.append(memory)
-        if len(self._memories) > self.mem_size:
-            self._memories.pop(0)
-    
-    def memories_remove(self):
-        if len(self._memories) > 0:
-            self._memories.pop(0)
 
     @property
     def mem_size(self):
@@ -85,18 +54,16 @@ class Villain(Character):
 
     def set_position_rect_vision(self, x_new, y_new):
         self.vision_field.center = (x_new, y_new)
-        
-    @property
-    def attack_field(self):
-        return self._attack_field
-
-    @attack_field.setter
-    def attack_field(self, value):
-        self._attack_field = value
     
-    def set_position_rect_attack(self, x_new, y_new):
-        self.attack_field.center = (x_new, y_new)
-
+    def memories_append(self, memory):
+        self._memories.append(memory)
+        if len(self._memories) > self.mem_size:
+            self._memories.pop(0)
+    
+    def memories_remove(self):
+        if len(self._memories) > 0:
+            self._memories.pop(0)
+            
     def define_direction(self):
         valid_memories = [memorie for memorie in self.memories]
         vector = [0, 0]
@@ -127,7 +94,19 @@ class Villain(Character):
             
 
     def attack(self, player):
-        player.life = player.life - self.damage
+        print('Dano corpo\n')
+        player.life = player.life - self.weapon.damage
+
+    def aim_function(self, player, movement):
+        fired = []
+        self.aim = movement
+        # Atira no personagem caso ele esteja na mira e tenha recarregado
+        if self.aim.any():
+            if player.rect.clipline(self.weapon.rect.center, np.array(self.weapon.rect.center) + self.aim*self.weapon.scope/np.linalg.norm(self.aim)) and self.weapon.check_load():
+                print('pow')
+                bullet = self.weapon.fire(self.aim)
+                fired.append(bullet)
+        return fired
 
     def evaluate_interaction(self):
         pass
@@ -140,7 +119,7 @@ class Villain(Character):
             self.memories_remove()
             
         # Verifica se o player esta no campo de ataque
-        if self.attack_field.colliderect(player.rect):
+        if self.weapon.attack_field.colliderect(player.rect):
             self.attack(player)
             
         movement = self.define_direction()
@@ -151,6 +130,17 @@ class Villain(Character):
         x_new, y_new = self.position_controller.apply_translation(self.x_position, self.y_position)
         self.set_position_rect(x_new, y_new)
         self.set_position_rect_vision(x_new, y_new)
-        self.set_position_rect_attack(x_new, y_new)
+        # Move a arma junto do vilao
+        out_shape = [0, 0]
+        if self.current_sprite_y == 0:
+            out_shape[1] = self.height/2
+        elif self.current_sprite_y == 1:
+            out_shape[1] = -self.height/2
+        elif self.current_sprite_y == 2:
+            out_shape[0] = self.width/2
+        else:
+            out_shape[0] = -self.width/2
+        self.weapon.set_position(self.x_position + out_shape[0], self.y_position+ out_shape[1])
+        
         self.animate()
         return fired
