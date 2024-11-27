@@ -7,18 +7,13 @@ from settings import  SCREEN_DIMENSIONS, START_SOUND_MENU, START_BACKGROUND_MENU
 
 import pygame
 
-class InterfaceElements:
-    def __init__(self):
-        pass
+# class InterfaceElements:
+#     def 
+
+screen = pygame.display.set_mode((800,600 ))
 
 class Menu:
-    """
-    Contains functions that create the menu and handle user interaction.
-
-    Parameters
-    ----------
-    screen: pygame.display
-        Screen shown to the player
+    """_summary_
     """
     def __init__(self, level_instance)-> None:
         
@@ -36,12 +31,17 @@ class Menu:
         pygame.mixer.init()
         self.load_audio(START_SOUND_MENU)
         
-        #  Carregar  a imagem com os frames
-        self.sprite_sheet = pygame.image.load(START_BACKGROUND_MENU).convert_alpha()
+    
         
         # Configurações dos frames
         self.columns = START_COLUMNS_MENU
         self.rows = START_ROWS_MENU
+        
+            #  Carregar  a imagem com os frames
+        self.sprite_sheet = pygame.image.load(START_BACKGROUND_MENU).convert_alpha()
+        self.dimensions = (self.sprite_sheet.get_width(), self.sprite_sheet.get_height())
+        self.frame_width = self.dimensions[0] // self.columns
+        self.frame_height = self.dimensions[1] // self.rows
         
         # Extrair frames da sprite sheet
         self.frames = self.extract_frames()
@@ -84,16 +84,23 @@ class Menu:
                         running = False
                         pygame.quit()
                         exit()
-                    
+                    if event.type == pygame.K_KP_ENTER:
+                        print("Ainda estou aqui")
+                        self.current_screen = "play"
 
+                
                 # Atualizar o frame da animação
                 self.current_frame += 0.7
                 if self.current_frame >= len(self.frames):
                     self.current_frame = 0
 
                 # Desenhar na tela
-                self.screen.blit(self.frames[int(self.current_frame)], (0, 0))
+                screen.blit(self.frames[int(self.current_frame)], (0, 0))
                 pygame.display.flip()
+                
+                pygame.display.update()
+                
+                
     
 
     

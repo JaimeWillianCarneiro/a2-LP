@@ -32,7 +32,7 @@ while True:
                 pg.quit()
                 exit() 
             # Tela cheia e sair de tela cheia
-            if event.key == pg.K_KP_ENTER:
+            if event.key == pg.K_F11:
                 pg.display.toggle_fullscreen()
     
     # print(np.array(pg.key.get_pressed()))
