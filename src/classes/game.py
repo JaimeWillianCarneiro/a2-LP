@@ -87,26 +87,30 @@ class Game:
             self.new()
 
             while self.running:
+                print("aaaaa")
                 self.movement = np.zeros(2)
                 self.attack = np.zeros(2)
                 self.clock.tick(FRAME_RATE)
                 
                 for event in pygame.event.get():
+                    # print("entrou no evento")
                     #  Usuario parou o jogo
                     
                     
                     if event.type == pygame.QUIT:
-                            print("AAAA")
-                            # exit()
+                            self.running = False
 
                     if event.type == pygame.KEYDOWN:
-                        
+                        print("KEY")
                         # Tela cheia e sair de tela cheia
                         if event.key == pygame.K_F11:
                             print("ESTOU AQUU")
                             pygame.display.toggle_fullscreen()
-                        
-                        
+                        if event.key == pygame.K_RETURN:  # Enter do teclado principal
+                             print("Enter pressionado!")
+                        if event.key == pg.K_ESCAPE:
+                            pg.quit()
+                            exit() 
                         
                     # Pause the game
                     # if event.type == pygame.KEYDOWN:
@@ -114,35 +118,36 @@ class Game:
                     #         self.menu.current_screen = "pause"
                     #         self.menu.pause()
 
-                
+                print("SAIU DO FOR")
                 if self.menu.current_screen == "main_menu":
+                    print("Sim")
                     self.menu.main_menu()
-                if self.menu.current_screen == "play":
+                if self.menu.current_screen == "start":
+                    # print("so tem que ser popular")
                     self.level.start_phase()
+                    self.menu.current_screen = "play"
+                if self.menu.current_screen == "play":
+                    if pygame.key.get_pressed()[WASD_Keys.LEFT.value]:
+                        self.movement[0] -= 1
+                    if pygame.key.get_pressed()[WASD_Keys.RIGHT.value]:
+                        self.movement[0] += 1
+                    if pygame.key.get_pressed()[WASD_Keys.TOP.value]:
+                        self.movement[1] -= 1
+                    if pygame.key.get_pressed()[WASD_Keys.DOWN.value]:
+                        self.movement[1] += 1
+            
+                    if pygame.key.get_pressed()[pygame.K_LEFT]:
+                            
+                        self.attack[0] -= 1
+                    if pygame.key.get_pressed()[pygame.K_RIGHT]:
+                        self.attack[0] += 1
+                    if pygame.key.get_pressed()[pygame.K_UP]:
+                        self.attack[1] -= 1
+                    if pygame.key.get_pressed()[pygame.K_DOWN]:
+                        self.attack[1] += 1
+                    
+                    self.level.update(self.movement, self.attack)
                     pygame.display.flip()
-                if pygame.key.get_pressed()[WASD_Keys.LEFT.value]:
-                    self.movement[0] -= 1
-                if pygame.key.get_pressed()[WASD_Keys.RIGHT.value]:
-                    self.movement[0] += 1
-                if pygame.key.get_pressed()[WASD_Keys.TOP.value]:
-                    self.movement[1] -= 1
-                if pygame.key.get_pressed()[WASD_Keys.DOWN.value]:
-                    self.movement[1] += 1
-        
-                if pygame.key.get_pressed()[pygame.K_LEFT]:
-                        
-                    self.attack[0] -= 1
-                if pygame.key.get_pressed()[pygame.K_RIGHT]:
-                    self.attack[0] += 1
-                if pygame.key.get_pressed()[pygame.K_UP]:
-                    self.attack[1] -= 1
-                if pygame.key.get_pressed()[pygame.K_DOWN]:
-                    self.attack[1] += 1
-                
-               
-                
-                self.level.update(self.movement, self.attack)
-                pygame.display.flip()
         # Handle errors
         
         except pygame.error as e:

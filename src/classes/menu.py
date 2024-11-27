@@ -10,7 +10,7 @@ import pygame
 # class InterfaceElements:
 #     def 
 
-screen = pygame.display.set_mode((800,600 ))
+screen = pygame.display.set_mode((0,0))
 
 class Menu:
     """_summary_
@@ -77,16 +77,30 @@ class Menu:
     
     def main_menu(self):  
             running = True
-            while running:
+            print("Entro no menu principal")
+            while self.current_screen == "main_menu":
+                # print("entrou no running do menu")
                 # Limitar a 30 FPS
                 for event in pygame.event.get():
+                    # print("Evento do Menu")
                     if event.type == pygame.QUIT:
                         running = False
                         pygame.quit()
                         exit()
-                    if event.type == pygame.K_KP_ENTER:
-                        print("Ainda estou aqui")
-                        self.current_screen = "play"
+                    
+                    
+                    if event.type == pygame.KEYDOWN:
+                        print("KEY MENU PRINCIPAL")
+                        if event.key == pygame.K_ESCAPE:
+                            print("ESCAPE")
+                            pygame.quit()
+                            exit()
+                        if event.key in (pygame.K_KP_ENTER, pygame.K_RETURN):
+                            print("Ainda estou aqui")                  
+                            self.current_screen = "start"
+                            pygame.display.update()
+                            print("POpular")
+                            
 
                 
                 # Atualizar o frame da animação
