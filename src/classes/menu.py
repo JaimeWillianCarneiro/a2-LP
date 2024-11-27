@@ -12,8 +12,13 @@ import pygame
 
 screen = pygame.display.set_mode((0,0))
 
+def get_font(size):
+    pass
+
 class Menu:
-    """_summary_
+    """
+    Represents the menu system in the game.
+    
     """
     def __init__(self, level_instance)-> None:
         
@@ -115,6 +120,49 @@ class Menu:
                 pygame.display.update()
                 
                 
-    
+    def pause(self):
+        """
+        Displays the pause screen with options to resume, go to the main menu, or quit the game.
+
+        Returns
+        -------
+        None.
+        """
+
+        while self.current_screen == "pause":
+            pause_mouse_pos = pygame.mouse.get_pos()
+
+            screen.fill("white")
+
+            pause_text = get_font(45).render("PAUSE", True, "Black")
+            pause_rect = pause_text.get_rect(center=(640, 260))
+            screen.blit(pause_text, pause_rect)
+
+            resume_button = Button(image=None, pos=(640, 360),
+                                text_input="RESUME", font=get_font(75), base_color="Black", hovering_color="Green")
+            menu_button = Button(image=None, pos=(640, 460),
+                                text_input="MENU", font=get_font(75), base_color="Black", hovering_color="Green")
+            quit_button = Button(image=None, pos=(640, 560),
+                                text_input="QUIT", font=get_font(75), base_color="Black", hovering_color="Green")
+
+            for button in [resume_button, menu_button, quit_button]:
+                button.change_color(pause_mouse_pos)
+                button.update(screen)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if resume_button.check_for_input(pause_mouse_pos):
+                        self.current_screen = "play"
+                    if menu_button.check_for_input(pause_mouse_pos):
+                        self.current_screen = "main_menu"
+                    if quit_button.check_for_input(pause_mouse_pos):
+                        pygame.quit()
+                        sys.exit()
+
+            pygame.display.update()
+
 
     
