@@ -1,6 +1,6 @@
 import pygame 
 from src.settings import * 
-from src.classes.phase import Phase
+from src.classes.phase import Phase, PhaseManager
 from src.classes.menu import Menu
 from src.classes.background import Interface
 import os
@@ -63,23 +63,12 @@ class Game:
         self.attack = np.zeros(2)
 
     def new(self):
-        """
-        Initializes a new game by creating a new level and menu.
-        
-        Parameters
-        ----------
-        None.
-
-        Returns
-        -------
-        None.
+        """_summary_
         """
         # Create a new level and menu
-        self.level = Phase(self.screen)
+        self.level = PhaseManager(self.screen)
         self.menu = Menu(self.level)
-        self.interface = Interface(self.screen, self.phase_atual, [])
         
-    
 
     def run(self):
         """
@@ -98,50 +87,74 @@ class Game:
             self.new()
 
             while self.running:
+                print("aaaaa")
                 self.movement = np.zeros(2)
                 self.attack = np.zeros(2)
                 self.clock.tick(FRAME_RATE)
                 
                 for event in pygame.event.get():
+                    # print("entrou no evento")
                     #  Usuario parou o jogo
+                    
+                    
                     if event.type == pygame.QUIT:
-                        self.running = False
-                        exit()
+                            self.running = False
 
-                    # Tela cheia e sair de tela cheia
-                    if event.key == pygame.K_F11:
-                        pygame.display.toggle_fullscreen()
-                        
-                    # Pause the game
                     if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:  # 'ESC' key to pause the game
+                        print("KEY")
+                        # Tela cheia e sair de tela cheia
+                        if event.key == pygame.K_F11:
+                            print("ESTOU AQUU")
+                            pygame.display.toggle_fullscreen()
+                        if event.key == pygame.K_RETURN:  # Enter do teclado principal
+                             print("Enter pressionado!")
+                        if event.key == pg.K_ESCAPE:
+                            pg.quit()
+                            exit() 
+                        if event.key == pygame.K_p:
                             self.menu.current_screen = "pause"
                             self.menu.pause()
-
-                if pygame.key.get_pressed()[WASD_Keys.LEFT.value]:
-                    self.movement[0] -= 1
-                if pygame.key.get_pressed()[WASD_Keys.RIGHT.value]:
-                    self.movement[0] += 1
-                if pygame.key.get_pressed()[WASD_Keys.TOP.value]:
-                    self.movement[1] -= 1
-                if pygame.key.get_pressed()[WASD_Keys.DOWN.value]:
-                    self.movement[1] += 1
-        
-                if pygame.key.get_pressed()[pygame.K_LEFT]:
                         
-                    self.attack[0] -= 1
-                if pygame.key.get_pressed()[pygame.K_RIGHT]:
-                    self.attack[0] += 1
-                if pygame.key.get_pressed()[pygame.K_UP]:
-                    self.attack[1] -= 1
-                if pygame.key.get_pressed()[pygame.K_DOWN]:
-                    self.attack[1] += 1
-                
-                phase_atual = phase_atual.update(self.movement, self.attack)
-                self.interface.set_phase_atual(phase_atual)
-                self.interface.update()
-                pygame.display.flip()
+                    # Pause the game
+                    # if event.type == pygame.KEYDOWN:
+                    #     if event.key == pygame.K_ESCAPE:  # 'ESC' key to pause the game
+                    #         self.menu.current_screen = "pause"
+                    #         self.menu.pause()
+
+                print("SAIU DO FOR")
+                if self.menu.current_screen == "main_menu":
+                    print("Sim")
+                    self.menu.main_menu()
+                if self.menu.current_screen == "start":
+                    # print("so tem que ser popular")
+                    self.level.start_phase()
+                    self.menu.current_screen = "play"
+                    
+             
+                if self.menu.current_screen == "play":
+                    if pygame.key.get_pressed()[WASD_Keys.LEFT.value]:
+                        self.movement[0] -= 1
+                    if pygame.key.get_pressed()[WASD_Keys.RIGHT.value]:
+                        self.movement[0] += 1
+                    if pygame.key.get_pressed()[WASD_Keys.TOP.value]:
+                        self.movement[1] -= 1
+                    if pygame.key.get_pressed()[WASD_Keys.DOWN.value]:
+                        self.movement[1] += 1
+            
+                    if pygame.key.get_pressed()[pygame.K_LEFT]:
+                            
+                        self.attack[0] -= 1
+                    if pygame.key.get_pressed()[pygame.K_RIGHT]:
+                        self.attack[0] += 1
+                    if pygame.key.get_pressed()[pygame.K_UP]:
+                        self.attack[1] -= 1
+                    if pygame.key.get_pressed()[pygame.K_DOWN]:
+                        self.attack[1] += 1
+                    
+                    self.level.update(self.movement, self.attack)
+                    pygame.display.flip()
         # Handle errors
+        
         except pygame.error as e:
             print(f"An error occurred during game execution: {e}")
         except Exception as e:
