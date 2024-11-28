@@ -6,8 +6,8 @@ pg.init()
 SCREEN_DIMENSIONS = (pg.display.Info().current_w, pg.display.Info().current_h)
 GAME_TITLE = 'SCOOBY DOO'
 
-START_SOUND_MENU =  'assets/sounds/backmusic.mp3'
-START_BACKGROUND_MENU= 'assets/title screen/title screen.png'
+START_SOUND_MENU =  'audios/abertura_inicial.wav'
+START_BACKGROUND_MENU= 'assets/menus/title screen.png'
 START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
 

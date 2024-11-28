@@ -4,16 +4,231 @@ utility functions to handle buttons and their events.
 """
 
 from settings import  SCREEN_DIMENSIONS, START_SOUND_MENU, START_BACKGROUND_MENU, START_COLUMNS_MENU, START_ROWS_MENU
-
+from classes.background import Background
 import pygame
+import sys
 
 # class InterfaceElements:
 #     def 
 
+
+
 screen = pygame.display.set_mode((0,0))
 
+def get_font(size):
+    """
+    Get a Pygame font object with a specified size.
+
+    Parameters
+    ----------
+    size : int
+        The font size.
+
+    Returns
+    -------
+    pygame.font.Font
+        A Pygame font object.
+    """
+
+    return pygame.font.Font(r"assets/font.ttf", size)
+
+
+# class GameObject(pg.sprite.Sprite):
+#     def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity):
+#         super().__init__()
+#         self.position_controller = PositionController(map_limits_sup, width, height)
+#         self.x_position = x_position
+#         self.y_position = y_position
+#         self.width = width
+#         self.height = height
+#         self.spritesheet_path = spritesheet
+#         self.spritesheet = pg.image.load(spritesheet)
+#         self.spritesheet = pg.transform.scale(self.spritesheet, (self.width*sprites_quantity, self.height))
+#         self.sprite_dimensions = self.spritesheet.get_size()
+#         self.sprite_actual_x = sprite_actual_x
+#         self.sprite_actual_y = sprite_actual_y
+#         self.sprites_quantity = sprites_quantity
+#         self.image = self.spritesheet.subsurface((self.sprite_actual_x*self.width, self.sprite_actual_y*self.height, *self.sprite_dimensions))
+#         self.image = pg.transform.scale(self.image, (self.width, self.height))
+#         self.rect = self.image.get_rect()
+#         self.rect.center = self.x_position, self.y_position
+    
+#     def set_position(self, x_new, y_new):
+#         self.x_position = x_new
+#         self.y_position = y_new
+        
+#     def get_position(self):
+#         return self.x_position, self.y_position
+
+#     def set_position_rect(self, x_new, y_new):
+#         self.rect.center = (x_new, y_new)
+        
+#     def apply_movement(self, movement):
+#         x_new = self.x_position + movement[0]
+#         y_new = self.y_position + movement[1]
+#         x_new, y_new = self.position_controller.to_frame(x_new, y_new)
+#         self.set_position(x_new, y_new)     
+    
+#     def animate(self):
+#         if self.sprites_quantity > 1:
+#             self.sprite_actual_x += 0.2
+#             self.sprite_actual_x %= self.sprites_quantity
+#             self.image = self.spritesheet.subsurface((int(self.sprite_actual_x), self.sprite_actual_y, self.width, self.height))
+    
+#     def update(self):
+#         x_position, y_position = self.get_position()
+#         x_new, y_new = self.position_controller.apply_translation(x_position, y_position)
+#         self.set_position_rect(x_new, y_new)
+#         self.animate()
+
+
+class Button:
+    """
+    Represents a clickable button in the game.
+
+    Attributes
+    ----------
+    image : pygame.Surface
+        The image representing the button.
+
+    x_pos : int
+        The x-coordinate of the button's center.
+
+    y_pos : int
+        The y-coordinate of the button's center.
+
+    font : pygame.font.Font
+        The font used for rendering text on the button.
+
+    base_color : str
+        The base color of the button's text.
+
+    hovering_color : str
+        The color of the button's text when hovering.
+
+    text_input : str
+        The text displayed on the button.
+
+    text : pygame.Surface
+        The rendered text surface.
+
+    rect : pygame.Rect
+        The rectangular area of the button.
+
+    text_rect : pygame.Rect
+        The rectangular area of the rendered text.
+
+    Methods
+    -------
+    update(screen)
+        Updates and renders the button on the given screen.
+
+    check_for_input(position)
+        Checks if a given position is within the button's area.
+
+    change_color(position)
+        Changes the color of the button's text based on the mouse position.
+    """
+
+    def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+        """
+        Initializes the Button instance.
+
+        Parameters
+        ----------
+        image : pygame.Surface
+            The image representing the button.
+
+        pos : tuple
+            The x, y coordinates of the button's center.
+
+        text_input : str
+            The text displayed on the button.
+
+        font : pygame.font.Font
+            The font used for rendering text on the button.
+
+        base_color : str
+            The base color of the button's text.
+
+        hovering_color : str
+            The color of the button's text when hovering.
+
+        Returns
+        -------
+        None.
+        """ 
+        self.image = image
+        self.x_pos = pos[0]
+        self.y_pos = pos[1]
+        self.font = font
+        self.base_color, self.hovering_color = base_color, hovering_color
+        self.text_input = text_input
+        self.text = self.font.render(self.text_input, True, self.base_color)
+        if self.image is None:
+            self.image = self.text
+        self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+        self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+
+    def update(self, screen):
+        """
+        Updates and renders the button on the given screen.
+
+        Parameters
+        ----------
+        screen : pygame.Surface
+            The screen where the button will be rendered.
+
+        Returns
+        -------
+        None.
+        """
+        if self.image is not None:
+            screen.blit(self.image, self.rect)
+        screen.blit(self.text, self.text_rect)
+
+    def check_for_input(self, position):
+        """
+        Checks if a given position is within the button's area.
+
+        Parameters
+        ----------
+        position : tuple
+            The x, y coordinates of the position to check.
+
+        Returns
+        -------
+        bool
+            True if the position is within the button's area, False otherwise.
+        """
+
+        return self.rect.collidepoint(position)
+
+    def change_color(self, position):
+        """
+        Changes the color of the button's text based on the mouse position.
+
+        Parameters
+        ----------
+        position : tuple
+            The x, y coordinates of the mouse position.
+
+        Returns
+        -------
+        None.
+        """
+
+        if self.check_for_input(position):
+            self.text = self.font.render(self.text_input, True, self.hovering_color)
+        else:
+            self.text = self.font.render(self.text_input, True, self.base_color)
+
+
+
 class Menu:
-    """_summary_
+    """
+    Represents the menu system in the game.
+    
     """
     def __init__(self, level_instance)-> None:
         
@@ -29,7 +244,7 @@ class Menu:
         
         # Configurações do mixer (áudio)
         pygame.mixer.init()
-        self.load_audio(START_SOUND_MENU)
+        # self.load_audio(START_SOUND_MENU)
         
     
         
@@ -115,6 +330,65 @@ class Menu:
                 pygame.display.update()
                 
                 
-    
+    def pause(self):
+        """
+        Displays the pause screen with options to resume, go to the main menu, or quit the game.
+
+        Returns
+        -------
+        None.
+        """
+        
+        background = pygame.image.load('assets/menus/pause screen.png')  # Caminho para sua imagem
+        # background = pygame.transform.scale(background, (1280, 720))  # Ajuste ao tamanho da tela
+        background = pygame.transform.scale(background, (850, 600))  
+        background_width, background_height = background.get_size()
+        
+        screen_width, screen_height = screen.get_size()
+        background_rect = background.get_rect(center=(750, 400))  
+        
+        background_x = (screen_width - background_width) 
+        background_y = (screen_height - background_height) 
+        
+        while self.current_screen == "pause":
+            pause_mouse_pos = pygame.mouse.get_pos()
+
+             # Desenhar a imagem de fundo
+            # screen.fill((0, 255, 0))
+            screen.blit(background, background_rect.topleft)
+            # screen.fill("white")
+
+            #  Texto Pause
+            # pause_text = get_font(45).render("PAUSE", True, "Black")
+            # pause_rect = pause_text.get_rect(center=(screen_width//2, 160))
+            # screen.blit(pause_text, pause_rect)
+
+            #  Texto botões
+            resume_button = Button(image=None, pos=(screen_width // 2, 360),
+                               text_input="RESUME", font=get_font(75), base_color="Black", hovering_color="Green")
+            menu_button = Button(image=None, pos=(screen_width // 2, 460),
+                             text_input="MENU", font=get_font(75), base_color="Black", hovering_color="Green")
+            quit_button = Button(image=None, pos=(screen_width // 2, 560),
+                             text_input="QUIT", font=get_font(75), base_color="Black", hovering_color="Green")
+
+            for button in [resume_button, menu_button, quit_button]:
+                button.change_color(pause_mouse_pos)
+                button.update(screen)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if resume_button.check_for_input(pause_mouse_pos):
+                        self.current_screen = "play"
+                    if menu_button.check_for_input(pause_mouse_pos):
+                        self.current_screen = "main_menu"
+                    if quit_button.check_for_input(pause_mouse_pos):
+                        pygame.quit()
+                        sys.exit()
+
+            pygame.display.update()
+
 
     

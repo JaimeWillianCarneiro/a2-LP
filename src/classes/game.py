@@ -111,6 +111,9 @@ class Game:
                         if event.key == pg.K_ESCAPE:
                             pg.quit()
                             exit() 
+                        if event.key == pygame.K_p:
+                            self.menu.current_screen = "pause"
+                            self.menu.pause()
                         
                     # Pause the game
                     # if event.type == pygame.KEYDOWN:
@@ -126,6 +129,8 @@ class Game:
                     # print("so tem que ser popular")
                     self.level.start_phase()
                     self.menu.current_screen = "play"
+                    
+             
                 if self.menu.current_screen == "play":
                     if pygame.key.get_pressed()[WASD_Keys.LEFT.value]:
                         self.movement[0] -= 1
