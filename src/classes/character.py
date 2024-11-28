@@ -4,9 +4,9 @@ from src.classes.background import PositionController
 import numpy as np
 
 class Character(pg.sprite.Sprite, ABC):
-    def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin, sprites_quantity, map_limits_sup, scope, ammunition, bullets, reload_time):
+    def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin, life, sprites_quantity, map_limits_sup, bullets, weapon):
         super().__init__()
-        # self.life = 5 TODO
+        self.life = life
         self._name = name
         self._speed = speed
         self._perception = perception
@@ -23,26 +23,9 @@ class Character(pg.sprite.Sprite, ABC):
         self.image = self.spritesheet.subsurface((self._current_sprite_x * self.width, self._current_sprite_y * self.height, self.width, self.height))
         self.rect = self.image.get_rect()
         self.rect.center = self._x_position, self._y_position
-        self._ammunition = ammunition
         self._bullets = bullets
-        self.scope = scope
         self._aim = np.zeros(2, dtype=float)
-        self.reload = reload_time
-        self.reload_time = reload_time
-
-
-    def instanciate_bullet(self, x_position, y_position, direction):
-        bullet = self.ammunition.copy()
-        bullet.x_position = x_position
-        bullet.y_position = y_position
-        bullet.direction = direction
-        return bullet
-        
-    def check_load(self):
-        if self.reload_time < self.reload:
-            self.reload = 0
-            return True
-        return False
+        self._weapon = weapon
 
     @property
     def name(self):
@@ -100,7 +83,6 @@ class Character(pg.sprite.Sprite, ABC):
         self.rect.height = value
         self.image = pg.transform.scale(self.image, (self.rect.width, self.rect.height))
 
-
     @property
     def image(self):
         return self._image
@@ -137,12 +119,12 @@ class Character(pg.sprite.Sprite, ABC):
         self.rect.center = (x_new, y_new)
     
     @property
-    def ammunition(self):
-        return self._ammunition
+    def weapon(self):
+        return self._weapon
     
-    @ammunition.setter
-    def ammunition(self, ammunition_new):
-        self._ammunition = ammunition_new
+    @weapon.setter
+    def weapon(self, weapon_new):
+        self._weapon = weapon_new
     
     @property
     def bullet(self):

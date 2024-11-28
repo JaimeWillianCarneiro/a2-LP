@@ -66,7 +66,7 @@ class Collectible(GameObject):
     def visible(self, new_value):
         self._visible = new_value
         
-class Ammunition(GameObject):
+class Ammo(GameObject):
     def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, damage, effects, direction, recochet, speed):
         super().__init__(x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity)
         self._damage = damage
@@ -92,7 +92,7 @@ class Ammunition(GameObject):
         self._bullets = bullets_new
         
     def copy(self):
-        return Ammunition(self.x_position, self.y_position, self.width, self.height, self.position_controller.map_limits_sup, self.spritesheet_path, self.sprite_actual_x, self.sprite_actual_y, self.sprites_quantity, self.damage, self.effects, self.direction, self.recochet, self.speed)
+        return Ammo(self.x_position, self.y_position, self.width, self.height, self.position_controller.map_limits_sup, self.spritesheet_path, self.sprite_actual_x, self.sprite_actual_y, self.sprites_quantity, self.damage, self.effects, self.direction, self.recochet, self.speed)
         
     def update(self):
         position = np.array(self.get_position(), dtype=float)
@@ -100,3 +100,92 @@ class Ammunition(GameObject):
         self.position_controller.out_game(self)
         self.set_position(position[0], position[1])
         super().update()
+        
+# class Weapon:
+#     Atributos:
+#     Dano
+#     Se é de arremesso ou corpo a corpo
+#     Efeito especial (cool down): elemental, se empurra, imobiliza o personagem
+    
+#     Métodos:
+#     Atacar 
+#     AtaqueEspecial
+#     Defender
+    
+    
+
+class Weapon(GameObject):
+    def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, damage, kind_damage, attack_field, reload_time, ammo, scope, special_effect = None):
+        # TODO tirar dano de personagens
+        super().__init__(x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity)
+        self.damage = damage
+        self.kind_damage = kind_damage
+        self.special_effect = special_effect
+        self.attack_field = pg.Rect(x_position - attack_field, y_position - attack_field, 2*attack_field, 2*attack_field)
+        self.reload = reload_time
+        self.reload_time = reload_time
+        self._reloading = False
+        self._ammo = ammo
+        self.scope = scope
+    
+    @property
+    def reloading(self):
+        return self._reloading
+    
+    @reloading.setter
+    def reloading(self, new_reloading):
+        self._reloading = new_reloading
+     
+    @property
+    def ammo(self):
+        return self._ammo
+    
+    @ammo.setter
+    def ammo(self, new_ammo):
+        self._ammo = new_ammo
+        
+    def set_position_rect_attack(self, x_new, y_new):
+        self.attack_field.center = (x_new, y_new)
+        
+    def instanciate_bullet(self, direction):
+        bullet = self.ammo.copy()
+        bullet.x_position = self.x_position
+        bullet.y_position = self.y_position
+        bullet.direction = direction
+        return bullet
+        
+    def check_load(self):
+        if self.reload_time <= self.reload:
+            return True
+        return False
+    
+    def fire(self, direction: np.array) -> Ammo:
+        """ Dispara uma municao numa direcao dada.
+
+        Args:
+            direction (np.array): Direcao na qual a municao sera disparada.
+
+        Returns:
+            Ammo: Nova instancia de municao disparada.
+        """
+        fired = None
+        # Condicoes do disparo
+        if self.check_load():
+            self.reload = 0
+            self.reloading = True
+            # Instancia uma nova municao, copia da municao dada
+            fired = self.instanciate_bullet(direction)
+            
+        return fired
+    
+    def update(self):
+        super().update()
+        # Atualiza a zona de ataque
+        self.set_position_rect_attack(*self.rect.center)
+        
+        # Recarrega caso o player solicite
+        if self.reloading:
+            self.reload += 1
+            # Para de recarregar ao terminar
+            if self.check_load():
+                self.reloading = False
