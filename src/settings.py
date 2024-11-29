@@ -3,7 +3,7 @@ import numpy as np
 from enum import Enum
 
 pg.init()
-SCREEN_DIMENSIONS = (pg.display.Info().current_w, pg.display.Info().current_h)
+SCREEN_DIMENSIONS = np.array([pg.display.Info().current_w, pg.display.Info().current_h])
 GAME_TITLE = 'SCOOBY DOO'
 
 START_SOUND_MENU =  'audios/abertura_inicial.wav'
