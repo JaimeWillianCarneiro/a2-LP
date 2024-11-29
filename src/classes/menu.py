@@ -456,6 +456,7 @@ class Menu:
             screen.blit(background, background_rect.topleft)
 
             #  Texto botões
+
             try_again_button = Button(image=None, pos=(screen_width // 2, background_rect.topleft[1] + background_height*0.72),
                                text_input="TRY AGAIN", font=get_font(28), base_color="Black", hovering_color="White")
 

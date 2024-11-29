@@ -1,5 +1,5 @@
 import pygame as pg
-from src.settings import SCREEN_DIMENSIONS, Fonts, HEART, CHARACTERS
+from src.settings import SCREEN_DIMENSIONS, Fonts, FULL_HEART, HALF_HEART, EMPTY_HEART
 import numpy as np
 
 
@@ -79,8 +79,14 @@ class Interface():
         self.event_warning_location = ((SCREEN_DIMENSIONS[0]*2)//5, 100)
         self.event_time_location = (SCREEN_DIMENSIONS[0]//2-50, 50)
         
-        self.heart_image = pg.image.load(HEART)
-        self.heart_image = pg.transform.scale(self.heart_image, (50, 50))  # Ajuste o tamanho conforme necessário
+        self.full_heart_image = pg.image.load(FULL_HEART)
+        self.full_heart_image = pg.transform.scale(self.full_heart_image, (50, 50)) 
+        self.empty_heart_image = pg.image.load(EMPTY_HEART)
+        self.empty_heart_image = pg.transform.scale(self.empty_heart_image, (50, 50)) 
+        self.half_heart_image = pg.image.load(HALF_HEART)
+        self.half_heart_image = pg.transform.scale(self.half_heart_image, (50, 50))
+        
+        
         self.heart_location = (50, 100)  # Local inicial para os corações
 
         # Coração
@@ -94,10 +100,20 @@ class Interface():
         # self.screen.blit(self.player_life, self.player_life_location)
         
                 # Desenha a quantidade de vidas como corações
-        for i in range(int(self.phase_atual.player.life)):
-            x = self.heart_location[0] + i * 60  # Espaçamento entre corações
+        for num in range(1, 6):
+            x = self.heart_location[0] + (num-1) * 60  # Espaçamento entre corações
             y = self.heart_location[1]
-            self.screen.blit(self.heart_image, (x, y))
+            if num <=self.phase_atual.player.life:
+                self.screen.blit(self.full_heart_image, (x, y))
+            elif num-1 < self.phase_atual.player.life  and self.phase_atual.player.life < num:
+                self.screen.blit(self.half_heart_image, (x,y))
+            elif num >self.phase_atual.player.life:
+                self.screen.blit(self.empty_heart_image, (x,y))      
+        
+        # for i in range(int(self.phase_atual.player.life)):
+        #     x = self.heart_location[0] + i * 60  # Espaçamento entre corações
+        #     y = self.heart_location[1]
+        #     self.screen.blit(self.full_heart_image, (x, y))
         
 
         
