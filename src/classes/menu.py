@@ -227,14 +227,44 @@ class Button:
 
 class Menu:
     """
-    Represents the menu system in the game.
-    
+        Represents the menu system in the game.
+
+        Attributes
+        ----------
+        current_screen : str
+            The current active screen.
+
+        level : Level
+            The instance of the game level associated with the menu.
+
+        Methods
+        -------
+        main_menu(background_image_path)
+            Displays the main menu screen with buttons for play, credits, and quit.
+
+        credits()
+            Displays the credits screen with information about the game developers.
+
+        pause()
+            Displays the pause screen with options to resume, go to the main menu, or quit the game.
+
+        game_over()
+            Displays the game over screen with the option to return to the main menu.
     """
     def __init__(self, level)-> None:
-        
-        
-        # pygame.init()
+        """
+        Initializes the Menu instance.
 
+        Parameters
+        ----------
+        level : PhaseManager
+            The instance of the game PhaseManager associated with the menu.
+
+        Returns
+        -------
+        None.
+        """
+        
         self.clock = pygame.time.Clock()
         
         
@@ -245,8 +275,6 @@ class Menu:
         # Configurações do mixer (áudio)
         pygame.mixer.init()
         # self.load_audio(START_SOUND_MENU)
-        
-    
         
         # Configurações dos frames
         self.columns = START_COLUMNS_MENU
@@ -270,7 +298,13 @@ class Menu:
         self.level= level
         
     def load_audio(self, audio_path):
-        """Carregar e iniciar o áudio de fundo."""
+        """
+        Load and play the background audio.
+         
+        Returns
+        -------
+        None
+        """
         try:
             pygame.mixer.music.load(audio_path)
             pygame.mixer.music.set_volume(0.5)  # Ajustar o volume
@@ -278,8 +312,15 @@ class Menu:
         except pygame.error as e:
             print(f"Erro ao carregar o áudio: {e}")
     
-    def extract_frames(self):
-        """Extrair os frames da sprite sheet e redimensioná-los para a tela."""
+    def extract_frames(self) -> list:
+        """
+        Extract the frames from the sprite sheet and resize them for the screen.
+         
+        Returns
+        -------
+        list
+            A lista with all the frames of the video
+        """
         frames = []
         for row in range(self.rows):
             for col in range(self.columns):
@@ -291,11 +332,17 @@ class Menu:
         return frames
     
     def main_menu(self):  
-            running = True
-            print("Entro no menu principal")
-            while self.current_screen == "main_menu":
-                # print("entrou no running do menu")
-                # Limitar a 30 FPS
+        """
+        Displays the pause screen with options to resume, go to the main menu, or quit the game.
+
+        Returns
+        -------
+        None.
+        """
+        running = True
+            
+        while self.current_screen == "main_menu":
+                
                 for event in pygame.event.get():
                     # print("Evento do Menu")
                     if event.type == pygame.QUIT:
@@ -305,13 +352,13 @@ class Menu:
                     
                     
                     if event.type == pygame.KEYDOWN:
-                        print("KEY MENU PRINCIPAL")
+                        
                         if event.key == pygame.K_ESCAPE:
                             print("ESCAPE")
                             pygame.quit()
                             exit()
                         if event.key in (pygame.K_KP_ENTER, pygame.K_RETURN):
-                            print("Ainda estou aqui")                  
+                                         
                             self.current_screen = "start"
                             pygame.display.update()
                             print("POpular")
@@ -354,22 +401,18 @@ class Menu:
             pause_mouse_pos = pygame.mouse.get_pos() #pegar a pos do mouse
 
              # Desenhar a imagem de fundo
-            # screen.fill((0, 255, 0))
+          
             screen.blit(background, background_rect.topleft)
-            # screen.fill("white")
-
-            #  Texto Pause
-            # pause_text = get_font(45).render("PAUSE", True, "Black")
-            # pause_rect = pause_text.get_rect(center=(screen_width//2, 160))
-            # screen.blit(pause_text, pause_rect)
 
             #  Texto botões
-            resume_button = Button(image=None, pos=(screen_width // 2, 360),
-                               text_input="RESUME", font=get_font(75), base_color="Black", hovering_color="White")
-            menu_button = Button(image=None, pos=(screen_width // 2, 460),
-                             text_input="MENU", font=get_font(75), base_color="Black", hovering_color="White")
-            quit_button = Button(image=None, pos=(screen_width // 2, 560),
-                             text_input="QUIT", font=get_font(75), base_color="Black", hovering_color="White")
+            
+            resume_button = Button(image=None, pos=(screen_width // 2, 390),
+                               text_input="RESUME", font=get_font(40), base_color="Black", hovering_color="White")
+            menu_button = Button(image=None, pos=(screen_width // 2, 500),
+                             text_input="MENU", font=get_font(40), base_color="Black", hovering_color="White")
+            quit_button = Button(image=None, pos=(screen_width // 2, 610),
+                             text_input="QUIT", font=get_font(40), base_color="Black", hovering_color="White")
+
 
             for button in [resume_button, menu_button, quit_button]:
                 button.change_color(pause_mouse_pos)
