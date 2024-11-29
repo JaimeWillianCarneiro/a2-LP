@@ -366,7 +366,7 @@ class Menu:
 
                 
                 # Atualizar o frame da animação
-                self.current_frame += 0.7
+                self.current_frame += 0.12
                 if self.current_frame >= len(self.frames):
                     self.current_frame = 0
 
@@ -386,7 +386,7 @@ class Menu:
         None.
         """
         
-        background = pygame.image.load('assets/menus/pause screen.png')  # Caminho para sua imagem
+        background = pygame.image.load('assets/menus/pause_screen.png')  # Caminho para sua imagem
         # background = pygame.transform.scale(background, (1280, 720))  # Ajuste ao tamanho da tela
         background = pygame.transform.scale(background, (850, 600))  
         background_width, background_height = background.get_size()
@@ -406,11 +406,11 @@ class Menu:
 
             #  Texto botões
             
-            resume_button = Button(image=None, pos=(screen_width // 2, 390),
+            resume_button = Button(image=None, pos=(screen_width // 2, background_rect.topleft[1] + background_height*0.435),
                                text_input="RESUME", font=get_font(40), base_color="Black", hovering_color="White")
-            menu_button = Button(image=None, pos=(screen_width // 2, 500),
+            menu_button = Button(image=None, pos=(screen_width // 2, background_rect.topleft[1] + background_height*0.62),
                              text_input="MENU", font=get_font(40), base_color="Black", hovering_color="White")
-            quit_button = Button(image=None, pos=(screen_width // 2, 610),
+            quit_button = Button(image=None, pos=(screen_width // 2, background_rect.topleft[1] + background_height*0.8),
                              text_input="QUIT", font=get_font(40), base_color="Black", hovering_color="White")
 
 
@@ -442,7 +442,7 @@ class Menu:
         None.
         """
 
-        background = pygame.image.load('assets/menus/selascou screen.png')  # Caminho para sua imagem
+        background = pygame.image.load('assets/menus/selascou_screen.png')  # Caminho para sua imagem
         background = pygame.transform.scale(background, (600, 260))  
         background_width, background_height = background.get_size()
         
@@ -456,7 +456,8 @@ class Menu:
             screen.blit(background, background_rect.topleft)
 
             #  Texto botões
-            try_again_button = Button(image=None, pos=(screen_width // 2, 485),
+
+            try_again_button = Button(image=None, pos=(screen_width // 2, background_rect.topleft[1] + background_height*0.72),
                                text_input="TRY AGAIN", font=get_font(28), base_color="Black", hovering_color="White")
 
             try_again_button.change_color(pause_mouse_pos)
