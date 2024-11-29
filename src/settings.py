@@ -3,13 +3,16 @@ import numpy as np
 from enum import Enum
 
 pg.init()
-SCREEN_DIMENSIONS = (pg.display.Info().current_w, pg.display.Info().current_h)
+SCREEN_DIMENSIONS = np.array([pg.display.Info().current_w, pg.display.Info().current_h])
 GAME_TITLE = 'SCOOBY DOO'
 
 START_SOUND_MENU =  'audios/abertura_inicial.wav'
 START_BACKGROUND_MENU= 'assets/menus/title screen.png'
 START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
+
+
+HEART = 'assets/menus/heart.png'
 
 class Fonts(Enum):
     PLAYER_NAME = pg.font.SysFont('comicsansms', 30, True, False)

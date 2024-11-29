@@ -392,7 +392,7 @@ class Menu:
         background_width, background_height = background.get_size()
         
         screen_width, screen_height = screen.get_size()
-        background_rect = background.get_rect(center=(780, 400))  
+        background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2)  
         
         background_x = (screen_width - background_width) 
         background_y = (screen_height - background_height) 
@@ -405,11 +405,11 @@ class Menu:
             screen.blit(background, background_rect.topleft)
 
             #  Texto botões
-            resume_button = Button(image=None, pos=(screen_width // 2, 360),
+            resume_button = Button(image=None, pos=(screen_width // 2, 390),
                                text_input="RESUME", font=get_font(40), base_color="Black", hovering_color="White")
-            menu_button = Button(image=None, pos=(screen_width // 2, 470),
+            menu_button = Button(image=None, pos=(screen_width // 2, 500),
                              text_input="MENU", font=get_font(40), base_color="Black", hovering_color="White")
-            quit_button = Button(image=None, pos=(screen_width // 2, 580),
+            quit_button = Button(image=None, pos=(screen_width // 2, 610),
                              text_input="QUIT", font=get_font(40), base_color="Black", hovering_color="White")
 
             for button in [resume_button, menu_button, quit_button]:
