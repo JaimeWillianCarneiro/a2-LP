@@ -398,19 +398,21 @@ class Menu:
         background_y = (screen_height - background_height) 
         
         while self.current_screen == "pause":
-            pause_mouse_pos = pygame.mouse.get_pos()
+            pause_mouse_pos = pygame.mouse.get_pos() #pegar a pos do mouse
 
              # Desenhar a imagem de fundo
           
             screen.blit(background, background_rect.topleft)
 
             #  Texto botões
+            
             resume_button = Button(image=None, pos=(screen_width // 2, 390),
                                text_input="RESUME", font=get_font(40), base_color="Black", hovering_color="White")
             menu_button = Button(image=None, pos=(screen_width // 2, 500),
                              text_input="MENU", font=get_font(40), base_color="Black", hovering_color="White")
             quit_button = Button(image=None, pos=(screen_width // 2, 610),
                              text_input="QUIT", font=get_font(40), base_color="Black", hovering_color="White")
+
 
             for button in [resume_button, menu_button, quit_button]:
                 button.change_color(pause_mouse_pos)
@@ -431,5 +433,43 @@ class Menu:
 
             pygame.display.update()
 
+    def selascou(self):
+        """
+        Displays the game over screen with the option to try the fase again.
 
-    
+        Returns
+        -------
+        None.
+        """
+
+        background = pygame.image.load('assets/menus/selascou screen.png')  # Caminho para sua imagem
+        background = pygame.transform.scale(background, (600, 260))  
+        background_width, background_height = background.get_size()
+        
+        screen_width, screen_height = screen.get_size()
+        background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2)  
+
+        while self.current_screen == "game_over":
+            pause_mouse_pos = pygame.mouse.get_pos() #pegar a pos do mouse
+
+            # Desenhar a imagem de fundo
+            screen.blit(background, background_rect.topleft)
+
+            #  Texto botões
+            try_again_button = Button(image=None, pos=(screen_width // 2, 445),
+                               text_input="TRY AGAIN", font=get_font(28), base_color="Black", hovering_color="White")
+
+            try_again_button.change_color(pause_mouse_pos)
+            try_again_button.update(screen)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if try_again_button.check_for_input(pause_mouse_pos):
+                        self.current_screen = "play"
+                        self.level.start_phase()
+
+
+            pygame.display.update()
