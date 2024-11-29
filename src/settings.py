@@ -12,7 +12,9 @@ START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
 
 
-HEART = 'assets/menus/heart.png'
+FULL_HEART = 'assets/menus/full heart.png'
+EMPTY_HEART = 'assets/menus/empty heart.png'
+HALF_HEART = 'assets/menus/half heart.png'
 
 class Fonts(Enum):
     PLAYER_NAME = pg.font.SysFont('comicsansms', 30, True, False)
