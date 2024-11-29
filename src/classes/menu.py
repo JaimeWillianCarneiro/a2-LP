@@ -456,7 +456,7 @@ class Menu:
             screen.blit(background, background_rect.topleft)
 
             #  Texto botões
-            try_again_button = Button(image=None, pos=(screen_width // 2, 445),
+            try_again_button = Button(image=None, pos=(screen_width // 2, 485),
                                text_input="TRY AGAIN", font=get_font(28), base_color="Black", hovering_color="White")
 
             try_again_button.change_color(pause_mouse_pos)
