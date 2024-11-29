@@ -13,6 +13,8 @@ START_ROWS_MENU = 20
 
 
 HEART = 'assets/menus/heart.png'
+CHARACTERS = 'assets/spritesheets/characters.png'
+
 
 class Fonts(Enum):
     PLAYER_NAME = pg.font.SysFont('comicsansms', 30, True, False)

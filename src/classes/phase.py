@@ -238,6 +238,7 @@ class Minigame(Event):
                 self.player.life -= 0.005
                 self.out_zone = True
 
+# TODO:
 class Dialog(Event):
     def __init__(self):
         pass

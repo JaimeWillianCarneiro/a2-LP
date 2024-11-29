@@ -1,5 +1,5 @@
 import pygame as pg
-from src.settings import SCREEN_DIMENSIONS, Fonts, HEART
+from src.settings import SCREEN_DIMENSIONS, Fonts, HEART, CHARACTERS
 import numpy as np
 
 
