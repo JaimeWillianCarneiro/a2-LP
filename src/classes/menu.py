@@ -406,12 +406,12 @@ class Menu:
 
             #  Texto botões
             
-            resume_button = Button(image=None, pos=(screen_width // 2, 360),
-                               text_input="RESUME", font=get_font(75), base_color="Black", hovering_color="White")
-            menu_button = Button(image=None, pos=(screen_width // 2, 460),
-                             text_input="MENU", font=get_font(75), base_color="Black", hovering_color="White")
-            quit_button = Button(image=None, pos=(screen_width // 2, 560),
-                             text_input="QUIT", font=get_font(75), base_color="Black", hovering_color="White")
+            resume_button = Button(image=None, pos=(screen_width // 2, 390),
+                               text_input="RESUME", font=get_font(40), base_color="Black", hovering_color="White")
+            menu_button = Button(image=None, pos=(screen_width // 2, 500),
+                             text_input="MENU", font=get_font(40), base_color="Black", hovering_color="White")
+            quit_button = Button(image=None, pos=(screen_width // 2, 610),
+                             text_input="QUIT", font=get_font(40), base_color="Black", hovering_color="White")
 
 
             for button in [resume_button, menu_button, quit_button]:
