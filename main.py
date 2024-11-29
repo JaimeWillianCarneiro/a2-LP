@@ -1,7 +1,6 @@
 import pygame as pg
 import numpy as np
-from src.classes.phase import Phase, PhaseManager
-from src.classes.background import Interface
+from src.classes.phase import PhaseManager
 from src.settings import SCREEN_DIMENSIONS, GAME_TITLE, FRAME_RATE, WASD_Keys
 
 pg.init()
