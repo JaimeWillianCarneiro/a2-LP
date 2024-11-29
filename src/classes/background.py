@@ -1,5 +1,5 @@
 import pygame as pg
-from src.settings import SCREEN_DIMENSIONS, Fonts
+from src.settings import SCREEN_DIMENSIONS, Fonts, HEART
 import numpy as np
 
 
@@ -69,13 +69,21 @@ class Interface():
         self.phase_atual = phase_atual
         self.interface_elements = interface_elements
         self.player_name = Fonts.PLAYER_NAME.value.render('Player :'+str(self.phase_atual.player.name), True, (123, 173, 123))
-        self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(self.phase_atual.player.life), True, (123, 173, 223))
+        # self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(self.phase_atual.player.life), True, (123, 173, 223))
         self.event_warning =  Fonts.EVENT_WARNING.value.render('Volte para a Zona!', True, (255, 255, 255))
         # self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.phase_atual.current_mandatory_event.time), True, (123, 173, 223))
+        
+        #  Localizações
         self.player_name_location = (50, 50)
-        self.player_life_location = (300, 50)
+        # self.player_life_location = (300, 50)
         self.event_warning_location = ((SCREEN_DIMENSIONS[0]*2)//5, 100)
         self.event_time_location = (SCREEN_DIMENSIONS[0]//2-50, 50)
+        
+        self.heart_image = pg.image.load(HEART)
+        self.heart_image = pg.transform.scale(self.heart_image, (50, 50))  # Ajuste o tamanho conforme necessário
+        self.heart_location = (50, 100)  # Local inicial para os corações
+
+        # Coração
         
     def set_phase_atual(self, new_phase):
         self.phase_atual = new_phase
@@ -83,7 +91,15 @@ class Interface():
     def draw_interface(self):
         # Desenha os atributos do player no canto superior esquerdo
         self.screen.blit(self.player_name, self.player_name_location)
-        self.screen.blit(self.player_life, self.player_life_location)
+        # self.screen.blit(self.player_life, self.player_life_location)
+        
+                # Desenha a quantidade de vidas como corações
+        for i in range(int(self.phase_atual.player.life)):
+            x = self.heart_location[0] + i * 60  # Espaçamento entre corações
+            y = self.heart_location[1]
+            self.screen.blit(self.heart_image, (x, y))
+        
+
         
         # Desenha avisos e informacoes da phase no centro superior da tela
         if self.phase_atual.current_mandatory_event:

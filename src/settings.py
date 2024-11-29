@@ -11,6 +11,9 @@ START_BACKGROUND_MENU= 'assets/menus/title screen.png'
 START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
 
+
+HEART = 'assets/menus/heart.png'
+
 class Fonts(Enum):
     PLAYER_NAME = pg.font.SysFont('comicsansms', 30, True, False)
     PLAYER_LIFE = pg.font.SysFont('franklingothicheavy', 25, True, False)

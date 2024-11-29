@@ -7,6 +7,7 @@ from src.classes.villain import Villain
 import random
 import numpy as np
 
+
 def random_data(background):
     # Variavéis fictias para testar a classe phase ##############
     map_limits_sup = list(background.get_shape())
