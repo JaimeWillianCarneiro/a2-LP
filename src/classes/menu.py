@@ -339,7 +339,7 @@ class Menu:
         None.
         """
         
-        background = pygame.image.load('assets/menus/pause screen.png')  # Caminho para sua imagem
+        background = pygame.image.load('assets/menus/pause_screen.png')  # Caminho para sua imagem
         # background = pygame.transform.scale(background, (1280, 720))  # Ajuste ao tamanho da tela
         background = pygame.transform.scale(background, (850, 600))  
         background_width, background_height = background.get_size()
@@ -399,7 +399,7 @@ class Menu:
         None.
         """
 
-        background = pygame.image.load('assets/menus/selascou screen.png')  # Caminho para sua imagem
+        background = pygame.image.load('assets/menus/selascou_screen.png')  # Caminho para sua imagem
         background = pygame.transform.scale(background, (600, 260))  
         background_width, background_height = background.get_size()
         
