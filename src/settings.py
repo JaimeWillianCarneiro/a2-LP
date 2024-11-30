@@ -11,9 +11,9 @@ START_BACKGROUND_MENU= 'assets/menus/title_screen.png'
 START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
 
+SHAGGY_PROFILE = 'assets/spritesheets/Shaggy_default.png' 
 
-
-FULL_HEART = 'assets/menus/full heart.png'
+FULL_HEART = 'assets/menus/full heart.png'/
 EMPTY_HEART = 'assets/menus/empty heart.png'
 HALF_HEART = 'assets/menus/half heart.png'
 
