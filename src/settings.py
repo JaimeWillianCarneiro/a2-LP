@@ -12,7 +12,8 @@ START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
 
 SHAGGY_PROFILE = 'assets/spritesheets/Shaggy_default.png'
-DAPHNE_PROFILE= ''
+DAPHNE_PROFILE= 'assets/spritesheets/Daphne_dialogue.png'
+
 
 FULL_HEART = 'assets/menus/full heart.png'
 EMPTY_HEART = 'assets/menus/empty heart.png'
