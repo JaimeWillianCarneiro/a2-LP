@@ -391,7 +391,7 @@ class PhaseManager:
         # Inicia a primeira fase
         self._current_phase =  None
         self.interface = None
-        self.start_phase()
+        # self.start_phase()
         
 
     
@@ -438,6 +438,7 @@ class PhaseManager:
         self.current_phase = Phase(self.screen, background, npcs, collectibles, mandatory_events, optional_events, player, villains[0], scooby_snacks)
         self.interface = Interface(self.screen, self.current_phase, [])
         
+        self.current_dialogue = 0
         self.dialogue = phase_data['dialogs']['dialog_0']
     
     @property
@@ -469,4 +470,6 @@ class PhaseManager:
         # Atualiza a interface
         self.interface.update()
 
-        
+    def quit_phase(self):
+        self.current_phase.background.stop_music()
+        self.current_phase = None
