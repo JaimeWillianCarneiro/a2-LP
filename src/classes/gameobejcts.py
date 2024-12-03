@@ -11,6 +11,7 @@ class GameObject(pg.sprite.Sprite):
         self.y_position = y_position
         self.width = width
         self.height = height
+        self.movement = np.zeros(2)
         self.spritesheet_path = spritesheet
         self.spritesheet = pg.image.load(spritesheet)
         self.spritesheet = pg.transform.scale(self.spritesheet, (self.width*sprites_quantity, self.height))
@@ -35,8 +36,16 @@ class GameObject(pg.sprite.Sprite):
     def apply_movement(self, movement):
         x_new = self.x_position + movement[0]
         y_new = self.y_position + movement[1]
-        x_new, y_new = self.position_controller.to_frame(x_new, y_new)
-        self.set_position(x_new, y_new)     
+        x_new_corrected, y_new_corrected = self.position_controller.to_frame(x_new, y_new)
+        
+        # Devolve a parte do movimento que nao foi aplicado
+        comeback = np.array([x_new, y_new]) - np.array([x_new_corrected, y_new_corrected])
+        
+        self.set_position(x_new_corrected, y_new_corrected)
+        self.movement = movement
+        
+        return -comeback
+        
     
     def animate(self):
         if self.sprites_quantity > 1:
@@ -44,10 +53,8 @@ class GameObject(pg.sprite.Sprite):
             self.sprite_actual_x %= self.sprites_quantity
             self.image = self.spritesheet.subsurface((int(self.sprite_actual_x), self.sprite_actual_y, self.width, self.height))
     
-    def passive_collide(self, movement, relative_position):
-        pass
-    
     def update(self):
+        self.movement = np.zeros(2)
         x_position, y_position = self.get_position()
         x_new, y_new = self.position_controller.apply_translation(x_position, y_position)
         self.set_position_rect(x_new, y_new)

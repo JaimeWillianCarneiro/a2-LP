@@ -97,21 +97,28 @@ class Villain(Character):
         print('Dano corpo\n')
         player.life = player.life - self.weapon.damage
 
-    def aim_function(self, player, movement):
-        fired = []
-        self.aim = movement
-        # Atira no personagem caso ele esteja na mira e tenha recarregado
-        if self.aim.any():
-            if player.rect.clipline(self.weapon.rect.center, np.array(self.weapon.rect.center) + self.aim*self.weapon.scope/np.linalg.norm(self.aim)) and self.weapon.check_load():
-                print('pow')
-                bullet = self.weapon.fire(self.aim)
-                fired.append(bullet)
-        return fired
-
     def evaluate_interaction(self):
         pass
     
-    def update(self, player, phase_elements, accessible_elements):
+
+    
+    def carry_weapon(self):
+        # Move a arma junto do vilao
+        out_shape = [0, 0]
+        if self.current_sprite_y == 0:
+            out_shape[1] = self.height/2
+        elif self.current_sprite_y == 1:
+            out_shape[1] = -self.height/2
+        elif self.current_sprite_y == 2:
+            out_shape[0] = self.width/2
+        else:
+            out_shape[0] = -self.width/2
+            
+        self.weapon.set_position(self.x_position + out_shape[0], self.y_position+ out_shape[1])
+        
+    
+    def update(self, player):
+
         # Verifica se o player esta no campo de visao
         if self.vision_field.colliderect(player.rect):
             self.memories_append((player.x_position, player.y_position))
@@ -125,24 +132,12 @@ class Villain(Character):
         movement = self.define_direction()
         movement = self.position_controller.normalize_movement(movement, self.speed)
         self.apply_movement(movement)
-        fired = self.aim_function(player, movement)
+        self.aim = self.movement
         
         x_new, y_new = self.position_controller.apply_translation(self.x_position, self.y_position)
         self.set_position_rect(x_new, y_new)
         self.set_position_rect_vision(x_new, y_new)
-        # Move a arma junto do vilao
-        out_shape = [0, 0]
-        if self.current_sprite_y == 0:
-            out_shape[1] = self.height/2
-        elif self.current_sprite_y == 1:
-            out_shape[1] = -self.height/2
-        elif self.current_sprite_y == 2:
-            out_shape[0] = self.width/2
-        else:
-            out_shape[0] = -self.width/2
-        self.weapon.set_position(self.x_position + out_shape[0], self.y_position+ out_shape[1])
+
+        self.carry_weapon()
         
         self.animate()
-        phase_elements.add(fired)
-        accessible_elements.add(fired) #TODO Fase gerencia colisao de player e monstro para animar o ataque
-        # ammus.add(fired)
