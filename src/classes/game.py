@@ -21,9 +21,6 @@ class Game:
     clock : pygame.time.Clock
         A clock to control the game's frame rate.
 
-    x : int
-        An example attribute for demonstration purposes.
-
     running : bool
         Flag indicating whether the game is currently running.
 
@@ -39,8 +36,18 @@ class Game:
         Runs the main game loop, handling events and updating the game state.
     """
     def __init__(self) -> None:
-        """Initializes the game
         """
+        Initializes the game
+
+        Parameters
+        ----------
+        None.
+
+        Returns
+        -------
+        None.
+        """
+        
         # Initialize pygame and create window
         pygame.init()
         pygame.mixer.init()
@@ -54,7 +61,6 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_DIMENSIONS[0], SCREEN_DIMENSIONS[0]))
         self.clock = pygame.time.Clock()
         
-        # self.x = 0
 
         # Game loop control
         self.running = True
@@ -63,7 +69,16 @@ class Game:
         self.attack = np.zeros(2)
 
     def new(self):
-        """_summary_
+        """
+        Initializes a new game by creating a new level and menu.
+        
+        Parameters
+        ----------
+        None.
+
+        Returns
+        -------
+        None.
         """
         # Create a new level and menu
         self.level = PhaseManager(self.screen)
@@ -87,31 +102,34 @@ class Game:
             self.new()
 
             while self.running:
-                print("aaaaa")
+
                 self.movement = np.zeros(2)
                 self.attack = np.zeros(2)
                 self.clock.tick(FRAME_RATE)
                 
                 for event in pygame.event.get():
-                    # print("entrou no evento")
-                    #  Usuario parou o jogo
-                    
                     
                     if event.type == pygame.QUIT:
                             self.running = False
 
                     if event.type == pygame.KEYDOWN:
-                        print("KEY")
+                       
                         # Tela cheia e sair de tela cheia
                         if event.key == pygame.K_F11:
-                            print("ESTOU AQUU")
+                            
                             pygame.display.toggle_fullscreen()
-                        if event.key == pygame.K_RETURN:  # Enter do teclado principal
-                             print("Enter pressionado!")
                         if event.key == pg.K_ESCAPE:
                             pg.quit()
                             exit() 
-                        
+                        if event.key == pygame.K_p:
+                            self.menu.current_screen = "pause"
+                            self.menu.pause()
+
+
+                if self.level._current_phase.check_lost():
+                    self.menu.current_screen = "game_over"
+                    self.menu.selascou()
+
                     # Pause the game
                     # if event.type == pygame.KEYDOWN:
                     #     if event.key == pygame.K_ESCAPE:  # 'ESC' key to pause the game
@@ -120,13 +138,14 @@ class Game:
 
                 print("SAIU DO FOR")
                 if self.menu.current_screen == "main_menu":
-                    print("Sim")
                     self.menu.main_menu()
+                    
                 if self.menu.current_screen == "start":
-                    # print("so tem que ser popular")
                     self.level.start_phase()
-                    self.menu.current_screen = "play"
+                    self.menu.current_screen = "play" 
+             
                 if self.menu.current_screen == "play":
+                    
                     if pygame.key.get_pressed()[WASD_Keys.LEFT.value]:
                         self.movement[0] -= 1
                     if pygame.key.get_pressed()[WASD_Keys.RIGHT.value]:
@@ -148,6 +167,10 @@ class Game:
                     
                     self.level.update(self.movement, self.attack)
                     pygame.display.flip()
+                    
+                    if not self.menu.first_dialogue:
+                        self.menu.dialogue()
+        
         # Handle errors
         
         except pygame.error as e:

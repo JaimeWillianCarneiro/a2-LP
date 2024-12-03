@@ -1,0 +1,70 @@
+{
+    "background": {"sprite": "assets\\backgrounds\\garden.jpg", "width": 4000, "height": 3000, "music": "assets\\sounds\\garden_ambience.mp3", "volume": 0.05, "sounds": []},
+    "ammos": {
+        "name": {"x_position": 1560, "y_position": 780, "width": 20, "height": 20, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\lua.png", "sprite_actual_x":  0, "sprite_actual_y": 0, "sprites_quantity": 1, "is_static": 0, "damage": 1, "effects": [], "recochet": 0, "speed": 7}
+    },
+    "weapons": {
+        "name": {
+            "x_position": 1560, "y_position": 780, "width": 100, "height": 20, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\shaggy_right_1.png", "sprite_actual_x": 0, "is_static": 0, "sprite_actual_y": 0, "sprites_quantity": 1, "damage": 0.007, "kind_damage": "", "attack_field": 50, "reload_time": 60, "ammo": "name", "scope": 250, "special_effect": ""
+        }
+    },
+    "player": {
+        "name": "Scooby", "speed": 10, "perception": 23, "x_position": 1560, "y_position": 780, "width": 95, "height": 75, "direction": 0, "skin": "default", "life": 5, "inventory": [], "ability": 1, "sprites_quantity": 4, "map_limits_sup": "map_limits_sup", "bullets": 100, "weapon": "name", "trap_power": 3
+    },
+    "scooby_snacks": {
+        "x_position": 50, "y_position": 50, "width": 50, "height": 50, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\shaggy_right_1.png", "sprite_actual_x": 0, "sprite_actual_y": 0, "sprites_quantity": 1, "visible": 0, "description": "Scooby Snacks"
+    },
+    "monsters": [
+        {
+            "name": "Fred", "speed": 8, "perception": 3, "x_position": 3300, "y_position": 1000, "width": 75, "height": 100, "direction": 0, "skin": "default", "life": 5, "sprites_quantity": 4, "map_limits_sup": "map_limits_sup", "bullets": 100, "weapon": "weapon", "mem_size": 60, "vision_field": 400, "background": "background", "scooby_snacks": "scooby_snacks"
+        }
+    ],
+    "collectibles": {
+        "Moeda": {
+            "x_position": 2300, "y_position": 1000, "width": 23, "height": 40, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\shaggy_right_1.png", "sprite_actual_x": 0, "sprite_actual_y": 0, "sprites_quantity": 1, "is_static": 0, "visible": 1, "description": "Moeda de Nero"
+        },
+        "Candelabro": {
+            "x_position": 2300, "y_position": 500, "width": 23, "height": 40, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\shaggy_right_1.png", "sprite_actual_x": 0, "sprite_actual_y": 0, "sprites_quantity": 1, "is_static": 0, "visible": 1, "description": "Moeda de Nero"
+        }
+    },
+    "game_objects": {
+        "g1": {
+            "x_position": 37, "y_position": 48, "width": 100, "height": 20, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\shaggy_right_1.png", "sprite_actual_x": 0, "sprite_actual_y": 0, "sprites_quantity": 1
+        },
+        "g2": {
+            "x_position": 370, "y_position": 480, "width": 100, "height": 20, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\shaggy_right_1.png", "sprite_actual_x": 0, "sprite_actual_y": 0, "sprites_quantity": 1
+        }
+    },
+    "npcs": {
+        "npc_1": {
+            "x_position": 222, "y_position": 22, "width": 100, "height": 80, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\shaggy_right_1.png", "sprite_actual_x": 0, "sprite_actual_y": 0, "sprites_quantity": 1
+        },
+        "npc_2": {
+            "x_position": 111, "y_position": 11, "width": 100, "height": 80, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\shaggy_right_1.png", "sprite_actual_x": 0, "sprite_actual_y": 0, "sprites_quantity": 1
+        }
+    },
+    "mandatory_events": {
+        "mg1": {
+            "id_event": 1, "player": "player", "start_zone": [2300, 170, 100, 75], "event_zone": [2300, 170, 700, 350], "end_zone": [2900, 170, 100, 75], "is_obrigatory": 1, "map_limits_sup": "map_limits_sup", "villains": ["monster"], "npcs": ["npc_1"], "time": 120
+        },
+        "mg2": {
+            "id_event": 2, "player": "player", "start_zone": [1500, 170, 100, 75], "event_zone": [1500, 170, 700, 350], "end_zone": [2100, 170, 100, 75], "is_obrigatory": 1, "map_limits_sup": "map_limits_sup", "villains": ["monster"], "npcs": ["npc_1"], "time": 120
+        
+        }  
+    },
+    "optional_events": {
+        "opt1": {
+            "id_event": 3, "player": "player", "start_zone": [137, 1860, 50, 25], "event_zone": [137, 1860, 150, 50], "end_zone": [187, 1860, 50, 25], "is_mandatory": 0, "is_obrigatory": 0
+        },
+        "opt2": {
+            "id_event": 1, "player": "player", "start_zone": [960, 23, 50, 25], "event_zone": [960, 23, 150, 50], "end_zone": [1010, 23, 50, 25], "is_mandatory": 0, "is_obrigatory": 0
+        }
+    },
+    "dialogs": {
+        "dialog_0":
+            [{"speaker": "Velma", "text": "Guys, we've entered a new phase!!"},
+            {"speaker": "Daphne", "text": "Yeah, it seems like we're in some kind of garden?!"},
+            {"speaker": "Shaggy", "text": "But everything looks gigantic??"},
+            {"speaker": "Fred", "text": "Or rather... it seems like we're comically small"}]
+    }
+}

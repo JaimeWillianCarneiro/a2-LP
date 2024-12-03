@@ -1,0 +1,8 @@
+{
+    "dialogs": [
+        {"speaker": "Velma", "text": "Guys, we've entered a new phase!!"},
+        {"speaker": "Daphne", "text": "Yeah, it seems like we're in some kind of garden?!"},
+        {"speaker": "Shaggy", "text": "But everything looks gigantic??"},
+        {"speaker": "Fred", "text": "Or rather... it seems like we're comically small"}
+    ]
+}

@@ -3,13 +3,22 @@ import numpy as np
 from enum import Enum
 
 pg.init()
-SCREEN_DIMENSIONS = (pg.display.Info().current_w, pg.display.Info().current_h)
+SCREEN_DIMENSIONS = np.array([pg.display.Info().current_w, pg.display.Info().current_h])
 GAME_TITLE = 'SCOOBY DOO'
 
-START_SOUND_MENU =  'assets/sounds/backmusic.mp3'
-START_BACKGROUND_MENU= 'assets/title screen/title screen.png'
+START_SOUND_MENU =  'audios/abertura_inicial.wav'
+START_BACKGROUND_MENU= 'assets/menus/title_screen.png'
 START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
+
+SHAGGY_PROFILE = 'assets/spritesheets/Shaggy_default.png'
+DAPHNE_PROFILE= 'assets/spritesheets/Daphne_dialogue.png'
+
+
+FULL_HEART = 'assets/menus/full heart.png'
+EMPTY_HEART = 'assets/menus/empty heart.png'
+HALF_HEART = 'assets/menus/half heart.png'
+
 
 class Fonts(Enum):
     PLAYER_NAME = pg.font.SysFont('comicsansms', 30, True, False)
@@ -26,5 +35,4 @@ class WASD_Keys(Enum):
     DOWN = pg.K_s
     RIGHT = pg.K_d
     
-    
-    
+#TODO: fazer uma funcao decoradora de start_dialogue
