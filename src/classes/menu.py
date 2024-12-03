@@ -483,7 +483,7 @@ class Menu:
 
             pygame.display.update()
 
-            
+
     def dialogue(self):
         
         def draw_dialog_box(speaker, screen, x, y, width, height, bg_color=(50, 50, 50), border_color=(255, 255, 255), border_width=2):
@@ -571,4 +571,5 @@ class Menu:
 
             self.level.current_dialogue += 1
             pygame.display.update()
+
 
