@@ -6,6 +6,7 @@ from src.classes.background import Background, PositionController, Interface, Co
 from src.classes.villain import Villain
 import random
 import numpy as np
+import json
 
 def random_data(background):
     # Variavéis fictias para testar a classe phase ##############
@@ -356,9 +357,48 @@ class PhaseManager:
     
     def start_phase(self):
         self.current_phase = Phase(self.screen)
+        with open(f"jsons\\phase_{self.phase_counter}.json", "r") as file:
+            phase_data = json.load(file)
+            
+        # Ler e criar elementos da nova fase
+        background = Background(self.screen, phase_data['background']['sprite'], SCREEN_DIMENSIONS[0], SCREEN_DIMENSIONS[1], phase_data['background']['width'], phase_data['background']['height'], phase_data['background']['music'], phase_data['background']['volume'], phase_data['background']['sounds']) 
+        map_limits_sup = list(background.get_shape())
+        
+        ammunition = Ammo(phase_data['ammos']['name']['x_position'], phase_data['ammos']['name']['y_position'], phase_data['ammos']['name']['width'], phase_data['ammos']['name']['height'], map_limits_sup, phase_data['ammos']['name']['spritesheet'], phase_data['ammos']['name']['sprite_actual_x'], phase_data['ammos']['name']['sprite_actual_y'], phase_data['ammos']['name']['sprites_quantity'], phase_data['ammos']['name']['damage'], phase_data['ammos']['name']['effects'], np.zeros(2, dtype=float), phase_data['ammos']['name']['recochet'], phase_data['ammos']['name']['speed'])
+
+        weapon = Weapon(phase_data['weapons']['name']['x_position'], phase_data['weapons']['name']['y_position'], phase_data['weapons']['name']['width'], phase_data['weapons']['name']['height'], map_limits_sup, phase_data['weapons']['name']['spritesheet'], phase_data['weapons']['name']['sprite_actual_x'], phase_data['weapons']['name']['sprite_actual_y'], phase_data['weapons']['name']['sprites_quantity'], phase_data['weapons']['name']['damage'], phase_data['weapons']['name']['kind_damage'], phase_data['weapons']['name']['attack_field'], phase_data['weapons']['name']['reload_time'], ammunition, phase_data['weapons']['name']['scope'], phase_data['weapons']['name']['special_effect'])
+        
+        player = Group1Protagonist(phase_data['player']['name'], phase_data['player']['speed'], phase_data['player']['perception'], phase_data['player']['x_position'], phase_data['player']['y_position'], phase_data['player']['width'], phase_data['player']['height'], phase_data['player']['direction'], phase_data['player']['skin'], phase_data['player']['life'], phase_data['player']['inventory'], phase_data['player']['ability'], phase_data['player']['sprites_quantity'], map_limits_sup, phase_data['player']['bullets'], phase_data['player']['weapon'], phase_data['player']['trap_power'])
+         
+        scooby_snacks = Collectible(phase_data['scooby_snacks']['x_position'], phase_data['scooby_snacks']['y_position'], phase_data['scooby_snacks']['width'], phase_data['scooby_snacks']['height'], map_limits_sup, phase_data['scooby_snacks']['spritesheet'], phase_data['scooby_snacks']['sprite_actual_x'], phase_data['scooby_snacks']['sprite_actual_y'], phase_data['scooby_snacks']['sprites_quantity'], phase_data['scooby_snacks']['visible'], phase_data['scooby_snacks']['description'])
+        
+        villains = []
+        for each_villain in phase_data['monsters']:
+            villains.append(Villain(each_villain['name'], each_villain['speed'], each_villain['perception'], each_villain['x_position'], each_villain['y_position'], each_villain['width'], each_villain['height'], each_villain['direction'], each_villain['skin'], each_villain['life'], each_villain['sprites_quantity'], map_limits_sup, each_villain['bullets'], weapon, each_villain['mem_size'], each_villain['vision_field'], background, scooby_snacks))
+        
+        collectibles = []
+        for each_collectible in phase_data['collectibles'].keys():
+            collectibles.append(Collectible(phase_data['collectibles'][each_collectible]['x_position'], phase_data['collectibles'][each_collectible]['y_position'], phase_data['collectibles'][each_collectible]['width'], phase_data['collectibles'][each_collectible]['height'], map_limits_sup, phase_data['collectibles'][each_collectible]['spritesheet'], phase_data['collectibles'][each_collectible]['sprite_actual_x'], phase_data['collectibles'][each_collectible]['sprite_actual_y'], phase_data['collectibles'][each_collectible]['sprites_quantity'], phase_data['collectibles'][each_collectible]['visible'], phase_data['collectibles'][each_collectible]['description']))
+            
+        game_objects = []
+        for each_game_object in phase_data['game_objects'].keys():
+            game_objects.append(GameObject(phase_data['game_objects'][each_game_object]['x_position'], phase_data['game_objects'][each_game_object]['y_position'], phase_data['game_objects'][each_game_object]['width'], phase_data['game_objects'][each_game_object]['height'], map_limits_sup, phase_data['game_objects'][each_game_object]['spritesheet'], phase_data['game_objects'][each_game_object]['sprite_actual_x'], phase_data['game_objects'][each_game_object]['sprite_actual_y'], phase_data['game_objects'][each_game_object]['sprites_quantity']))
+    
+        npcs = []
+        for each_npc in phase_data['npcs'].keys():
+            npcs.append(GameObject(phase_data['npcs'][each_npc]['x_position'], phase_data['npcs'][each_npc]['y_position'], phase_data['npcs'][each_npc]['width'], phase_data['npcs'][each_npc]['height'], map_limits_sup, phase_data['npcs'][each_npc]['spritesheet'], phase_data['npcs'][each_npc]['sprite_actual_x'], phase_data['npcs'][each_npc]['sprite_actual_y'], phase_data['npcs'][each_npc]['sprites_quantity']))
+        
+        mandatory_events = []
+        for each_mandatory_event in phase_data['mandatory_events'].keys():
+            mandatory_events.append(Minigame(phase_data['mandatory_events'][each_mandatory_event]['id_event'], player, phase_data['mandatory_events'][each_mandatory_event]['start_zone'], phase_data['mandatory_events'][each_mandatory_event]['event_zone'], phase_data['mandatory_events'][each_mandatory_event]['end_zone'], phase_data['mandatory_events'][each_mandatory_event]['is_obrigatory'], map_limits_sup, villains, npcs, phase_data['mandatory_events'][each_mandatory_event]['time']))
+        optional_events = []
+
+        for each_optional_event in phase_data['optional_events'].keys():
+            optional_events.append(Event(phase_data['optional_events'][each_optional_event]['id_event'], player, phase_data['optional_events'][each_optional_event]['start_zone'], phase_data['optional_events'][each_optional_event]['event_zone'], phase_data['optional_events'][each_optional_event]['end_zone'], phase_data['optional_events'][each_optional_event]['is_obrigatory'], map_limits_sup))
+
+        self.current_phase = Phase(self.screen, background, npcs, collectibles, mandatory_events, optional_events, player, villains[0], scooby_snacks)
         self.interface = Interface(self.screen, self.current_phase, [])
         
-        self.current_dialogue = 0
         self.dialogue = phase_data['dialogs']['dialog_0']
 
     
