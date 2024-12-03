@@ -132,7 +132,8 @@ class Interface():
         self.dapnhe_proflle = DAPHNE_PROFILE
         self.velma_profile = VELMA_PROFILE
         self.scooby_profile = SCOOBY_PROFILE
-        self.fred_profile = FRED_PROFILE
+        self.f
+        red_profile = FRED_PROFILE
         
         
     def set_phase_atual(self, new_phase):
@@ -161,7 +162,7 @@ class Interface():
                 player_image = pg.image.load(self.shaggy_profile)
             
             if player_image:
-                player_image = pg.transform.scale(player_image, (100, 100))  # Redimensiona para caber na interface
+                player_image = pg.transform.sczale(player_image, (100, 100))  # Redimensiona para caber na interface
                 self.screen.blit(player_image, (10, 10))            
         
         except KeyError as e:
@@ -215,7 +216,9 @@ class PositionController():
 
     @staticmethod
     def normalize_movement(movement, speed):
+        movement = np.array(movement, dtype=float) 
         norma = np.linalg.norm(movement)
+        
         if norma:
             movement /= norma
         movement *= speed
