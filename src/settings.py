@@ -35,5 +35,4 @@ class WASD_Keys(Enum):
     DOWN = pg.K_s
     RIGHT = pg.K_d
     
-    
-    
+#TODO: fazer uma funcao decoradora de start_dialogue
