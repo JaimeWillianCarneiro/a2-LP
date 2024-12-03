@@ -143,9 +143,9 @@ class Interface():
 
         
         # Desenha avisos e informacoes da phase no centro superior da tela
-        if self.phase_atual.collide_controller.current_mandatory_event:
-            if self.phase_atual.collide_controller.current_mandatory_event.in_execution:
-                if self.phase_atual.collide_controller.current_mandatory_event.out_zone:
+        if self.phase_atual.current_mandatory_event:
+            if self.phase_atual.current_mandatory_event.in_execution:
+                if self.phase_atual.current_mandatory_event.out_zone:
                     self.screen.blit(self.event_warning, self.event_warning_location)
                 # self.event_time = self.phase_atual.current_mandatory_event.time
                 # self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.event_time), True, (123, 173, 223))
@@ -344,6 +344,7 @@ class CollideController:
             each_ammu.kill()
         
     
+
     def game_objects_collide_with(self):
         # Colisao com objetos (empurra-os, caso consiga)
         object_pushed_by_character = pg.sprite.groupcollide(self.characters, self.game_objects, False, False)
@@ -359,6 +360,7 @@ class CollideController:
                     comeback = each_object.apply_movement(each_character.movement)
                     if comeback.any():
                         _ = each_character.apply_movement(comeback, False)
+
     
     def monsters_collide_with(self):
         fired = []

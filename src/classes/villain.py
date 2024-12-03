@@ -100,6 +100,7 @@ class Villain(Character):
     def evaluate_interaction(self):
         pass
     
+
     
     def carry_weapon(self):
         # Move a arma junto do vilao
@@ -117,6 +118,7 @@ class Villain(Character):
         
     
     def update(self, player):
+
         # Verifica se o player esta no campo de visao
         if self.vision_field.colliderect(player.rect):
             self.memories_append((player.x_position, player.y_position))
@@ -135,6 +137,7 @@ class Villain(Character):
         x_new, y_new = self.position_controller.apply_translation(self.x_position, self.y_position)
         self.set_position_rect(x_new, y_new)
         self.set_position_rect_vision(x_new, y_new)
+
         self.carry_weapon()
         
         self.animate()

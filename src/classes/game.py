@@ -165,7 +165,7 @@ class Game:
                     pygame.display.flip()
                     
 
-                    if self.level.current_dialogue == 0:
+                    if self.level.current_dialogue != None:
                         self.menu.dialogue()
                 
                 if self.level._current_phase.check_lost():
