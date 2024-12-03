@@ -1,6 +1,6 @@
 import pygame as pg
 from src.settings import SCREEN_DIMENSIONS, FRAME_RATE
-from src.classes.gameobejcts import GameObject, Collectible, Ammo, Weapon
+from src.classes.gameobjects import GameObject, Collectible, Ammo, Weapon
 from src.classes.protagonist import Group1Protagonist
 from src.classes.background import Background, PositionController, Interface
 from src.classes.villain import Villain

@@ -8,8 +8,16 @@ class Background(pg.sprite.Sprite):
     def __init__(self, screen, sprite, x_position, y_position, width, height, music, volume, sounds):
         super().__init__()
         self.screen = screen
-        self.sprite = pg.image.load(sprite)
-        self.sprite = pg.transform.scale(self.sprite, (width, height))
+        
+        # Tratamento de exceção no carregamento da imagem
+        try:
+            self.sprite = pg.image.load(sprite)
+            self.sprite = pg.transform.scale(self.sprite, (width, height))
+        except pg.error as e:
+            print(f"Erro ao carregar a imagem: {sprite}. Detalhes: {e}")
+            self.sprite = pg.Surface((width, height))  # Usar um "placeholder" se falhar
+
+    
         self.position_controller = PositionController([width, height], SCREEN_DIMENSIONS[0], SCREEN_DIMENSIONS[1])
         self.x_position = x_position - SCREEN_DIMENSIONS[0]//2
         self.y_position = y_position - SCREEN_DIMENSIONS[1]//2
@@ -18,11 +26,22 @@ class Background(pg.sprite.Sprite):
         self.music = music
         self.volume = volume
         self.sounds = sounds
-        self.image = self.sprite.subsurface((self.x_position, self.y_position, *SCREEN_DIMENSIONS))
-        self.rect = self.image.get_rect()
-        pg.mixer.music.load(self.music)
-        pg.mixer.music.set_volume(self.volume)
         
+        try:
+            pg.mixer.music.load(self.music)
+            pg.mixer.music.set_volume(self.volume)
+        except pg.error as e:
+            print(f"Erro ao carregar a música: {self.music}. Detalhes: {e}")
+        
+        
+        try:
+            self.image = self.sprite.subsurface((self.x_position, self.y_position, *SCREEN_DIMENSIONS))
+        except ValueError as e:
+            print(f"Erro ao criar subsurface da imagem. Detalhes: {e}")
+            self.image = pg.Surface(SCREEN_DIMENSIONS)  # Usar uma superfície em branco
+    
+        self.rect = self.image.get_rect()
+
         # Limites, ate aonde a camera vai
         self.x_limit_sup = self.width - SCREEN_DIMENSIONS[0]
         self.y_limit_sup = self.height - SCREEN_DIMENSIONS[1]
@@ -41,15 +60,22 @@ class Background(pg.sprite.Sprite):
         self.y_position = y_new
         
     def center(self, x_player, y_player):
-        # Centraliza a camera no personagem
-        x_new, y_new = self.position_controller.to_frame(x_player, y_player)
-        x_new -= SCREEN_DIMENSIONS[0]/2
-        y_new -= SCREEN_DIMENSIONS[1]/2
-        self.set_position(x_new, y_new)
-        self.image = self.sprite.subsurface((*self.get_position(), *SCREEN_DIMENSIONS))
-        
+       # Centraliza a câmera no personagem
+        try:
+            x_new, y_new = self.position_controller.to_frame(x_player, y_player)
+            x_new -= SCREEN_DIMENSIONS[0] // 2
+            y_new -= SCREEN_DIMENSIONS[1] // 2
+            self.set_position(x_new, y_new)
+            self.image = self.sprite.subsurface((*self.get_position(), *SCREEN_DIMENSIONS))
+        except Exception as e:
+            print(f"Erro ao centralizar a câmera: {e}")
+            
     def play_music(self):
-        pg.mixer.music.play(-1)
+        try:
+            pg.mixer.music.play(-1)
+        except pg.error as e:
+            print(f"Erro ao tocar música. Detalhes: {e}")
+        
         
     def set_volume(self, volume):
         self.volume = volume
