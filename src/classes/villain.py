@@ -111,7 +111,7 @@ class Villain(Character):
     def evaluate_interaction(self):
         pass
     
-    def update(self, player, phase_elements, accessible_elements, ammus):
+    def update(self, player, phase_elements, accessible_elements):
         # Verifica se o player esta no campo de visao
         if self.vision_field.colliderect(player.rect):
             self.memories_append((player.x_position, player.y_position))
@@ -143,7 +143,6 @@ class Villain(Character):
         self.weapon.set_position(self.x_position + out_shape[0], self.y_position+ out_shape[1])
         
         self.animate()
-        
         phase_elements.add(fired)
         accessible_elements.add(fired) #TODO Fase gerencia colisao de player e monstro para animar o ataque
-        ammus.add(fired)
+        # ammus.add(fired)
