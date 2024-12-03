@@ -5,7 +5,169 @@ import numpy as np
 
 
 class Background(pg.sprite.Sprite):
+    """
+    Represents a scrolling background in the game, including its position, dimensions, and music control.
+
+    Parameters
+    ----------
+    screen : pygame.Surface
+        The game screen where the background is rendered.
+    sprite : str
+        Path to the image file used as the background sprite.
+    x_position : int
+        Initial x-coordinate of the background.
+    y_position : int
+        Initial y-coordinate of the background.
+    width : int
+        Width of the background image.
+    height : int
+        Height of the background image.
+    music : str
+        Path to the music file played for this background.
+    volume : float
+        Volume level for the background music (0.0 to 1.0).
+    sounds : list
+        List of sound effects associated with the background.
+
+    Attributes
+    ----------
+    screen : pygame.Surface
+        The game screen for rendering.
+    sprite : pygame.Surface
+        The scaled image surface of the background.
+    x_position : int
+        Current x-coordinate of the background's top-left corner.
+    y_position : int
+        Current y-coordinate of the background's top-left corner.
+    width : int
+        Width of the background.
+    height : int
+        Height of the background.
+    music : str
+        Path to the background music file.
+    volume : float
+        Volume of the background music.
+    sounds : list
+        Sound effects linked to the background.
+    image : pygame.Surface
+        The subsurface of the sprite displayed as the visible area.
+    rect : pygame.Rect
+        The rectangle defining the position and dimensions of the visible background.
+    x_limit_sup : int
+        Maximum x-coordinate for scrolling.
+    y_limit_sup : int
+        Maximum y-coordinate for scrolling.
+
+    Methods
+    -------
+    get_origin():
+        Returns the coordinates of the background's origin.
+    get_shape():
+        Returns the dimensions of the background.
+    get_position():
+        Returns the current top-left position of the background.
+    set_position(x_new, y_new):
+        Updates the top-left position of the background.
+    center(x_player, y_player):
+        Centers the camera on the player's position.
+    play_music():
+        Starts playing the background music.
+    stop_music():
+        Stops the background music.
+    set_volume(volume):
+        Sets the volume level of the background music.
+    draw_background_image():
+        Draws the current view of the background onto the screen.
+    update(x_player, y_player):
+        Updates the background's position and renders it on the screen.
+    """
+
     def __init__(self, screen, sprite, x_position, y_position, width, height, music, volume, sounds):
+        """
+        Inicializa a classe que gerencia o background e os recursos do jogo, como sprite, música e sons.
+
+        Parâmetros
+        ----------
+        screen : pygame.Surface
+            A superfície da tela onde o jogo será renderizado.
+
+        sprite : str
+            O caminho para o arquivo de imagem que será usado como o sprite da câmera.
+
+        x_position : int
+            A posição inicial da câmera no eixo x.
+
+        y_position : int
+            A posição inicial da câmera no eixo y.
+
+        width : int
+            A largura da câmera.
+
+        height : int
+            A altura da câmera.
+
+        music : str
+            O caminho para o arquivo de música que será reproduzido no fundo.
+
+        volume : float
+            O volume da música, variando de 0.0 (silencioso) a 1.0 (volume máximo).
+
+        sounds : list
+            Lista de sons que serão usados no jogo (não utilizado diretamente no construtor, mas armazenado).
+
+        Exceções
+        ---------
+        pg.error
+            Levantada caso ocorra um erro ao carregar a imagem ou a música.
+
+        ValueError
+            Levantada se houver erro ao criar a subsuperfície da imagem.
+
+        Atributos
+        ---------
+        screen : pygame.Surface
+            A superfície da tela onde a câmera será renderizada.
+
+        sprite : pygame.Surface
+            A imagem do sprite redimensionada ou um placeholder caso o carregamento falhe.
+
+        position_controller : PositionController
+            O controlador de posição que gerencia os limites de movimentação da câmera.
+
+        x_position : int
+            A posição ajustada da câmera no eixo x, levando em consideração as dimensões da tela.
+
+        y_position : int
+            A posição ajustada da câmera no eixo y, levando em consideração as dimensões da tela.
+
+        width : int
+            A largura da câmera.
+
+        height : int
+            A altura da câmera.
+
+        music : str
+            O caminho para o arquivo de música que será tocado.
+
+        volume : float
+            O volume da música.
+
+        sounds : list
+            Lista de sons que podem ser usados no jogo.
+
+        image : pygame.Surface
+            A imagem que será usada para renderizar a visão da câmera (subsuperfície).
+
+        rect : pygame.Rect
+            O retângulo delimitador da imagem da câmera, usado para colisões e posicionamento.
+
+        x_limit_sup : int
+            O limite superior de movimentação da câmera no eixo x.
+
+        y_limit_sup : int
+            O limite superior de movimentação da câmera no eixo y.
+        """
+
         super().__init__()
         self.screen = screen
         
@@ -90,6 +252,7 @@ class Background(pg.sprite.Sprite):
         
 
 class Interface():
+    
     def __init__(self, screen, phase_atual, interface_elements):
         self.screen = screen
         self.phase_atual = phase_atual
