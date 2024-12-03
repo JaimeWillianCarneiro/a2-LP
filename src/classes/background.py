@@ -166,7 +166,7 @@ class PositionController:
             y_position = self.map_limits_inf[1]
         if y_position > self.map_limits_sup[1]:
             y_position = self.map_limits_sup[1]
-            
+        
         return x_position, y_position
     
     def out_game(self, object):
@@ -217,9 +217,10 @@ class CollideController:
         
         # Retira parte do movimento que causou a colisao
         collide_x_axis  = cos_movement > cos_min_distance
+        abs_distance[abs_distance == 0] = 1 # Nao divir zero por zero, por favor
         signal = distance/abs_distance
         comeback = min_distance*np.array([collide_x_axis, not collide_x_axis])*signal
-        return comeback
+        return -comeback
             
     def __init__(self, player, npcs, villains, game_objects, collectibles, ammus, mandatory_events, optional_events, scooby_snacks, weapons, phase_elements):
         """ Classe que gerencia as colisoes entre os elementos da fase, atualizando os estados dos elementos que colidiram entre si.
@@ -295,29 +296,22 @@ class CollideController:
         # Colisao com npcs
         npcs_to_push = pg.sprite.spritecollide(self.player, self.npcs, False)
         for each_npc in npcs_to_push:
-            each_npc.apply_movement(self.player.movement)
-            
-        # Colisao com os monstros
-        Villains_collided = pg.sprite.spritecollide(self.player, self.villains, False)
-        for each_villain in Villains_collided:
-            limits = self.locate_collide(self.player, each_villain)
-            self.player.x_position = each_villain.x_position + each_villain.width * (-1)**limits[0]
-            self.player.y_position = each_villain.y_position + each_villain.height * (-1)**limits[1]
-    
+            comeback = -self.locate_collide(self.player, each_npc)
+            comeback = each_npc.apply_movement(comeback)
+            if comeback.any():
+                self.player.apply_movement(comeback, False)
     
     def ammus_collide_with(self):
         # Colisao com personagens
         character_hit_by_ammu = pg.sprite.groupcollide(self.ammus, self.characters, False, False)
         for ammu  in self.ammus.sprites():
-            print(f'{(ammu.x_position, ammu.y_position)} - player: {(self.player.x_position, self.player.y_position)}')
-        print(character_hit_by_ammu)
-        for each_ammu in character_hit_by_ammu.keys():
-            for each_character in character_hit_by_ammu[each_ammu]:
-                # Atinge o personagem
-                print('Dano longo\n')
-                each_character.life -= each_ammu.damage
-                # Remove todas as referencias
-                each_ammu.kill()
+            for each_ammu in character_hit_by_ammu.keys():
+                for each_character in character_hit_by_ammu[each_ammu]:
+                    # Atinge o personagem
+                    print('Dano longo\n')
+                    each_character.life -= each_ammu.damage
+                    # Remove todas as referencias
+                    each_ammu.kill()
 
         # Colisao com objetos
         destroyed_ammus = pg.sprite.groupcollide(self.ammus, self.game_objects, False, False).keys()
@@ -332,16 +326,14 @@ class CollideController:
             for each_object in object_pushed_by_character[each_character]:
                 if each_object.is_static:
                     comeback = self.locate_collide(each_character, each_object)
-                    print(comeback)
-                        # new_position = np.array([each_character.x_position, each_character.y_position])
-                        # shape = np.array([each_object.width, each_object.height])*limits
-                        # each_character.x_position, each_character.y_position = new_position + shape
-                        # comeback = -each_character.movement*limits
-                        # each_character.apply_movement(comeback)
-                    each_character.apply_movement(-comeback, False)
-                        
+                    comeback = each_character.apply_movement(comeback, False)
+                    if comeback.any():
+                        _ = each_object.apply_movement(comeback)
+                    
                 else:
-                    each_object.apply_movement(each_character.movement)
+                    comeback = each_object.apply_movement(each_character.movement)
+                    if comeback.any():
+                        _ = each_character.apply_movement(comeback, False)
     
     def monsters_collide_with(self):
         fired = []
@@ -350,8 +342,11 @@ class CollideController:
         for each_villain in characters_to_push.keys():
             for each_character in characters_to_push[each_villain]:
                 # Nao se empurra
-                if each_villain != each_character:
-                    each_character.apply_movement(each_villain.movement)
+                if each_villain != each_character and each_villain.movement.any():
+                    comeback = -self.locate_collide(each_villain, each_character)
+                    comeback = each_character.apply_movement(comeback)
+                    if comeback.any():
+                        _ = each_villain.apply_movement(comeback, False)
         
         # Atira no personagem caso ele esteja na mira e tenha recarregado
         for each_villain in self.villains.sprites():
@@ -367,7 +362,21 @@ class CollideController:
         return fired
     
     def npcs_collide_with(self):
-        pass
+        # npcs empurram uns aos outros
+        npcs_pushed_by_npcs = pg.sprite.groupcollide(self.npcs, self.npcs, False, False)
+        for each_npc1 in npcs_pushed_by_npcs.keys():
+            for each_npc2 in npcs_pushed_by_npcs[each_npc1]:
+                # Nao se empurram
+                if each_npc1 != each_npc2 and each_npc1.movement.any():
+                    # Separa o npc2 do npc1
+                    comeback = -self.locate_collide(each_npc1, each_npc2)
+                    comeback = each_npc2.apply_movement(comeback)
+                    if comeback.any():
+                        _ = each_npc1.apply_movement(comeback)
+                        
+                    # Nao precisa tratar a mesma colisao depois
+                    npcs_pushed_by_npcs[each_npc2].remove(each_npc1)
+    
     
     def update(self, phase_elements):
         fired = []

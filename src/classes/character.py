@@ -176,11 +176,16 @@ class Character(pg.sprite.Sprite, ABC):
         
         x_new = self.x_position + movement[0]
         y_new = self.y_position + movement[1]
-        x_new, y_new = self.position_controller.to_frame(x_new, y_new)
-        self.x_position = x_new
-        self.y_position = y_new
+        x_new_corrected, y_new_corrected = self.position_controller.to_frame(x_new, y_new)
         
+        # Devolve a parte do movimento que nao foi aplicado
+        comeback = np.array([x_new, y_new]) - np.array([x_new_corrected, y_new_corrected])
+        
+        self.x_position = x_new_corrected
+        self.y_position = y_new_corrected
         self.movement = movement
+        
+        return -comeback
         
     @abstractmethod
     def update(self):
