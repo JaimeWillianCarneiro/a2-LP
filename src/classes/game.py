@@ -155,12 +155,14 @@ class Game:
                     self.level.update(self.movement, self.attack)
                     pygame.display.flip()
                     
-                    if self.level.current_dialogue == 0:
+
+                    if self.level.current_dialogue != None:
                         self.menu.dialogue()
                 
                 if self.level._current_phase.check_lost():
                     self.menu.current_screen = "game_over"
                     self.menu.selascou()
+
         
         # Handle errors
         

@@ -151,12 +151,7 @@ class Character(pg.sprite.Sprite, ABC):
             current_sprite_x = int(self.current_sprite_x)
             self.image = self.spritesheet.subsurface((current_sprite_x * self.width, self._current_sprite_y * self.height, self.width, self.height))
     
-    def redefine_direction(self, current_sprite_y):
-        if self.current_sprite_y != current_sprite_y:
-            self.current_sprite_y = current_sprite_y
-            self.current_sprite_x = 0   
-
-    def apply_movement(self, movement):
+    def redefine_direction(self, movement):
         if movement[0] > 0:
             current_sprite_y = 2
         elif movement[0] < 0:
@@ -171,15 +166,26 @@ class Character(pg.sprite.Sprite, ABC):
             current_sprite_y ^= self.current_sprite_y
             self.current_sprite_y ^= current_sprite_y
             
-        self.redefine_direction(current_sprite_y)
+        if self.current_sprite_y != current_sprite_y:
+            self.current_sprite_y = current_sprite_y
+            self.current_sprite_x = 0   
+
+    def apply_movement(self, movement, redefine_direction = True):
+        if redefine_direction:
+            self.redefine_direction(movement)
         
         x_new = self.x_position + movement[0]
         y_new = self.y_position + movement[1]
-        x_new, y_new = self.position_controller.to_frame(x_new, y_new)
-        self.x_position = x_new
-        self.y_position = y_new
+        x_new_corrected, y_new_corrected = self.position_controller.to_frame(x_new, y_new)
         
+        # Devolve a parte do movimento que nao foi aplicado
+        comeback = np.array([x_new, y_new]) - np.array([x_new_corrected, y_new_corrected])
+        
+        self.x_position = x_new_corrected
+        self.y_position = y_new_corrected
         self.movement = movement
+        
+        return -comeback
         
     @abstractmethod
     def update(self):
