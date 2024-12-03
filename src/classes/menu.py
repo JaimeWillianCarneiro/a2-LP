@@ -435,11 +435,13 @@ class Menu:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if resume_button.check_for_input(pause_mouse_pos):
+                        self.play_music()
                         self.current_screen = "play"
                     if menu_button.check_for_input(pause_mouse_pos):
                         self.current_screen = "main_menu"
-                        self.play_music()
                         self.level.quit_phase()
+                        self.load_audio(START_SOUND_MENU)
+                        self.play_music()
                     if quit_button.check_for_input(pause_mouse_pos):
                         pygame.quit()
                         sys.exit()
@@ -573,5 +575,5 @@ class Menu:
                     box_height=150  # Altura fixa do retângulo
                 )
 
-            self.level.current_dialogue += 1
+            self.level.current_dialogue = None
             pygame.display.update()
