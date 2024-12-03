@@ -95,10 +95,15 @@ class Interface():
         self.screen = screen
         self.phase_atual = phase_atual
         self.interface_elements = interface_elements
-        self.player_name = Fonts.PLAYER_NAME.value.render('Player :'+str(self.phase_atual.player.name), True, (123, 173, 123))
-        # self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(self.phase_atual.player.life), True, (123, 173, 223))
+        
+        # Tratamento de exceção na criação do nome do player
+        try:
+            self.player_name = Fonts.PLAYER_NAME.value.render('Player :' + str(self.phase_atual.player.name), True, (123, 173, 123))
+        except AttributeError as e:
+            print(f"Erro ao acessar o nome do player: {e}")
+            self.player_name = Fonts.PLAYER_NAME.value.render('Player :Unknown', True, (123, 173, 123))
+        
         self.event_warning =  Fonts.EVENT_WARNING.value.render('Volte para a Zona!', True, (255, 255, 255))
-        # self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.phase_atual.current_mandatory_event.time), True, (123, 173, 223))
         
         #  Localizações
         self.player_name_location = (50, 50)
@@ -107,13 +112,19 @@ class Interface():
         self.event_time_location = (SCREEN_DIMENSIONS[0]//2-50, 50)
         
         # Sprite de Vida do Personagem  
-        self.full_heart_image = pg.image.load(FULL_HEART)
-        self.full_heart_image = pg.transform.scale(self.full_heart_image, (50, 50)) 
-        self.empty_heart_image = pg.image.load(EMPTY_HEART)
-        self.empty_heart_image = pg.transform.scale(self.empty_heart_image, (50, 50)) 
-        self.half_heart_image = pg.image.load(HALF_HEART)
-        self.half_heart_image = pg.transform.scale(self.half_heart_image, (50, 50))
-        
+        try:
+            self.full_heart_image = pg.image.load(FULL_HEART)
+            self.full_heart_image = pg.transform.scale(self.full_heart_image, (50, 50)) 
+            self.empty_heart_image = pg.image.load(EMPTY_HEART)
+            self.empty_heart_image = pg.transform.scale(self.empty_heart_image, (50, 50)) 
+            self.half_heart_image = pg.image.load(HALF_HEART)
+            self.half_heart_image = pg.transform.scale(self.half_heart_image, (50, 50))
+        except pg.error as e:
+            print(f"Erro ao carregar as imagens de coração: {e}")
+            self.full_heart_image = pg.Surface((50, 50))
+            self.empty_heart_image = pg.Surface((50, 50))
+            self.half_heart_image = pg.Surface((50, 50))
+            
         self.heart_location = (115, 45)  # Local inicial para os corações
 
         # Sprite de Foto de Perfil do personagem
@@ -131,28 +142,32 @@ class Interface():
         # Desenha os atributos do player no canto superior esquerdo
         # self.screen.blit(self.player_name, self.player_name_location)
         # self.screen.blit(self.player_life, self.player_life_location)
-
-        if self.phase_atual.player.name == "Scooby":
-            player_image = pg.image.load(self.scooby_profile)  # Carrega a imagem de perfil do Scooby
-        
-             # Desenha a imagem no canto superior esquerdo (10, 10)
-        elif self.phase_atual.player.name =="Velma":
-            player_image = pg.image.load(self.velma_profile)  # Carrega a imagem de perfil do Scooby
-        
-        elif self.phase_atual.player.name == "Daphne":
-            player_image = pg.image.load(self.dapnhe_proflle)
-           
-        elif self.phase_atual.player.name == "Fred":
-            player_image = pg.image.load(self.fred_profile)
-           
-        elif self.phase_atual.player.name == "Shaggy":
-            player_image = pg.image.load(self.shaggy_profile)
-           
-        if player_image:
-            player_image = pg.transform.scale(player_image, (100, 100))  # Redimensiona para caber na interface
-            self.screen.blit(player_image, (10, 10))            
+        try:
+                
+            if self.phase_atual.player.name == "Scooby":
+                player_image = pg.image.load(self.scooby_profile)  # Carrega a imagem de perfil do Scooby
             
-                # Desenha a quantidade de vidas como corações
+                # Desenha a imagem no canto superior esquerdo (10, 10)
+            elif self.phase_atual.player.name =="Velma":
+                player_image = pg.image.load(self.velma_profile)  # Carrega a imagem de perfil do Scooby
+            
+            elif self.phase_atual.player.name == "Daphne":
+                player_image = pg.image.load(self.dapnhe_proflle)
+            
+            elif self.phase_atual.player.name == "Fred":
+                player_image = pg.image.load(self.fred_profile)
+            
+            elif self.phase_atual.player.name == "Shaggy":
+                player_image = pg.image.load(self.shaggy_profile)
+            
+            if player_image:
+                player_image = pg.transform.scale(player_image, (100, 100))  # Redimensiona para caber na interface
+                self.screen.blit(player_image, (10, 10))            
+        
+        except KeyError as e:
+                print(f"Erro ao carregar a imagem de perfil do personagem: {e}")
+        
+        # Desenha a quantidade de vidas como corações
         for num in range(1, 6):
             x = self.heart_location[0] + (num-1) * 60  # Espaçamento entre corações
             y = self.heart_location[1]
@@ -177,8 +192,11 @@ class Interface():
         # Desenha o minimapa e as configuracoes no canto superior direito
         
     def update(self):
-        self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(int(self.phase_atual.player.life)), True, (123, 173, 223))
-        self.draw_interface()
+        try:
+            self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(int(self.phase_atual.player.life)), True, (123, 173, 223))
+            self.draw_interface()
+        except Exception as e:
+            print(f"Erro ao atualizar a interface: {e}")
     
 class PositionController():
     x_origin = 0

@@ -15,12 +15,25 @@ class Character(pg.sprite.Sprite, ABC):
         self._y_position = y_position
         self._width = width
         self._height = height
-        self._spritesheet = pg.image.load(f'assets\\spritesheets\\{name}_{skin}.png')
-        self._spritesheet = pg.transform.scale(self._spritesheet, (width*sprites_quantity, height*4))
+        
+        try:
+            self._spritesheet = pg.image.load(f'assets\\spritesheets\\{name}_{skin}.png')
+            self._spritesheet = pg.transform.scale(self._spritesheet, (width*sprites_quantity, height*4))
+        except pg.error as e:
+            print(f"Erro ao carregar a spritesheet para {name} com a skin {skin}. Detalhes: {e}")
+            self._spritesheet = pg.Surface((width * sprites_quantity, height * 4))  # Superfície em branco como fallback
+        
         self.sprites_quantity = sprites_quantity 
         self._current_sprite_x = 0
         self._current_sprite_y = direction
-        self.image = self.spritesheet.subsurface((self._current_sprite_x * self.width, self._current_sprite_y * self.height, self.width, self.height))
+          # Verificação de índice da spritesheet
+        try:
+            self.image = self.spritesheet.subsurface((self._current_sprite_x * self.width, self._current_sprite_y * self.height, self.width, self.height))
+        except ValueError as e:
+            print(f"Erro ao acessar a subsuperfície da spritesheet: {e}")
+            self.image = pg.Surface((self.width, self.height))  # Superfície em branco como fallback
+
+        
         self.rect = self.image.get_rect()
         self.rect.center = self._x_position, self._y_position
         self._bullets = bullets
