@@ -142,9 +142,10 @@ class Game:
                     
                 if self.menu.current_screen == "start":
                     self.level.start_phase()
-                    self.menu.current_screen = "play"      
+                    self.menu.current_screen = "play" 
              
                 if self.menu.current_screen == "play":
+                    
                     if pygame.key.get_pressed()[WASD_Keys.LEFT.value]:
                         self.movement[0] -= 1
                     if pygame.key.get_pressed()[WASD_Keys.RIGHT.value]:
@@ -166,6 +167,9 @@ class Game:
                     
                     self.level.update(self.movement, self.attack)
                     pygame.display.flip()
+                    
+                    if not self.menu.first_dialogue:
+                        self.menu.dialogue()
         
         # Handle errors
         
