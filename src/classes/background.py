@@ -261,7 +261,7 @@ class CollideController:
         # Colisao com npcs
         npcs_to_push = pg.sprite.spritecollide(self.player, self.npcs, False)
         for each_npc in npcs_to_push:
-            each_npc.apply_movement(movement)
+            each_npc.apply_movement(self.player.movement)
             
         # Colisao com os monstros
         Villains_collided = pg.sprite.spritecollide(self.player, self.villains, False)

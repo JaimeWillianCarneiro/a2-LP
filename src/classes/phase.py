@@ -27,7 +27,6 @@ def random_data(background):
     
     weapon = Weapon(x_position=x, y_position=y, width=100, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, is_static=False, sprite_actual_y=0, sprites_quantity=1, damage=0.007, kind_damage=None, attack_field=50, reload_time=2*FRAME_RATE, ammo=ammunition, scope=250, special_effect=None)
     
-    
     player = Group1Protagonist(name='Scooby', speed=10, perception=23, x_position=SCREEN_DIMENSIONS[0], y_position=SCREEN_DIMENSIONS[1], width=width, height=height, direction=0, skin='default', life=5, inventory=[], ability=1, sprites_quantity=4, map_limits_sup=map_limits_sup, bullets=100, weapon=weapon, trap_power=3)
     
     x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
@@ -39,6 +38,8 @@ def random_data(background):
     x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
     y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
     monster = Villain(name='Fred', speed=8, perception=3, x_position=x, y_position=y, width=width, height=height, direction=0, skin='default', life=5, sprites_quantity=4, map_limits_sup=map_limits_sup, bullets=100, weapon=weapon, mem_size=60, vision_field=400, background=background, scooby_snacks=scooby_snacks)
+
+    
     
     for description in ['Moeda de Nero', 'Candelabro']:
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
@@ -49,7 +50,6 @@ def random_data(background):
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         mandatory_events.append(Minigame(id_event=1, player=player, start_zone=(x, y, 100, 75), event_zone=(x, y, 700, 350), end_zone=(x+600, y, 100, 75), is_obrigatory=True, map_limits_sup=map_limits_sup, villains=monster, npcs=npcs, time=4*FRAME_RATE))
-
 
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
@@ -63,6 +63,7 @@ def random_data(background):
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         game_objects.append(GameObject(x, y, 100, 20, map_limits_sup, 'assets\\backgrounds\\shaggy_right_1.png', 0, 0, 1, True))
+        
         
     return npcs, collectibles, game_objects, mandatory_events, optional_events, player, monster, scooby_snacks
 
@@ -170,7 +171,6 @@ class Event(pg.sprite.Sprite):
             if self.check_end():
                 self.end_event()
                 
-            
 class Minigame(Event):
     def __init__(self, id_event, player, start_zone, event_zone, end_zone, is_obrigatory, map_limits_sup, villains, npcs, time):
         super().__init__(id_event, player, start_zone, event_zone, end_zone, is_obrigatory, map_limits_sup)
@@ -244,9 +244,7 @@ class Minigame(Event):
 
 class Dialog(Event):
     def __init__(self):
-        pass
-        
-                        
+        pass            
 
 class Phase:
     def __init__(self, screen):
@@ -325,7 +323,7 @@ class Phase:
 
         self.collide_controller.update()
         self.background.update(self.player.x_position, self.player.y_position)
-        self.phase_elements.update()
+        self.phase_elements.update()        
         
         self.render_camera()
         pg.draw.line(self.screen, (0, 0, 0), self.player.rect.center, (np.array(self.player.rect.center)+self.player.aim*50))
