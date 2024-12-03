@@ -1,5 +1,6 @@
 import pygame as pg
 from src.settings import SCREEN_DIMENSIONS, Fonts, FULL_HEART, HALF_HEART, EMPTY_HEART
+from src.settings import SHAGGY_PROFILE, DAPHNE_PROFILE, SCOOBY_PROFILE, VELMA_PROFILE, FRED_PROFILE
 import numpy as np
 
 
@@ -49,6 +50,9 @@ class Background(pg.sprite.Sprite):
         
     def play_music(self):
         pg.mixer.music.play(-1)
+    
+    def stop_music(self):
+        pg.mixer.music.stop()
         
     def set_volume(self, volume):
         self.volume = volume
@@ -79,6 +83,7 @@ class Interface():
         self.event_warning_location = ((SCREEN_DIMENSIONS[0]*2)//5, 100)
         self.event_time_location = (SCREEN_DIMENSIONS[0]//2-50, 50)
         
+        # Sprite de Vida do Personagem  
         self.full_heart_image = pg.image.load(FULL_HEART)
         self.full_heart_image = pg.transform.scale(self.full_heart_image, (50, 50)) 
         self.empty_heart_image = pg.image.load(EMPTY_HEART)
@@ -86,19 +91,44 @@ class Interface():
         self.half_heart_image = pg.image.load(HALF_HEART)
         self.half_heart_image = pg.transform.scale(self.half_heart_image, (50, 50))
         
-        
-        self.heart_location = (50, 100)  # Local inicial para os corações
+        self.heart_location = (115, 45)  # Local inicial para os corações
 
-        # Coração
+        # Sprite de Foto de Perfil do personagem
+        self.shaggy_profile = SHAGGY_PROFILE
+        self.dapnhe_proflle = DAPHNE_PROFILE
+        self.velma_profile = VELMA_PROFILE
+        self.scooby_profile = SCOOBY_PROFILE
+        self.fred_profile = FRED_PROFILE
+        
         
     def set_phase_atual(self, new_phase):
         self.phase_atual = new_phase
         
     def draw_interface(self):
         # Desenha os atributos do player no canto superior esquerdo
-        self.screen.blit(self.player_name, self.player_name_location)
+        # self.screen.blit(self.player_name, self.player_name_location)
         # self.screen.blit(self.player_life, self.player_life_location)
+
+        if self.phase_atual.player.name == "Scooby":
+            player_image = pg.image.load(self.scooby_profile)  # Carrega a imagem de perfil do Scooby
         
+             # Desenha a imagem no canto superior esquerdo (10, 10)
+        elif self.phase_atual.player.name =="Velma":
+            player_image = pg.image.load(self.velma_profile)  # Carrega a imagem de perfil do Scooby
+        
+        elif self.phase_atual.player.name == "Daphne":
+            player_image = pg.image.load(self.dapnhe_proflle)
+           
+        elif self.phase_atual.player.name == "Fred":
+            player_image = pg.image.load(self.fred_profile)
+           
+        elif self.phase_atual.player.name == "Shaggy":
+            player_image = pg.image.load(self.shaggy_profile)
+           
+        if player_image:
+            player_image = pg.transform.scale(player_image, (100, 100))  # Redimensiona para caber na interface
+            self.screen.blit(player_image, (10, 10))            
+            
                 # Desenha a quantidade de vidas como corações
         for num in range(1, 6):
             x = self.heart_location[0] + (num-1) * 60  # Espaçamento entre corações
@@ -109,11 +139,6 @@ class Interface():
                 self.screen.blit(self.half_heart_image, (x,y))
             elif num >self.phase_atual.player.life:
                 self.screen.blit(self.empty_heart_image, (x,y))      
-        
-        # for i in range(int(self.phase_atual.player.life)):
-        #     x = self.heart_location[0] + i * 60  # Espaçamento entre corações
-        #     y = self.heart_location[1]
-        #     self.screen.blit(self.full_heart_image, (x, y))
         
 
         

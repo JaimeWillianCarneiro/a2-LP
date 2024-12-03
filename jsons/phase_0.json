@@ -1,5 +1,5 @@
 {
-    "background": {"sprite": "assets\\backgrounds\\garden.jpg", "width": 4000, "height": 3000, "music": "assets\\sounds\\garden_ambience.mp3", "volume": 0.05, "sounds": []},
+    "background": {"sprite": "assets\\backgrounds\\garden.jpg", "width": 4000, "height": 3000, "music": "assets\\sounds\\garden_ambience_2.mp3", "volume": 0.5, "sounds": []},
     "ammos": {
         "name": {"x_position": 1560, "y_position": 780, "width": 20, "height": 20, "map_limits_sup": "map_limits_sup", "spritesheet": "assets\\backgrounds\\lua.png", "sprite_actual_x":  0, "sprite_actual_y": 0, "sprites_quantity": 1, "is_static": 0, "damage": 1, "effects": [], "recochet": 0, "speed": 7}
     },

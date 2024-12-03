@@ -11,8 +11,12 @@ START_BACKGROUND_MENU= 'assets/menus/title_screen.png'
 START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
 
-SHAGGY_PROFILE = 'assets/spritesheets/Shaggy_default.png'
-DAPHNE_PROFILE= 'assets/spritesheets/Daphne_dialogue.png'
+
+SHAGGY_PROFILE = 'assets/spritesheets/Shaggy_dialogue.png' 
+DAPHNE_PROFILE = 'assets/spritesheets/Dapnhe_dialogue.png'
+SCOOBY_PROFILE = 'assets/spritesheets/Scooby_dialogue.png'
+FRED_PROFILE = 'assets/spritesheets/Fred_dialogue.png'
+VELMA_PROFILE = 'assets/spritesheets/Velma_dialogue.png'
 
 
 FULL_HEART = 'assets/menus/full heart.png'
