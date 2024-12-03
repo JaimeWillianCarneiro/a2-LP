@@ -151,12 +151,7 @@ class Character(pg.sprite.Sprite, ABC):
             current_sprite_x = int(self.current_sprite_x)
             self.image = self.spritesheet.subsurface((current_sprite_x * self.width, self._current_sprite_y * self.height, self.width, self.height))
     
-    def redefine_direction(self, current_sprite_y):
-        if self.current_sprite_y != current_sprite_y:
-            self.current_sprite_y = current_sprite_y
-            self.current_sprite_x = 0   
-
-    def apply_movement(self, movement):
+    def redefine_direction(self, movement):
         if movement[0] > 0:
             current_sprite_y = 2
         elif movement[0] < 0:
@@ -171,7 +166,13 @@ class Character(pg.sprite.Sprite, ABC):
             current_sprite_y ^= self.current_sprite_y
             self.current_sprite_y ^= current_sprite_y
             
-        self.redefine_direction(current_sprite_y)
+        if self.current_sprite_y != current_sprite_y:
+            self.current_sprite_y = current_sprite_y
+            self.current_sprite_x = 0   
+
+    def apply_movement(self, movement, redefine_direction = True):
+        if redefine_direction:
+            self.redefine_direction(movement)
         
         x_new = self.x_position + movement[0]
         y_new = self.y_position + movement[1]

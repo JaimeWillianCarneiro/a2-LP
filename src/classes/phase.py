@@ -23,10 +23,10 @@ def random_data(background):
     width = 95
     height = 75
     
-    ammunition = Ammo(x_position=x, y_position=y, width=20, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\lua.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, is_static=False, damage=1, effects=[], direction=np.zeros(2, dtype=float), recochet=False, speed=7)
+    ammunition = Ammo(x_position=x, y_position=y, width=20, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, is_static=False, damage=1, effects=[], direction=np.zeros(2, dtype=float), recochet=False, speed=7)
     
     weapon = Weapon(x_position=x, y_position=y, width=100, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, is_static=False, sprite_actual_y=0, sprites_quantity=1, damage=0.007, kind_damage=None, attack_field=50, reload_time=2*FRAME_RATE, ammo=ammunition, scope=250, special_effect=None)
-    
+
     player = Group1Protagonist(name='Scooby', speed=10, perception=23, x_position=SCREEN_DIMENSIONS[0], y_position=SCREEN_DIMENSIONS[1], width=width, height=height, direction=0, skin='default', life=5, inventory=[], ability=1, sprites_quantity=4, map_limits_sup=map_limits_sup, bullets=100, weapon=weapon, trap_power=3)
     
     x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
@@ -280,7 +280,7 @@ class Phase:
         self.phase_elements.add(self.optional_events)
 
         # Gerenciador de colisoes
-        self.collide_controller = CollideController(player=self.player, npcs=npcs, villains=self.monsters, game_objects=self.game_objects, collectibles=self.collectibles, ammus=pg.sprite.Group(), mandatory_events=self.mandatory_events, optional_events=self.optional_events, scooby_snacks=self.scooby_snacks, weapons=pg.sprite.Group())
+        self.collide_controller = CollideController(player=self.player, npcs=npcs, villains=self.monsters, game_objects=self.game_objects, collectibles=self.collectibles, ammus=pg.sprite.Group(), mandatory_events=self.mandatory_events, optional_events=self.optional_events, scooby_snacks=self.scooby_snacks, weapons=pg.sprite.Group(each_monster.weapon), phase_elements=self.phase_elements)
 
         self.background.play_music()
 
@@ -302,16 +302,14 @@ class Phase:
         """ Verifica se o player falhou (seja por tempo, seja por vida, seja por falha em algum evento da phase, etc) """
         return self.player.life <= 0
     
-    def update(self, movement, attack):            
-
-        fired = []
+    def update(self, movement, attack):
         self.player.aim = np.array(attack)
 
         # Aplica o movimento do player e atualiza o background, obtendo o centro do mapa
         movement = self.player.position_controller.normalize_movement(movement, self.player.speed)
         self.player.apply_movement(movement)
         self.background.update(self.player.x_position, self.player.y_position)
-        self.monsters.update(self.player, self.phase_elements, self.collide_controller.accessible_elements, self.fired)
+        self.monsters.update(self.player)
         # fired.extend(monster_bullets)
         # if any(fired):
         #     self.phase_elements.add(fired)
@@ -321,26 +319,14 @@ class Phase:
         # Atualiza todos os elementos da phase, aplicando a translacao para o novo sistema de coordenadas
         self.phase_elements.update()
 
-        self.collide_controller.update()
+        self.collide_controller.update(self.phase_elements)
         self.background.update(self.player.x_position, self.player.y_position)
-        self.phase_elements.update()        
+        self.phase_elements.update()     
         
         self.render_camera()
         pg.draw.line(self.screen, (0, 0, 0), self.player.rect.center, (np.array(self.player.rect.center)+self.player.aim*50))
         if self.monster.aim.any():
             pg.draw.line(self.screen, (0, 0, 0), self.monster.weapon.rect.center, np.array(self.monster.weapon.rect.center) + self.monster.aim*self.monster.weapon.scope/np.linalg.norm(self.monster.aim))
-            
-    
-# Gerenciador()
-#     __init__:
-#         # count_fase = 0
-#         #{'vilao': {'name': 'fred', }
-#         # Ler os dados da fase 0
-#         self.fase_atual = Phase
-#     # if Fase_Atual.check_end():
-#         count_fase += 1
-#         # Ler os dados da proxima fase
-#         fase_atual = Phase(self.scren, #dados da fase)
 
 
 class PhaseManager:

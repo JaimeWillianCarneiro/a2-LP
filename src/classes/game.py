@@ -136,7 +136,7 @@ class Game:
                     #         self.menu.current_screen = "pause"
                     #         self.menu.pause()
 
-                print("SAIU DO FOR")
+                # print("SAIU DO FOR")
                 if self.menu.current_screen == "main_menu":
                     self.menu.main_menu()
                     
@@ -168,8 +168,8 @@ class Game:
                     self.level.update(self.movement, self.attack)
                     pygame.display.flip()
                     
-                    if not self.menu.first_dialogue:
-                        self.menu.dialogue()
+                    # if not self.menu.first_dialogue:
+                    #     self.menu.dialogue()
         
         # Handle errors
         
