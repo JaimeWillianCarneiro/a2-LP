@@ -294,7 +294,7 @@ class Interface():
         self.dapnhe_proflle = DAPHNE_PROFILE
         self.velma_profile = VELMA_PROFILE
         self.scooby_profile = SCOOBY_PROFILE
-        selfred_profile = FRED_PROFILE
+        self.fred_profile = FRED_PROFILE
         
         
     def set_phase_atual(self, new_phase):

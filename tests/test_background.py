@@ -22,10 +22,7 @@ class TestBackground(unittest.TestCase):
             []
         )
     
-    # def test_get_origin(self):
-    #     expected_origin = (500 + SCREEN_DIMENSIONS[0], 400 + SCREEN_DIMENSIONS[1])
-    #     self.assertEqual(self.bg.get_origin(), expected_origin)
-    
+  
     def test_get_shape(self):
         expected_shape = (1000, 800)
         self.assertEqual(self.bg.get_shape(), expected_shape)
@@ -48,21 +45,6 @@ class TestPositionController(unittest.TestCase):
             self.controller.normalize_movement(movement, speed),
             expected
         )
-    
-    # def test_to_frame(self):
-    #     # Posição dentro dos limites
-    #     x, y = 300, 400
-    #     self.assertEqual(self.controller.to_frame(x, y), (300, 400))
-        
-    #     # Posição fora dos limites (abaixo)
-    #     x, y = 50, 50
-    #     expected = (100, 75)  # Limite inferior do mapa
-    #     self.assertEqual(self.controller.to_frame(x, y), expected)
-        
-    #     # Posição fora dos limites (acima)
-    #     x, y = 1100, 900
-    #     expected = (800, 650)  # Limite superior do mapa
-    #     self.assertEqual(self.controller.to_frame(x, y), expected)
     
     def test_apply_translation(self):
         # Origem configurada para (100, 100)
