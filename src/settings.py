@@ -11,11 +11,13 @@ START_BACKGROUND_MENU= 'assets/menus/title_screen.png'
 START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
 
+
 SHAGGY_PROFILE = 'assets/spritesheets/Shaggy_dialogue.png' 
 DAPHNE_PROFILE = 'assets/spritesheets/Dapnhe_dialogue.png'
 SCOOBY_PROFILE = 'assets/spritesheets/Scooby_dialogue.png'
 FRED_PROFILE = 'assets/spritesheets/Fred_dialogue.png'
 VELMA_PROFILE = 'assets/spritesheets/Velma_dialogue.png'
+
 
 FULL_HEART = 'assets/menus/full heart.png'
 EMPTY_HEART = 'assets/menus/empty heart.png'
@@ -37,5 +39,4 @@ class WASD_Keys(Enum):
     DOWN = pg.K_s
     RIGHT = pg.K_d
     
-    
-    
+#TODO: fazer uma funcao decoradora de start_dialogue

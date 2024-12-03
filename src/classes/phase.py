@@ -2,17 +2,17 @@ import pygame as pg
 from src.settings import SCREEN_DIMENSIONS, FRAME_RATE
 from src.classes.gameobejcts import GameObject, Collectible, Ammo, Weapon
 from src.classes.protagonist import Group1Protagonist
-from src.classes.background import Background, PositionController, Interface
+from src.classes.background import Background, PositionController, Interface, CollideController
 from src.classes.villain import Villain
 import random
 import numpy as np
-
 
 def random_data(background):
     # Variavéis fictias para testar a classe phase ##############
     map_limits_sup = list(background.get_shape())
     collectibles = []
     npcs = []
+    game_objects = []
     mandatory_events = []
     optional_events = []
         
@@ -23,44 +23,49 @@ def random_data(background):
     width = 95
     height = 75
     
-    ammunition = Ammo(x_position=x, y_position=y, width=20, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\lua.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, damage=1, effects=[], direction=np.zeros(2, dtype=float), recochet=False, speed=7)
+    ammunition = Ammo(x_position=x, y_position=y, width=20, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\lua.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, is_static=False, damage=1, effects=[], direction=np.zeros(2, dtype=float), recochet=False, speed=7)
     
-    weapon = Weapon(x_position=x, y_position=y, width=100, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, damage=0.007, kind_damage=None, attack_field=50, reload_time=1*FRAME_RATE, ammo=ammunition, scope=250, special_effect=None)
-    
+    weapon = Weapon(x_position=x, y_position=y, width=100, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, is_static=False, sprite_actual_y=0, sprites_quantity=1, damage=0.007, kind_damage=None, attack_field=50, reload_time=2*FRAME_RATE, ammo=ammunition, scope=250, special_effect=None)
     
     player = Group1Protagonist(name='Scooby', speed=10, perception=23, x_position=SCREEN_DIMENSIONS[0], y_position=SCREEN_DIMENSIONS[1], width=width, height=height, direction=0, skin='default', life=5, inventory=[], ability=1, sprites_quantity=4, map_limits_sup=map_limits_sup, bullets=100, weapon=weapon, trap_power=3)
     
     x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
     y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-    scooby_snacks = Collectible(x, y, 50, 50, map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, visible=False, description='Scooby Snacks')
+    scooby_snacks = Collectible(x, y, 50, 50, map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, is_static=True, visible=False, description='Scooby Snacks')
     
     width = 75
     height = 100
     x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
     y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
     monster = Villain(name='Fred', speed=8, perception=3, x_position=x, y_position=y, width=width, height=height, direction=0, skin='default', life=5, sprites_quantity=4, map_limits_sup=map_limits_sup, bullets=100, weapon=weapon, mem_size=60, vision_field=400, background=background, scooby_snacks=scooby_snacks)
+
+    
     
     for description in ['Moeda de Nero', 'Candelabro']:
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         width = 23
         height = 40
-        collectibles.append(Collectible(x_position=x, y_position=y, width=width, height=height, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, visible=True, description=description))
+        collectibles.append(Collectible(x_position=x, y_position=y, width=width, height=height, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, is_static=False, visible=True, description=description))
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         mandatory_events.append(Minigame(id_event=1, player=player, start_zone=(x, y, 100, 75), event_zone=(x, y, 700, 350), end_zone=(x+600, y, 100, 75), is_obrigatory=True, map_limits_sup=map_limits_sup, villains=monster, npcs=npcs, time=4*FRAME_RATE))
-
 
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         width = 67
         height = 100
-        npcs.append(GameObject(x,y, width, height, map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1))
+        npcs.append(GameObject(x,y, width, height, map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, is_static=False))
         x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
         y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
         optional_events.append(Event(1, player=player, start_zone=(x, y, 50, 25), event_zone=(x, y, 150, 50), end_zone=(x+50, y, 50, 25), is_obrigatory=False, map_limits_sup=map_limits_sup))
         
-    return npcs, collectibles, mandatory_events, optional_events, player, monster, scooby_snacks
+        x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
+        y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
+        game_objects.append(GameObject(x, y, 100, 20, map_limits_sup, 'assets\\backgrounds\\shaggy_right_1.png', 0, 0, 1, True))
+        
+        
+    return npcs, collectibles, game_objects, mandatory_events, optional_events, player, monster, scooby_snacks
 
 class Event(pg.sprite.Sprite):
     def __init__(self, id_event, player, start_zone, event_zone, end_zone, is_obrigatory, map_limits_sup):
@@ -166,7 +171,6 @@ class Event(pg.sprite.Sprite):
             if self.check_end():
                 self.end_event()
                 
-            
 class Minigame(Event):
     def __init__(self, id_event, player, start_zone, event_zone, end_zone, is_obrigatory, map_limits_sup, villains, npcs, time):
         super().__init__(id_event, player, start_zone, event_zone, end_zone, is_obrigatory, map_limits_sup)
@@ -238,58 +242,51 @@ class Minigame(Event):
                 self.player.life -= 0.005
                 self.out_zone = True
 
-# TODO:
 class Dialog(Event):
     def __init__(self):
-        pass
-        
-                        
+        pass            
 
 class Phase:
     def __init__(self, screen):
         self.screen = screen
         self.phase_elements = pg.sprite.Group()
-        self.accessible_elements = pg.sprite.Group()
         self.collectibles = pg.sprite.Group()
         self.fired = pg.sprite.Group()
-        
+        self.monsters = pg.sprite.Group()
         background = Background(self.screen, 'assets\\backgrounds\\Lua.webp', SCREEN_DIMENSIONS[0], SCREEN_DIMENSIONS[1], 4000, 2000, 'assets//sounds//backmusic.mp3', 0.05, [])
         self.background = background
         
-        npcs, collectibles, mandatory_events, optional_events, self.player, self.monster, self.scooby_snacks = random_data(background)
-        
-        self.phase_elements.add(self.player) # [player]
-        # self.phase_elements.add(self.monster)
+        npcs, collectibles, game_objects, mandatory_events, optional_events, self.player, monster, self.scooby_snacks = random_data(background)
+        self.monster = monster
+        self.monsters.add(monster)
+        self.phase_elements.add(self.player)
         self.phase_elements.add(self.scooby_snacks)
-        self.accessible_elements.add(self.monster)
-        
-        self.accessible_elements.add(self.monster.weapon)
-        self.phase_elements.add(self.monster.weapon)
+        for each_monster in self.monsters.sprites():
+            self.phase_elements.add(each_monster.weapon)
         
         self.npcs = pg.sprite.Group(npcs)
-        self.accessible_elements.add(self.npcs)
         self.phase_elements.add(self.npcs)
             
-        self.collectibles = pg.sprite.Group(collectibles) # [1, 2] [1, 2]
-        self.accessible_elements.add(self.collectibles)
+        self.collectibles = pg.sprite.Group(collectibles)
         self.phase_elements.add(self.collectibles)
         
+        self.game_objects = pg.sprite.Group(game_objects)
+        self.phase_elements.add(self.game_objects)
+        
         self.mandatory_events = pg.sprite.Group(mandatory_events)
-        self.mandatory_events.add(self.mandatory_events)
         self.phase_elements.add(self.mandatory_events)
-        self.current_mandatory_event = next(iter(self.mandatory_events), None)
-        self.accessible_elements.add(self.current_mandatory_event)
-        self.phase_elements.add(self.current_mandatory_event)
         
         self.optional_events = pg.sprite.Group(optional_events)
-        self.accessible_elements.add(self.optional_events)
         self.phase_elements.add(self.optional_events)
-        
+
+        # Gerenciador de colisoes
+        self.collide_controller = CollideController(player=self.player, npcs=npcs, villains=self.monsters, game_objects=self.game_objects, collectibles=self.collectibles, ammus=pg.sprite.Group(), mandatory_events=self.mandatory_events, optional_events=self.optional_events, scooby_snacks=self.scooby_snacks, weapons=pg.sprite.Group())
+
         self.background.play_music()
 
     def render_camera(self):
         """ Avalia quais elementos do jogo sao acessiveis e estao no campo de visao do protagonista para serem renderizados """
-        objects_to_render = pg.sprite.spritecollide(self.background, self.accessible_elements, False)
+        objects_to_render = pg.sprite.spritecollide(self.background, self.collide_controller.accessible_elements, False)
         to_render = pg.sprite.Group()
         to_render.add(self.player)
         to_render.add(objects_to_render)
@@ -299,33 +296,11 @@ class Phase:
         """  Verifica se o player passou pela phase (chama a próxima phase e encerra a atual) """
         if pg.sprite.collide_rect(self.player, self.scooby_snacks) and self.scooby_snacks.visible:
             return True
-        if not self.current_mandatory_event:
-            return True
         return False
     
     def check_lost(self):
         """ Verifica se o player falhou (seja por tempo, seja por vida, seja por falha em algum evento da phase, etc) """
         return self.player.life <= 0
-            
-    def check_collectibles(self):
-        to_collectible = pg.sprite.spritecollide(self.player, self.collectibles, False)
-        for each_collectible in to_collectible:
-            if each_collectible.visible:
-                # Adiciona ao inventario
-                
-                # Remove todas as referencias
-                each_collectible.kill()
-                del each_collectible
-                
-    def check_fired(self):
-        to_fire = pg.sprite.spritecollide(self.player, self.fired, False)
-        for each_fired in to_fire:
-            # Atinge o jogador
-            print('Dano longo\n')
-            self.player.life = self.player.life - each_fired.damage
-            # Remove todas as referencias
-            each_fired.kill()
-            del each_fired
     
     def update(self, movement, attack):            
 
@@ -336,38 +311,20 @@ class Phase:
         movement = self.player.position_controller.normalize_movement(movement, self.player.speed)
         self.player.apply_movement(movement)
         self.background.update(self.player.x_position, self.player.y_position)
-        monster_bullets = self.monster.update(self.player)
-        fired.extend(monster_bullets)
-        if any(fired):
-            self.phase_elements.add(fired)
-            self.accessible_elements.add(fired) #TODO Fase gerencia colisao de player e monstro para animar o ataque
-            self.fired.add(fired)
+        self.monsters.update(self.player, self.phase_elements, self.collide_controller.accessible_elements, self.fired)
+        # fired.extend(monster_bullets)
+        # if any(fired):
+        #     self.phase_elements.add(fired)
+        #     self.collide_controller.accessible_elements.add(fired) #TODO Fase gerencia colisao de player e monstro para animar o ataque
+        #     self.fired.add(fired)
         
         # Atualiza todos os elementos da phase, aplicando a translacao para o novo sistema de coordenadas
         self.phase_elements.update()
-        
-        # Atualizacao do evento obrigatorio atual
-        if self.current_mandatory_event.started:
-            if not self.current_mandatory_event.in_execution:
-                self.current_mandatory_event.kill()
-                self.current_mandatory_event = next(iter(self.mandatory_events), None)
-                if self.current_mandatory_event:
-                    self.accessible_elements.add(self.current_mandatory_event)
-        if len(self.mandatory_events.sprites()) == 1:
-            self.scooby_snacks.visible = True
-            self.accessible_elements.add(self.scooby_snacks)
-        
-        # Atualizacao dos eventos opcionais
-        for optional_event in self.optional_events.sprites():
-            if optional_event.started and not optional_event.in_execution:
-                optional_event.kill()
-                
-        # Coleta os coletaveis possiveis
-        self.check_collectibles()
-        
-        # Verifa colisao com projeteis
-        self.check_fired()
 
+        self.collide_controller.update()
+        self.background.update(self.player.x_position, self.player.y_position)
+        self.phase_elements.update()        
+        
         self.render_camera()
         pg.draw.line(self.screen, (0, 0, 0), self.player.rect.center, (np.array(self.player.rect.center)+self.player.aim*50))
         if self.monster.aim.any():
@@ -391,13 +348,19 @@ class PhaseManager:
         self.screen = screen
         self._phase_counter = phase_counter
         # Inicia a primeira fase
-        self._current_phase = Phase(self.screen)
-        self.interface = Interface(self.screen, self.current_phase, []) 
-        
+
+        self._current_phase =  None
+        self.interface = None
+        # self.start_phase()
+
     
     def start_phase(self):
         self.current_phase = Phase(self.screen)
         self.interface = Interface(self.screen, self.current_phase, [])
+        
+        self.current_dialogue = 0
+        self.dialogue = phase_data['dialogs']['dialog_0']
+
     
     @property
     def phase_counter(self):
@@ -427,3 +390,7 @@ class PhaseManager:
          
         # Atualiza a interface
         self.interface.update()
+
+    def quit_phase(self):
+        self.current_phase.background.stop_music()
+        self.current_phase = None
