@@ -52,10 +52,6 @@ class Game:
         pygame.init()
         pygame.mixer.init()
 
-        #audio
-        self.bg_music = pygame.mixer.Sound(START_SOUND_MENU)
-        self.bg_music.set_volume(0.3)
-        self.bg_music.play(loops = -1)
 
         # Create the screen and clock
         self.screen = pygame.display.set_mode((SCREEN_DIMENSIONS[0], SCREEN_DIMENSIONS[0]))
@@ -83,6 +79,7 @@ class Game:
         # Create a new level and menu
         self.level = PhaseManager(self.screen)
         self.menu = Menu(self.level)
+
         
 
     def run(self):
@@ -126,9 +123,7 @@ class Game:
                             self.menu.pause()
 
 
-                if self.level._current_phase.check_lost():
-                    self.menu.current_screen = "game_over"
-                    self.menu.selascou()
+
 
                     # Pause the game
                     # if event.type == pygame.KEYDOWN:
@@ -136,11 +131,12 @@ class Game:
                     #         self.menu.current_screen = "pause"
                     #         self.menu.pause()
 
-                print("SAIU DO FOR")
+                # print("SAIU DO FOR")
                 if self.menu.current_screen == "main_menu":
                     self.menu.main_menu()
                     
                 if self.menu.current_screen == "start":
+                    self.menu.stop_music()
                     self.level.start_phase()
                     self.menu.current_screen = "play" 
              
@@ -168,8 +164,12 @@ class Game:
                     self.level.update(self.movement, self.attack)
                     pygame.display.flip()
                     
-                    if not self.menu.first_dialogue:
+                    if self.level.current_dialogue == 0:
                         self.menu.dialogue()
+                
+                if self.level._current_phase.check_lost():
+                    self.menu.current_screen = "game_over"
+                    self.menu.selascou()
         
         # Handle errors
         

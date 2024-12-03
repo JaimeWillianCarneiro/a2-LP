@@ -49,6 +49,9 @@ class Background(pg.sprite.Sprite):
         
     def play_music(self):
         pg.mixer.music.play(-1)
+    
+    def stop_music(self):
+        pg.mixer.music.stop()
         
     def set_volume(self, volume):
         self.volume = volume
