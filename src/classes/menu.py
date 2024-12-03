@@ -268,7 +268,11 @@ class Menu:
         
         # Configurações do mixer (áudio)
         pygame.mixer.init()
-        # self.load_audio(START_SOUND_MENU)
+        # self.bg_music = pygame.mixer.Sound(START_SOUND_MENU)
+        # self.bg_music.set_volume(0.3)
+        # self.play_music()
+
+        self.load_audio(START_SOUND_MENU)
         
         # Configurações dos frames
         self.columns = START_COLUMNS_MENU
@@ -290,6 +294,7 @@ class Menu:
         
         self.current_screen = "main_menu"
         self.level= level
+        self.first_dialogue = False
         
     def load_audio(self, audio_path):
         """
@@ -305,6 +310,12 @@ class Menu:
             pygame.mixer.music.play(-1)  # Reproduzir em loop
         except pygame.error as e:
             print(f"Erro ao carregar o áudio: {e}")
+
+    def play_music(self):
+        pygame.mixer.music.play(-1)
+    
+    def stop_music(self):
+        pygame.mixer.music.stop()
     
     def extract_frames(self) -> list:
         """
@@ -421,6 +432,8 @@ class Menu:
                         self.current_screen = "play"
                     if menu_button.check_for_input(pause_mouse_pos):
                         self.current_screen = "main_menu"
+                        self.play_music()
+                        self.level.quit_phase()
                     if quit_button.check_for_input(pause_mouse_pos):
                         pygame.quit()
                         sys.exit()
@@ -468,5 +481,93 @@ class Menu:
 
 
             pygame.display.update()
-font = get_font(30)
-print(font)
+
+            
+    def dialogue(self):
+        
+        def draw_dialog_box(speaker, screen, x, y, width, height, bg_color=(50, 50, 50), border_color=(255, 255, 255), border_width=2):
+            """Desenha um retângulo padrão para o diálogo."""
+            pygame.draw.rect(screen, bg_color, (x, y, width, height))
+            pygame.draw.rect(screen, border_color, (x, y, width, height), border_width)
+            picture = pygame.image.load(f'assets/spritesheets/{speaker}_dialogue.png')
+            picture = pygame.transform.scale(picture, (100, 100))
+            screen.blit(picture, (x+20,SCREEN_DIMENSIONS[1] - height))
+
+
+
+        def wrap_text(text, font, max_width):
+            """Divide o texto em linhas que cabem na largura máxima."""
+            words = text.split(" ")
+            lines = []
+            current_line = ""
+
+            for word in words:
+                # Testa se a linha atual mais a próxima palavra cabe na largura
+                if font.size(current_line + word)[0] <= max_width:
+                    current_line += word + " "
+                else:
+                    lines.append(current_line.strip())
+                    current_line = word + " "
+
+            # Adiciona a última linha
+            if current_line:
+                lines.append(current_line.strip())
+
+            return lines
+        def display_dialog(dialog, screen, font, max_width, start_y, line_spacing, box_height=150):
+            """Renderiza o diálogo com altura fixa para o retângulo de fundo."""
+
+            # Largura fixa com margem
+            box_width = max_width + 40
+            box_x = 30  # Margem esquerda
+            box_y = start_y - 20  # Margem superior
+
+            # Desenha o retângulo de fundo com altura fixa
+            draw_dialog_box(dialog["speaker"], screen, box_x, box_y, box_width, box_height)
+
+            # Divide o texto em múltiplas linhas
+            wrapped_lines = wrap_text(dialog["text"], font, max_width)
+
+            # Renderiza o nome e a imagem do personagem
+            speaker_text = font.render(dialog["speaker"] + ":", True, (255, 255, 255))
+            screen.blit(speaker_text, (box_x + 130, start_y))
+
+            # Renderiza o texto dentro do retângulo, até a altura máxima
+            y_offset = start_y + 40
+            for i, line in enumerate(wrapped_lines):
+                # Limita as linhas para caberem no espaço fixo
+                if y_offset + line_spacing > box_y + box_height:
+                    break
+                rendered_line = font.render(line, True, (255, 255, 255))
+                screen.blit(rendered_line, (box_x + 130, y_offset))
+                y_offset += line_spacing
+
+            pygame.display.flip()
+
+        current_dialog = 0
+
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:  # Avança com Enter
+                        current_dialog += 1
+                        if current_dialog >= len(self.level.dialogue):
+                            running = False
+
+            if current_dialog < len(self.level.dialogue):
+                display_dialog(
+                    dialog=self.level.dialogue[current_dialog],
+                    screen=screen,
+                    font= pygame.font.Font("assets/font.ttf", 18),  # Fonte Arial,
+                    max_width=SCREEN_DIMENSIONS[0]-100,  # Largura máxima do texto
+                    start_y=SCREEN_DIMENSIONS[1]-150,  # Posição inicial do texto
+                    line_spacing=40,  # Espaçamento entre as linhas
+                    box_height=150  # Altura fixa do retângulo
+                )
+
+            self.level.current_dialogue += 1
+            pygame.display.update()
+

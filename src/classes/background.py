@@ -71,11 +71,10 @@ class Background(pg.sprite.Sprite):
             print(f"Erro ao centralizar a câmera: {e}")
             
     def play_music(self):
-        try:
-            pg.mixer.music.play(-1)
-        except pg.error as e:
-            print(f"Erro ao tocar música. Detalhes: {e}")
-        
+        pg.mixer.music.play(-1)
+    
+    def stop_music(self):
+        pg.mixer.music.stop()
         
     def set_volume(self, volume):
         self.volume = volume
@@ -182,9 +181,9 @@ class Interface():
 
         
         # Desenha avisos e informacoes da phase no centro superior da tela
-        if self.phase_atual.current_mandatory_event:
-            if self.phase_atual.current_mandatory_event.in_execution:
-                if self.phase_atual.current_mandatory_event.out_zone:
+        if self.phase_atual.collide_controller.current_mandatory_event:
+            if self.phase_atual.collide_controller.current_mandatory_event.in_execution:
+                if self.phase_atual.collide_controller.current_mandatory_event.out_zone:
                     self.screen.blit(self.event_warning, self.event_warning_location)
                 # self.event_time = self.phase_atual.current_mandatory_event.time
                 # self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.event_time), True, (123, 173, 223))
@@ -199,7 +198,7 @@ class Interface():
         except Exception as e:
             print(f"Erro ao atualizar a interface: {e}")
     
-class PositionController():
+class PositionController:
     x_origin = 0
     y_origin = 0
     def __init__(self, map_limits_sup, width, height):
@@ -247,3 +246,194 @@ class PositionController():
         x_new = x_position - self.x_origin
         y_new = y_position - self.y_origin
         return x_new, y_new
+    
+    
+class CollideController:
+    @staticmethod
+    def locate_collide(sprite_1: pg.sprite.Sprite, sprite_2: pg.sprite.Sprite) -> np.array:
+        """ Identifica a posicao relativa da sprite_2 em relacao a sprite 1.
+
+        Args:
+            sprite_1 (pg.sprite.Sprite): Sprite de interesse.
+            sprite_2 (pg.sprite.Sprite): Sprite tomada como referencial.
+
+        Returns:
+            np.array: Array de entradas 0 caso esteja no sentido negativo do eixo, 1 caso positivo
+        """
+        # Toma os centros das sprites
+        center_1 = np.array([sprite_1.x_position, sprite_1.y_position])
+        center_2 = np.array([sprite_2.x_position, sprite_2.y_position])
+        distance = center_2 - center_1
+        abs_distance = np.absolute(distance)
+        abs_movement = np.absolute(sprite_1.movement)
+        min_distance = np.array([sprite_1.width+sprite_2.width, sprite_1.height+sprite_2.height])/2
+        print(f'D: {distance}, Abs: {abs_distance}\nMin: {min_distance} - Abs_movement: {abs_movement}')
+        
+        min_distance -= abs_distance
+        
+        # Avalia se eles colidem nos eixos
+        # collide = abs_distance - min_distance
+        # print(f'C: {collide}')
+        # collide = collide < 0
+        # print(f'C pos: {collide}\n\n')
+        
+        # Angulo entre os vetores define em qual eixo foi a colisao
+        e1 = np.array([1, 0])
+        cos_movement = np.dot(e1, abs_movement)/np.linalg.norm(abs_movement)
+        cos_min_distance = np.dot(e1, min_distance)/np.linalg.norm(min_distance)
+        print(f'Cos_mov: {cos_movement}, cos_min: {cos_min_distance}')
+        
+        # Retira parte do movimento que causou a colisao
+        collide_x_axis  = cos_movement > cos_min_distance
+        signal = distance/abs_distance
+        comeback = min_distance*np.array([collide_x_axis, not collide_x_axis])*signal
+        return comeback
+            
+    def __init__(self, player, npcs, villains, game_objects, collectibles, ammus, mandatory_events, optional_events, scooby_snacks, weapons):
+        """ Classe que gerencia as colisoes entre os elementos da fase, atualizando os estados dos elementos que colidiram entre si.
+
+        Args:
+            player (Protagonist): Protagonista da fase.
+            npcs (pg.sprite.Group): NPC's da fase.
+            villains (pg.sprite.Group): Monstros da fase.
+            game_objects (pg.sprite.Group): Objetos da fase.
+            collectibles (pg.sprite.Group): Coletaveis da fase.
+            ammus (pg.sprite.Group): Municoes disparadas na fase.
+            mandatory_events (pg.sprite.Group): Eventos obrigatorios da fase.
+            optional_events (pg.sprite.Group): Eventos opcionais da fase.
+            scooby_snacks (Collectible): Caixa de biscoitos scooby da fase.
+            weapons (pg.sprite.Group): Armas usadas na fase.
+        """
+        
+        self.player = player
+        self.npcs = npcs
+        self.villains = villains
+        self.game_objects = game_objects
+        self.collectibles = collectibles
+        self.ammus = ammus
+        self.mandatory_events = mandatory_events
+        self.current_mandatory_event = next(iter(self.mandatory_events), None)
+        self.optional_events = optional_events
+        self.scooby_snacks = scooby_snacks
+        self.characters = pg.sprite.Group(self.villains)
+        self.characters.add(self.npcs)
+        self.characters.add(self.player)
+        
+        self.accessible_elements = pg.sprite.Group()
+        for each_monster in self.villains.sprites():
+            self.accessible_elements.add(each_monster.weapon)
+
+        self.accessible_elements.add(self.villains)
+        self.accessible_elements.add(self.npcs)
+        self.accessible_elements.add(self.game_objects)
+        self.accessible_elements.add(self.collectibles)
+        self.accessible_elements.add(self.current_mandatory_event)
+        self.accessible_elements.add(self.optional_events)
+        
+    def player_collide_with(self):
+        """ Processa as colisoes do player com os elementos da fase.
+        """
+        # Atualizacao do evento obrigatorio atual
+        if self.current_mandatory_event.started:
+            if not self.current_mandatory_event.in_execution:
+                self.current_mandatory_event.kill()
+                self.current_mandatory_event = next(iter(self.mandatory_events), None)
+                if self.current_mandatory_event:
+                    self.accessible_elements.add(self.current_mandatory_event)
+        if len(self.mandatory_events.sprites()) == 1:
+            self.scooby_snacks.visible = True
+            self.accessible_elements.add(self.scooby_snacks)
+            
+        # Atualizacao dos eventos opcionais
+        for optional_event in self.optional_events.sprites():
+            if optional_event.started and not optional_event.in_execution:
+                optional_event.kill()
+        
+        # Colisao com coletaveis
+        to_collectible = pg.sprite.spritecollide(self.player, self.collectibles, False)
+        for each_collectible in to_collectible:
+            if each_collectible.visible:
+                # Adiciona ao inventario
+                
+                # Remove todas as referencias
+                each_collectible.kill()
+            
+        # Colisao com npcs
+        npcs_to_push = pg.sprite.spritecollide(self.player, self.npcs, False)
+        for each_npc in npcs_to_push:
+            each_npc.apply_movement(self.player.movement)
+            
+        # Colisao com os monstros
+        Villains_collided = pg.sprite.spritecollide(self.player, self.villains, False)
+        for each_villain in Villains_collided:
+            limits = self.locate_collide(self.player, each_villain)
+            self.player.x_position = each_villain.x_position + each_villain.width * (-1)**limits[0]
+            self.player.y_position = each_villain.y_position + each_villain.height * (-1)**limits[1]
+    
+    
+    def ammus_collide_with(self):
+        # Colisao com personagens
+        character_hit_by_ammu = pg.sprite.groupcollide(self.ammus, self.characters, False, False)
+        print(character_hit_by_ammu)
+        for each_ammu in character_hit_by_ammu.keys():
+            for each_character in character_hit_by_ammu[each_ammu]:
+                # Atinge o personagem
+                print('Dano longo\n')
+                each_character.life -= each_ammu.damage
+                # Remove todas as referencias
+                each_ammu.kill()
+
+        # Colisao com objetos
+        destroyed_ammus = pg.sprite.groupcollide(self.ammus, self.game_objects, False, False).keys()
+        for each_ammu in destroyed_ammus:
+            each_ammu.kill()
+        
+    
+    def game_objects_collide_with(self):
+        # Colisao com objetos (empurra-os, caso consiga)
+        object_pushed_by_character = pg.sprite.groupcollide(self.characters, self.game_objects, False, False)
+        for each_character in object_pushed_by_character.keys():
+            for each_object in object_pushed_by_character[each_character]:
+                if each_object.is_static:
+                    comeback = self.locate_collide(each_character, each_object)
+                    print(comeback)
+                        # new_position = np.array([each_character.x_position, each_character.y_position])
+                        # shape = np.array([each_object.width, each_object.height])*limits
+                        # each_character.x_position, each_character.y_position = new_position + shape
+                        # comeback = -each_character.movement*limits
+                        # each_character.apply_movement(comeback)
+                    print(each_character.movement)
+                    each_character.apply_movement(-comeback)
+                        
+                else:
+                    each_object.apply_movement(each_character.movement)    
+    
+    def monsters_collide_with(self):
+        # Colisao com objetos
+        pass
+    
+    def npcs_collide_with(self):
+        pass
+    
+    def update(self):
+        self.player_collide_with()
+        self.ammus_collide_with()
+        self.game_objects_collide_with()
+        self.monsters_collide_with()
+        self.npcs_collide_with()
+        
+        """
+        Colisoes:
+        player - monstro (atacado)
+        player - coletavel (coleta)
+        player - game object (empurra)
+        player - npcs (para)
+        player - event (inicia)
+        player - ammu (destroi ou recocheteia)
+        
+        monstro - player
+        monstro - ammu (destroi ou recocheteia)
+        monstro - game object (empurra)
+        
+        npc - player ou game object (empurra)
+        """
