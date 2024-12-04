@@ -18,3 +18,5 @@ During the second part of the PL course, we learnt about Object Oriented Program
 - [Walléria Simões Correia](https://github.com/WalleriaSimoes)
 
 ## Report
+
+You can find our detailed research paper on this project in the `/docs` directory. Tthe report is available as a PDF and in it there is more information about the development of the game.
