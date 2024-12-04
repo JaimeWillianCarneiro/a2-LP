@@ -4,64 +4,8 @@ from src.classes.gameobejcts import GameObject, Collectible, Ammo, Weapon
 from src.classes.protagonist import Group1Protagonist
 from src.classes.background import Background, PositionController, Interface, CollideController
 from src.classes.villain import Villain
-import random
 import numpy as np
 import json
-
-
-def random_data(background):
-    # Variavéis fictias para testar a classe phase ##############
-    map_limits_sup = list(background.get_shape())
-    collectibles = []
-    npcs = []
-    mandatory_events = []
-    optional_events = []
-        
-    x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
-    y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-    # width = 75
-    # height = 100
-    width = 95
-    height = 75
-    
-
-    ammunition = Ammo(x_position=x, y_position=y, width=20, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, is_static=False, damage=1, effects=[], direction=np.zeros(2, dtype=float), recochet=False, speed=7)
-    
-    weapon = Weapon(x_position=x, y_position=y, width=100, height=20, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, is_static=False, sprite_actual_y=0, sprites_quantity=1, damage=0.007, kind_damage=None, attack_field=50, reload_time=2*FRAME_RATE, ammo=ammunition, scope=250, special_effect=None)
-
-    player = Group1Protagonist(name='Scooby', speed=10, perception=23, x_position=SCREEN_DIMENSIONS[0], y_position=SCREEN_DIMENSIONS[1], width=width, height=height, direction=0, skin='default', life=5, inventory=[], ability=1, sprites_quantity=4, map_limits_sup=map_limits_sup, bullets=100, weapon=weapon, trap_power=3)
-    
-    x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
-    y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-    scooby_snacks = Collectible(x, y, 50, 50, map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, visible=False, description='Scooby Snacks')
-    
-    width = 75
-    height = 100
-    x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
-    y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-    monster = Villain(name='Fred', speed=8, perception=3, x_position=x, y_position=y, width=width, height=height, direction=0, skin='default', life=5, sprites_quantity=4, map_limits_sup=map_limits_sup, bullets=100, weapon=weapon, mem_size=60, vision_field=400, background=background, scooby_snacks=scooby_snacks)
-    
-    for description in ['Moeda de Nero', 'Candelabro']:
-        x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
-        y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-        width = 23
-        height = 40
-        collectibles.append(Collectible(x_position=x, y_position=y, width=width, height=height, map_limits_sup=map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1, visible=True, description=description))
-        x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
-        y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-        mandatory_events.append(Minigame(id_event=1, player=player, start_zone=(x, y, 100, 75), event_zone=(x, y, 700, 350), end_zone=(x+600, y, 100, 75), is_mandatory=True, map_limits_sup=map_limits_sup, villains=monster, npcs=npcs, time=4*FRAME_RATE))
-
-
-        x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
-        y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-        width = 67
-        height = 100
-        npcs.append(GameObject(x,y, width, height, map_limits_sup, spritesheet='assets\\backgrounds\\shaggy_right_1.png', sprite_actual_x=0, sprite_actual_y=0, sprites_quantity=1))
-        x = random.choice(range(SCREEN_DIMENSIONS[0]*2))
-        y = random.choice(range(SCREEN_DIMENSIONS[1]*2))
-        optional_events.append(Event(1, player=player, start_zone=(x, y, 50, 25), event_zone=(x, y, 150, 50), end_zone=(x+50, y, 50, 25), is_mandatory=False, map_limits_sup=map_limits_sup))
-        
-    return npcs, collectibles, mandatory_events, optional_events, player, monster, scooby_snacks
 
 class Event(pg.sprite.Sprite):
     def __init__(self, id_event, player, start_zone, event_zone, end_zone, is_mandatory, map_limits_sup):
@@ -81,7 +25,7 @@ class Event(pg.sprite.Sprite):
         self.event_zone_params = list(event_zone)
         self.end_zone = pg.Rect(*end_zone)
         self.is_mandatory = is_mandatory
-        self.image = pg.image.load('assets\\backgrounds\\lua.png')
+        self.image = pg.image.load('assets\\backgrounds\\locator.png')
         self.image = pg.transform.scale(self.image, (self.rect.width, self.rect.height))
     
     @property
@@ -108,9 +52,17 @@ class Event(pg.sprite.Sprite):
     def x_position(self):
         return self._x_position
     
+    @x_position.setter
+    def x_position(self, x_new):
+        self._x_position = x_new
+    
     @property
     def y_position(self):
         return self._y_position
+    
+    @y_position.setter
+    def y_position(self, y_new):
+        self._y_position = y_new
     
     def get_position(self):
         return self.x_position, self.y_position
@@ -145,6 +97,8 @@ class Event(pg.sprite.Sprite):
         self.in_execution = True
         self.started = True
         self.rect = pg.Rect(*self.event_zone_params)
+        self.x_position, self.y_position = self.event_zone_params[:2]
+
         self.image = pg.transform.scale(self.image, (self.rect.width, self.rect.height))
     
     def end_event(self):
@@ -318,6 +272,7 @@ class Phase:
         self.phase_elements.update()     
         
         self.render_camera()
+        pg.draw.rect(self.screen, (0, 0, 0), self.collide_controller.current_mandatory_event.end_zone)
         pg.draw.line(self.screen, (0, 0, 0), self.player.rect.center, (np.array(self.player.rect.center)+self.player.aim*50))
         if self.monster.aim.any():
             pg.draw.line(self.screen, (0, 0, 0), self.monster.weapon.rect.center, np.array(self.monster.weapon.rect.center) + self.monster.aim*self.monster.weapon.scope/np.linalg.norm(self.monster.aim))
@@ -337,6 +292,7 @@ class PhaseManager:
             phase_data = json.load(file)
             
         # Ler e criar elementos da nova fase
+        # [self.screen, phase_data['background'][param] for param in ['sprite', ]]
         background = Background(self.screen, phase_data['background']['sprite'], SCREEN_DIMENSIONS[0], SCREEN_DIMENSIONS[1], phase_data['background']['width'], phase_data['background']['height'], phase_data['background']['music'], phase_data['background']['volume'], phase_data['background']['sounds']) 
         map_limits_sup = list(background.get_shape())
         

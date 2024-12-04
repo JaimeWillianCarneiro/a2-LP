@@ -224,7 +224,7 @@ class CollideController:
         abs_distance = np.absolute(distance)
         abs_movement = np.absolute(sprite_1.movement)
         min_distance = np.array([sprite_1.width+sprite_2.width, sprite_1.height+sprite_2.height])/2
-        print(f'D: {distance}, Abs: {abs_distance}\nMin: {min_distance} - Abs_movement: {abs_movement}')
+        # print(f'D: {distance}, Abs: {abs_distance}\nMin: {min_distance} - Abs_movement: {abs_movement}')
         
         min_distance -= abs_distance
         
@@ -238,7 +238,7 @@ class CollideController:
         e1 = np.array([1, 0])
         cos_movement = np.dot(e1, abs_movement)/np.linalg.norm(abs_movement)
         cos_min_distance = np.dot(e1, min_distance)/np.linalg.norm(min_distance)
-        print(f'Cos_mov: {cos_movement}, cos_min: {cos_min_distance}')
+        # print(f'Cos_mov: {cos_movement}, cos_min: {cos_min_distance}')
         
         # Retira parte do movimento que causou a colisao
         collide_x_axis  = cos_movement > cos_min_distance
