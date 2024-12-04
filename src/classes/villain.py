@@ -1,6 +1,6 @@
 import pygame as pg
 from src.classes.character import Character
-from src.classes.gameobejcts import Ammo
+from src.classes.gameobjects import Ammo
 from src.settings import FRAME_RATE
 import numpy as np
 
