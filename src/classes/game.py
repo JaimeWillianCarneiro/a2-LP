@@ -135,10 +135,13 @@ class Game:
                 if self.menu.current_screen == "main_menu":
                     self.menu.main_menu()
                     
-                if self.menu.current_screen == "start":
+                if self.menu.current_screen == "initial_cutscene":
                     self.menu.stop_music()
-                    self.level.start_phase()
-                    self.menu.current_screen = "play" 
+                    self.menu.load_audio("assets\\sounds\\start.mp3")
+                    pygame.time.delay(50)
+                    self.menu.play_music(1)
+                    pygame.time.delay(1000)
+                    self.menu.initial_cutscene()
              
                 if self.menu.current_screen == "play":
                     
@@ -166,7 +169,7 @@ class Game:
                     
 
                     if self.level.current_dialogue != None:
-                        self.menu.dialogue()
+                        self.menu.dialogue(self.level.current_dialogue)
                 
                 if self.level._current_phase.check_lost():
                     self.menu.current_screen = "game_over"

@@ -331,6 +331,11 @@ class PhaseManager:
         self._current_phase =  None
         self.interface = None
         # self.start_phase()
+
+        with open(f"jsons\\cutscene_dialogs.json", "r") as file:
+            cutscene = json.load(file)
+        self.current_dialogue = 0
+        self.dialogues = cutscene['dialogs']
     
     def start_phase(self):
         with open(f"jsons\\phase_{self.phase_counter}.json", "r") as file:
@@ -377,7 +382,7 @@ class PhaseManager:
         self.interface = Interface(self.screen, self.current_phase, [])
         
         self.current_dialogue = 0
-        self.dialogue = phase_data['dialogs']['dialog_0']
+        self.dialogues = phase_data['dialogs']
     
     @property
     def phase_counter(self):

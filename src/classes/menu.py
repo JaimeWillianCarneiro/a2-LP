@@ -312,8 +312,8 @@ class Menu:
         except pygame.error as e:
             print(f"Erro ao carregar o áudio: {e}")
 
-    def play_music(self):
-        pygame.mixer.music.play(-1)
+    def play_music(self, x = -1):
+        pygame.mixer.music.play(x)
     
     def stop_music(self):
         pygame.mixer.music.stop()
@@ -365,7 +365,7 @@ class Menu:
                             exit()
                         if event.key in (pygame.K_KP_ENTER, pygame.K_RETURN):
                                          
-                            self.current_screen = "start"
+                            self.current_screen = "initial_cutscene"
                             pygame.display.update()
                             print("POpular")
                             
@@ -486,7 +486,7 @@ class Menu:
             pygame.display.update()
 
 
-    def dialogue(self):
+    def dialogue(self, i):
 
         def draw_dialog_box(speaker, screen, x, y, width, height, bg_color=(50, 50, 50), border_color=(255, 255, 255), border_width=2):
             """Desenha um retângulo padrão para o diálogo."""
@@ -575,23 +575,57 @@ class Menu:
                     if event.key == pygame.K_RETURN and dialog_done:  # Avança apenas se o texto estiver completo
                         current_dialog += 1
                         dialog_done = False
-                        if current_dialog >= len(self.level.dialogue):
+                        if current_dialog >= len(self.level.dialogues[f"dialog_{i}"]):
                             running = False
                         else:
                             dialog_start_time = pygame.time.get_ticks()  # Reinicia o temporizador para o próximo diálogo
 
-            if current_dialog < len(self.level.dialogue):
+            if current_dialog < len(self.level.dialogues[f"dialog_{i}"]):
                 dialog_done = display_dialog(
-                    dialog=self.level.dialogue[current_dialog],
+                    dialog=self.level.dialogues[f"dialog_{i}"][current_dialog],
                     screen=screen,
                     font=pygame.font.Font("assets/font.ttf", 18),
                     max_width=SCREEN_DIMENSIONS[0] - 100,
                     start_y=SCREEN_DIMENSIONS[1] - 150,
                     line_spacing=40,
                     box_height=150,
-                    reveal_speed=50,  # Controla a velocidade das letras
+                    reveal_speed=10,  # Controla a velocidade das letras
                     start_time=dialog_start_time  # Passa o tempo de início
                 )
 
-            self.level.current_dialogue = None
+            
             pygame.display.update()
+        self.level.current_dialogue = None
+
+    def initial_cutscene(self):
+        background = pygame.image.load('assets/backgrounds/fachada_fgv.png')  # Caminho para sua imagem
+        background = pygame.transform.scale(background, SCREEN_DIMENSIONS)  
+        background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2)
+        screen.blit(background, background_rect.topleft)
+        pygame.time.delay(500)
+
+        self.dialogue(0)
+        pygame.time.delay(500)
+
+        background = pygame.image.load('assets/backgrounds/laboratorio.png')  # Caminho para sua imagem
+        background = pygame.transform.scale(background, SCREEN_DIMENSIONS)  
+        background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2)
+        screen.blit(background, background_rect.topleft)
+        pygame.time.delay(500)
+        
+        self.dialogue(1)
+        pygame.time.delay(500)
+
+        background = pygame.image.load('assets/backgrounds/botao.png')  # Caminho para sua imagem
+        background = pygame.transform.scale(background, SCREEN_DIMENSIONS) 
+        background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2) 
+        screen.blit(background, background_rect.topleft)
+        pygame.time.delay(500)
+        
+        self.dialogue(2)
+        pygame.time.delay(500)
+
+        pygame.display.update()
+
+        self.current_screen = "play"
+        self.level.start_phase()
