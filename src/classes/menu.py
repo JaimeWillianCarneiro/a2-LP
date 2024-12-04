@@ -6,6 +6,7 @@ from settings import  SCREEN_DIMENSIONS, START_SOUND_MENU, START_BACKGROUND_MENU
 from classes.background import Background
 import pygame
 import sys
+import json
 
 
 screen = pygame.display.set_mode((0,0))
@@ -297,6 +298,11 @@ class Menu:
         self.level= level
         self.first_dialogue = False
         
+        self.typing = pygame.mixer.Sound('assets\sounds\som_dialogo.wav')
+        self.fgv = pygame.mixer.Sound('assets\sounds\\frente_fgv.mp3')
+        self.laboratorio = pygame.mixer.Sound('assets\sounds\laboratorio.wav')
+        self.botao_3 = pygame.mixer.Sound('assets\sounds\\botao_cena3.mp3') 
+        
     def load_audio(self, audio_path):
         """
         Load and play the background audio.
@@ -346,6 +352,11 @@ class Menu:
         None.
         """
         running = True
+
+        with open(f"jsons\\cutscene_dialogs.json", "r") as file:
+            cutscene = json.load(file)
+        self.level.current_dialogue = 0
+        self.level.dialogues = cutscene['dialogs']
             
         while self.current_screen == "main_menu":
                 
@@ -539,6 +550,7 @@ class Menu:
             # Renderiza o texto progressivamente
             y_offset = start_y + 40
             char_count = 0
+            # self.typing.play(loops=-1)
             for line in wrapped_lines:
                 if y_offset + line_spacing > box_y + box_height:
                     break  # Não exibe além da altura do box
@@ -556,6 +568,9 @@ class Menu:
                     break
 
                 y_offset += line_spacing
+           
+            if total_chars >= sum(len(line) for line in wrapped_lines):
+                self.typing.stop()
 
             # Verifica se todas as letras já foram exibidas
             return total_chars >= sum(len(line) for line in wrapped_lines)
@@ -565,8 +580,8 @@ class Menu:
         current_dialog = 0
         running = True
         dialog_done = False
+        self.typing.play(loops=-1)
         dialog_start_time = pygame.time.get_ticks()  # Marca o início do diálogo
-
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -575,12 +590,15 @@ class Menu:
                     if event.key == pygame.K_RETURN and dialog_done:  # Avança apenas se o texto estiver completo
                         current_dialog += 1
                         dialog_done = False
+                        self.typing.play(loops=-1)
                         if current_dialog >= len(self.level.dialogues[f"dialog_{i}"]):
+                            
                             running = False
                         else:
                             dialog_start_time = pygame.time.get_ticks()  # Reinicia o temporizador para o próximo diálogo
 
             if current_dialog < len(self.level.dialogues[f"dialog_{i}"]):
+                # self.typing.play(loops=-1)
                 dialog_done = display_dialog(
                     dialog=self.level.dialogues[f"dialog_{i}"][current_dialog],
                     screen=screen,
@@ -593,11 +611,14 @@ class Menu:
                     start_time=dialog_start_time  # Passa o tempo de início
                 )
 
+
             
             pygame.display.update()
+        self.typing.stop()
         self.level.current_dialogue = None
 
     def initial_cutscene(self):
+        self.fgv.play(loops=-1)
         background = pygame.image.load('assets/backgrounds/fachada_fgv.png')  # Caminho para sua imagem
         background = pygame.transform.scale(background, SCREEN_DIMENSIONS)  
         background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2)
@@ -606,7 +627,9 @@ class Menu:
 
         self.dialogue(0)
         pygame.time.delay(500)
+        self.fgv.stop()
 
+        self.laboratorio.play(loops=-1)
         background = pygame.image.load('assets/backgrounds/laboratorio.png')  # Caminho para sua imagem
         background = pygame.transform.scale(background, SCREEN_DIMENSIONS)  
         background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2)
@@ -615,7 +638,9 @@ class Menu:
         
         self.dialogue(1)
         pygame.time.delay(500)
+        self.laboratorio.stop()
 
+        self.botao_3.play(loops=0)
         background = pygame.image.load('assets/backgrounds/botao.png')  # Caminho para sua imagem
         background = pygame.transform.scale(background, SCREEN_DIMENSIONS) 
         background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2) 
