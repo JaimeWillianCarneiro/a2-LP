@@ -593,6 +593,5 @@ class Menu:
                     start_time=dialog_start_time  # Passa o tempo de início
                 )
 
-            pygame.display.update()
             self.level.current_dialogue = None
             pygame.display.update()
