@@ -8,7 +8,6 @@ import random
 import numpy as np
 import json
 
-import json
 
 def random_data(background):
     # Variavéis fictias para testar a classe phase ##############
