@@ -81,7 +81,7 @@
 
         "dialog_2":
             [{"speaker": "Velma", "text": "It's the virus! He must have gotten beamed into the game too."},
-            {"speaker": "Gustavo", "text": "HEHEHEHEHEHE"},
+            {"speaker": "Virus", "text": "HEHEHEHEHEHE"},
             {"speaker": "Fred", "text": "Oh no, and he's not alone. Let's get out of here."},
             {"speaker": "Scooby", "text": "Look, a moon rover, and what a cool paint job."},
             {"speaker": "Daphne", "text": "Come on, guys."}],

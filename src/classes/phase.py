@@ -798,10 +798,7 @@ class PhaseManager:
         self.interface = None
         # self.start_phase()
 
-        with open(f"jsons\\cutscene_dialogs.json", "r") as file:
-            cutscene = json.load(file)
-        self.current_dialogue = 0
-        self.dialogues = cutscene['dialogs']
+
     
     def start_phase(self):
         """
