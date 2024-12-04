@@ -22,3 +22,23 @@ During the second part of the PL course, we learnt about Object Oriented Program
 You can find our detailed research paper on this project in the `/docs` directory. Tthe report is available as a PDF and in it there is more information about the development of the game.
 
 [Research Report (PDF)](/docs/report_A2.pdf)
+
+
+## How to Run
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/JaimeWillianCarneiro/a2-LP
+    ```
+2. Navigate to the project directory:
+    ```bash
+    cd a2-LP
+    ```
+3. Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+4. Run the main script:
+    ```bash
+    python main.py
+    ```
