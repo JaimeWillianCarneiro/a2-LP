@@ -209,20 +209,63 @@ class Background(pg.sprite.Sprite):
         self.y_limit_sup = self.height - SCREEN_DIMENSIONS[1]
         
     def get_origin(self):
+        """
+        Returns the current top-left coordinates of the background's visible area.
+
+        Returns
+        -------
+        tuple
+            A tuple (x, y) representing the coordinates of the background's origin.
+        """
         return self.x_position+SCREEN_DIMENSIONS[0], self.y_position+SCREEN_DIMENSIONS[1]  
     
     def get_shape(self):
+        """
+        Returns the current dimensions (width, height) of the background.
+
+        Returns
+        -------
+        tuple
+            A tuple (width, height) representing the dimensions of the background.
+        """
         return self.width, self.height
     
     def get_position(self):
+        """
+        Returns the current top-left position of the background.
+
+        Returns
+        -------
+        tuple
+            A tuple (x_position, y_position) representing the position of the background.
+        """        
         return self.x_position, self.y_position
         
     def set_position(self, x_new, y_new):
+        """
+        Updates the position of the background by setting new top-left coordinates.
+
+        Parameters
+        ----------
+        x_new : int
+            The new x-coordinate for the background's position.
+        y_new : int
+            The new y-coordinate for the background's position.
+        """
         self.x_position = x_new
         self.y_position = y_new
         
     def center(self, x_player, y_player):
-       # Centraliza a câmera no personagem
+        """
+        Centers the background on the player's position by adjusting the background's view.
+
+        Parameters
+        ----------
+        x_player : int
+            The x-coordinate of the player.
+        y_player : int
+            The y-coordinate of the player.
+        """
         try:
             x_new, y_new = self.position_controller.to_frame(x_player, y_player)
             x_new -= SCREEN_DIMENSIONS[0] // 2
@@ -233,27 +276,134 @@ class Background(pg.sprite.Sprite):
             print(f"Erro ao centralizar a câmera: {e}")
             
     def play_music(self):
+        """
+        Starts playing the background music in a loop.
+        """
         pg.mixer.music.play(-1)
     
     def stop_music(self):
+        """
+        Stops the background music.
+        """
         pg.mixer.music.stop()
         
     def set_volume(self, volume):
+        """
+        Sets the volume level for the background music.
+
+        Parameters
+        ----------
+        volume : float
+            The volume level, ranging from 0.0 (silent) to 1.0 (maximum volume).
+        """
         self.volume = volume
         pg.mixer.music.set_volume(self.volume)
     
     def draw_background_image(self):
+        """
+        Draws the current view of the background onto the screen.
+
+        This method blits the background image onto the game screen.
+        """
         self.screen.blit(self.image, self.rect)
     
     def update(self, x_player, y_player):
+        """
+        Updates the background's position and renders it on the screen, keeping the player centered.
+
+        Parameters
+        ----------
+        x_player : int
+            The x-coordinate of the player.
+        y_player : int
+            The y-coordinate of the player.
+        """
         self.center(x_player, y_player)
         self.position_controller.set_origin(*self.get_position())
         self.draw_background_image()
         
 
 class Interface():
-    
+    """
+    Representa a interface gráfica do jogo, incluindo elementos como o nome do jogador, vida, imagem de perfil e outros avisos.
+
+    Parameters
+    ----------
+    screen : pygame.Surface
+        A superfície onde a interface será desenhada.
+    phase_atual : object
+        A fase atual do jogo, contendo informações sobre o jogador e o estado do jogo.
+    interface_elements : dict
+        Dicionário contendo os elementos gráficos e fontes usados na interface.
+
+    Attributes
+    ----------
+    screen : pygame.Surface
+        A superfície onde a interface será renderizada.
+    phase_atual : object
+        A fase atual do jogo.
+    interface_elements : dict
+        Dicionário de elementos gráficos da interface.
+    player_name : pygame.Surface
+        Superfície contendo o nome do jogador renderizado.
+    event_warning : pygame.Surface
+        Superfície contendo o aviso "Volte para a Zona!".
+    player_name_location : tuple
+        Coordenadas para a posição do nome do jogador.
+    event_warning_location : tuple
+        Coordenadas para a posição do aviso de evento.
+    event_time_location : tuple
+        Coordenadas para a posição do tempo do evento.
+    full_heart_image : pygame.Surface
+        Imagem do coração cheio (vida plena).
+    empty_heart_image : pygame.Surface
+        Imagem do coração vazio (sem vida).
+    half_heart_image : pygame.Surface
+        Imagem do coração meio cheio (meia vida).
+    heart_location : tuple
+        Coordenadas para a posição dos corações (vidas) do jogador.
+    shaggy_profile : str
+        Caminho para a imagem de perfil do personagem Shaggy.
+    dapnhe_profile : str
+        Caminho para a imagem de perfil do personagem Daphne.
+    velma_profile : str
+        Caminho para a imagem de perfil do personagem Velma.
+    scooby_profile : str
+        Caminho para a imagem de perfil do personagem Scooby.
+    fred_profile : str
+        Caminho para a imagem de perfil do personagem Fred.
+
+    Methods
+    -------
+    set_phase_atual(new_phase)
+        Atualiza a fase atual do jogo com uma nova fase.
+    draw_interface()
+        Desenha os elementos gráficos da interface no jogo.
+    update()
+        Atualiza a interface, renderizando a vida do jogador e outros elementos gráficos.
+    """    
     def __init__(self, screen, phase_atual, interface_elements):
+        """
+        Inicializa a interface gráfica do jogo, incluindo a configuração dos elementos e imagens.
+
+        Parameters
+        ----------
+        screen : pygame.Surface
+            A superfície onde a interface será desenhada.
+        phase_atual : object
+            A fase atual do jogo, que contém informações do jogador e o estado da fase.
+        interface_elements : dict
+            Dicionário contendo os elementos gráficos e fontes usadas na interface.
+
+        Exceptions
+        ----------
+        AttributeError
+            Se houver um erro ao acessar o nome do jogador.
+        pg.error
+            Se houver um erro ao carregar as imagens de coração ou perfil.
+        KeyError
+            Se houver um erro ao carregar a imagem de perfil do jogador.
+        """
         self.screen = screen
         self.phase_atual = phase_atual
         self.interface_elements = interface_elements
@@ -298,12 +448,23 @@ class Interface():
         
         
     def set_phase_atual(self, new_phase):
+        """
+        Atualiza a fase atual do jogo com uma nova fase.
+
+        Parameters
+        ----------
+        new_phase : object
+            A nova fase que será definida como a fase atual do jogo.
+        """
         self.phase_atual = new_phase
         
     def draw_interface(self):
-        # Desenha os atributos do player no canto superior esquerdo
-        # self.screen.blit(self.player_name, self.player_name_location)
-        # self.screen.blit(self.player_life, self.player_life_location)
+        """
+        Desenha os elementos gráficos da interface no jogo, incluindo o nome do jogador, imagem de perfil, vida e outros avisos.
+
+        Este método renderiza o nome do jogador, o número de corações representando a vida, a imagem do perfil 
+        e o aviso de evento caso esteja ocorrendo.
+        """
         try:
                 
             if self.phase_atual.player.name == "Scooby":
@@ -354,6 +515,11 @@ class Interface():
         # Desenha o minimapa e as configuracoes no canto superior direito
         
     def update(self):
+        """
+        Atualiza a interface, renderizando a vida do jogador e outros elementos gráficos.
+
+        Este método é chamado para atualizar a interface, desenhando informações atualizadas como a vida do jogador.
+        """
         try:
             self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(int(self.phase_atual.player.life)), True, (123, 173, 223))
             self.draw_interface()
@@ -361,9 +527,47 @@ class Interface():
             print(f"Erro ao atualizar a interface: {e}")
     
 class PositionController:
+    """
+    Controla o posicionamento de objetos dentro de um mapa, garantindo que esses objetos não ultrapassem os limites do mapa e realizando operações de normalização e tradução.
+
+    Parameters
+    ----------
+    map_limits_sup : list
+        Limites superiores do mapa, fornecidos como uma lista com dois valores [x, y].
+    width : float
+        Largura da área de visualização.
+    height : float
+        Altura da área de visualização.
+
+    Attributes
+    ----------
+    x_origin : int
+        Coordenada X da origem do sistema de coordenadas.
+    y_origin : int
+        Coordenada Y da origem do sistema de coordenadas.
+    map_limits_inf : list
+        Limites inferiores do mapa, calculados a partir da largura e altura fornecidas.
+    map_limits_sup : list
+        Limites superiores do mapa, ajustados pela largura e altura da área de visualização.
+    map : pygame.Rect
+        Retângulo representando o mapa, com limites calculados com base nas informações fornecidas.
+    """
     x_origin = 0
     y_origin = 0
+    
     def __init__(self, map_limits_sup, width, height):
+        """
+        Inicializa o controlador de posição com os limites do mapa e a área de visualização.
+
+        Parameters
+        ----------
+        map_limits_sup : list
+            Limites superiores do mapa, fornecidos como uma lista com dois valores [x, y].
+        width : float
+            Largura da área de visualização.
+        height : float
+            Altura da área de visualização.
+        """
         self.map_limits_inf = [width/2, height/2]
         self.map_limits_sup = map_limits_sup.copy()
         self.map_limits_sup[0] -= width/2
@@ -372,11 +576,36 @@ class PositionController:
         
     @classmethod
     def set_origin(cls, x_new, y_new):
+        """
+        Define a origem do sistema de coordenadas do mapa.
+
+        Parameters
+        ----------
+        x_new : int
+            A nova coordenada X da origem.
+        y_new : int
+            A nova coordenada Y da origem.
+        """
         cls.x_origin = x_new
         cls.y_origin = y_new  
 
     @staticmethod
     def normalize_movement(movement, speed):
+        """
+        Normaliza o movimento, ajustando a direção e aplicando a velocidade.
+
+        Parameters
+        ----------
+        movement : list or np.array
+            Movimento desejado, fornecido como uma lista ou array com as coordenadas [x, y].
+        speed : float
+            A velocidade do movimento.
+
+        Returns
+        -------
+        np.array
+            O movimento normalizado multiplicado pela velocidade.
+        """
         movement = np.array(movement, dtype=float) 
         norma = np.linalg.norm(movement)
         
@@ -386,7 +615,21 @@ class PositionController:
         return movement
     
     def to_frame(self, x_position, y_position):
-        # Enquadra objeto para que ele nao ultrapasse nenhum limite do mapa
+        """
+        Ajusta a posição de um objeto para que ele não ultrapasse os limites do mapa.
+
+        Parameters
+        ----------
+        x_position : float
+            A posição X do objeto.
+        y_position : float
+            A posição Y do objeto.
+
+        Returns
+        -------
+        tuple
+            As novas coordenadas ajustadas (x_position, y_position).
+        """
         if x_position < self.map_limits_inf[0]:
             x_position = self.map_limits_inf[0]
         elif x_position > self.map_limits_sup[0]:
@@ -400,27 +643,81 @@ class PositionController:
         return x_position, y_position
     
     def out_game(self, object):
+        """
+        Verifica se um objeto está fora dos limites do mapa e, caso esteja, o remove do jogo.
+
+        Parameters
+        ----------
+        object : pygame.sprite.Sprite
+            O objeto que será verificado.
+
+        Notes
+        -----
+        Este método usa o método `kill()` do objeto para removê-lo do jogo se ele estiver fora dos limites do mapa.
+        """
         if not self.map.contains(object.rect):
             object.kill()
     
     def apply_translation(self, x_position, y_position):
-        # Aplica uma translacao no plano, considerando o sistema de coordenadas na qual o jogo sera desenhado
+        """
+        Aplica uma tradução no plano, considerando a origem do sistema de coordenadas.
+
+        Parameters
+        ----------
+        x_position : float
+            A posição X do objeto.
+        y_position : float
+            A posição Y do objeto.
+
+        Returns
+        -------
+        tuple
+            As novas coordenadas (x_position, y_position) após a tradução.
+        """
         x_new = x_position - self.x_origin
         y_new = y_position - self.y_origin
         return x_new, y_new
     
-    
+
 class CollideController:
+    """
+    Controla as colisões entre diversos elementos da fase, processando interações entre o protagonista, NPCs, vilões, objetos do jogo, munições, eventos e coletáveis.
+
+    Methods
+    -------
+    locate_collide(sprite_1, sprite_2)
+        Identifica a posição relativa de duas sprites (sprite_1 e sprite_2) em relação a um eixo, verificando se há colisão.
+    __init__(player, npcs, villains, game_objects, collectibles, ammus, mandatory_events, optional_events, scooby_snacks, weapons, phase_elements)
+        Inicializa o controlador de colisões com todos os elementos da fase.
+    player_collide_with()
+        Processa as colisões do protagonista (player) com os elementos da fase, como NPCs, coletáveis e eventos.
+    ammus_collide_with()
+        Processa as colisões das munições com os personagens e objetos do jogo.
+    game_objects_collide_with()
+        Processa as colisões entre personagens e objetos do jogo, empurrando ou interagindo conforme necessário.
+    monsters_collide_with()
+        Processa as colisões entre vilões e personagens, além de disparar munições quando apropriado.
+    npcs_collide_with()
+        Processa as colisões entre NPCs, empurrando-os uns aos outros quando necessário.
+    update(phase_elements)
+        Atualiza o estado dos elementos da fase, processando todas as colisões e ações associadas.
+    """
     @staticmethod
     def locate_collide(sprite_1: pg.sprite.Sprite, sprite_2: pg.sprite.Sprite) -> np.array:
-        """ Identifica a posicao relativa da sprite_2 em relacao a sprite 1.
+        """
+        Identifica a posição relativa da `sprite_2` em relação à `sprite_1`, verificando se elas colidem.
 
-        Args:
-            sprite_1 (pg.sprite.Sprite): Sprite de interesse.
-            sprite_2 (pg.sprite.Sprite): Sprite tomada como referencial.
+        Parameters
+        ----------
+        sprite_1 : pg.sprite.Sprite
+            A sprite de interesse, geralmente o personagem.
+        sprite_2 : pg.sprite.Sprite
+            A sprite tomada como referencial para a colisão.
 
-        Returns:
-            np.array: Array de entradas 0 caso esteja no sentido negativo do eixo, 1 caso positivo
+        Returns
+        -------
+        np.array
+            Um array com valores 0 ou 1, dependendo da direção da colisão nos eixos (X, Y).
         """
         # Toma os centros das sprites
         center_1 = np.array([sprite_1.x_position, sprite_1.y_position])
@@ -453,19 +750,33 @@ class CollideController:
         return -comeback
             
     def __init__(self, player, npcs, villains, game_objects, collectibles, ammus, mandatory_events, optional_events, scooby_snacks, weapons, phase_elements):
-        """ Classe que gerencia as colisoes entre os elementos da fase, atualizando os estados dos elementos que colidiram entre si.
+        """
+        Inicializa o controlador de colisões com os elementos da fase, definindo os grupos de sprites e acessibilidade.
 
-        Args:
-            player (Protagonist): Protagonista da fase.
-            npcs (pg.sprite.Group): NPC's da fase.
-            villains (pg.sprite.Group): Monstros da fase.
-            game_objects (pg.sprite.Group): Objetos da fase.
-            collectibles (pg.sprite.Group): Coletaveis da fase.
-            ammus (pg.sprite.Group): Municoes disparadas na fase.
-            mandatory_events (pg.sprite.Group): Eventos obrigatorios da fase.
-            optional_events (pg.sprite.Group): Eventos opcionais da fase.
-            scooby_snacks (Collectible): Caixa de biscoitos scooby da fase.
-            weapons (pg.sprite.Group): Armas usadas na fase.
+        Parameters
+        ----------
+        player : Protagonist
+            O protagonista da fase, geralmente o personagem controlado pelo jogador.
+        npcs : pg.sprite.Group
+            Grupo de sprites dos NPCs da fase.
+        villains : pg.sprite.Group
+            Grupo de sprites dos vilões da fase.
+        game_objects : pg.sprite.Group
+            Grupo de sprites de objetos do jogo.
+        collectibles : pg.sprite.Group
+            Grupo de sprites de itens colecionáveis.
+        ammus : pg.sprite.Group
+            Grupo de sprites de munições disparadas.
+        mandatory_events : pg.sprite.Group
+            Grupo de eventos obrigatórios que o jogador deve completar.
+        optional_events : pg.sprite.Group
+            Grupo de eventos opcionais que podem ser acionados durante a fase.
+        scooby_snacks : Collectible
+            O item especial "Scooby Snacks" coletável na fase.
+        weapons : pg.sprite.Group
+            Grupo de sprites de armas disponíveis na fase.
+        phase_elements : pg.sprite.Group
+            Grupo de todos os elementos da fase que são monitorados para colisões.
         """
         
         self.player = player
@@ -496,9 +807,11 @@ class CollideController:
         self.accessible_elements.add(self.optional_events)
         
     def player_collide_with(self):
-        """ Processa as colisoes do player com os elementos da fase.
         """
-        # Atualizacao do evento obrigatorio atual
+        Processa as colisões do protagonista (player) com os elementos da fase, como NPCs, coletáveis e eventos.
+
+        Atualiza o evento obrigatório atual, executa ações relacionadas a coletáveis e interage com NPCs.
+        """
         if self.current_mandatory_event.started:
             if not self.current_mandatory_event.in_execution:
                 self.current_mandatory_event.kill()
@@ -532,7 +845,11 @@ class CollideController:
                 self.player.apply_movement(comeback, False)
     
     def ammus_collide_with(self):
-        # Colisao com personagens
+        """
+        Processa as colisões das munições com personagens e objetos do jogo.
+
+        Colide com personagens e objetos, aplicando dano aos personagens ou destruindo munições e objetos.
+        """
         character_hit_by_ammu = pg.sprite.groupcollide(self.ammus, self.characters, False, False)
         for ammu  in self.ammus.sprites():
             for each_ammu in character_hit_by_ammu.keys():
@@ -551,7 +868,11 @@ class CollideController:
     
 
     def game_objects_collide_with(self):
-        # Colisao com objetos (empurra-os, caso consiga)
+        """
+        Processa as colisões entre personagens e objetos do jogo.
+
+        Empurra objetos ou interage com eles conforme a natureza da colisão.
+        """
         object_pushed_by_character = pg.sprite.groupcollide(self.characters, self.game_objects, False, False)
         for each_character in object_pushed_by_character.keys():
             for each_object in object_pushed_by_character[each_character]:
@@ -568,6 +889,11 @@ class CollideController:
 
     
     def monsters_collide_with(self):
+        """
+        Processa as colisões entre vilões e personagens, além de disparar munições quando apropriado.
+
+        Colide com personagens, atira em direção ao protagonista e gerencia disparos.
+        """
         fired = []
         # Colisao com algum personagem
         characters_to_push = pg.sprite.groupcollide(self.villains, self.characters, False, False)
@@ -594,7 +920,11 @@ class CollideController:
         return fired
     
     def npcs_collide_with(self):
-        # npcs empurram uns aos outros
+        """
+        Processa as colisões entre NPCs, empurrando-os uns aos outros quando necessário.
+
+        Garante que NPCs não se empurrem repetidamente e trata colisões.
+        """
         npcs_pushed_by_npcs = pg.sprite.groupcollide(self.npcs, self.npcs, False, False)
         for each_npc1 in npcs_pushed_by_npcs.keys():
             for each_npc2 in npcs_pushed_by_npcs[each_npc1]:
@@ -611,6 +941,14 @@ class CollideController:
     
     
     def update(self, phase_elements):
+        """
+        Atualiza o estado da fase, processando todas as colisões e interações entre os elementos da fase.
+
+        Parameters
+        ----------
+        phase_elements : pg.sprite.Group
+            O grupo de todos os elementos da fase que serão atualizados e verificados para colisões.
+        """
         fired = []
         self.player_collide_with()
         self.ammus_collide_with()
