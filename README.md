@@ -1,4 +1,9 @@
 # Scooby Doo e o Mistério Contra Ataca
+
+<p align="center">
+  <img width="460" height="300" src="assets/menus/gif_example_read_me.gif">
+</p>
+
 Repositorio com A2 de Linguagens de Programação
 
 ## Introduction
