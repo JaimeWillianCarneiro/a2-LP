@@ -1,59 +1,65 @@
 import unittest
+from unittest.mock import Mock, patch
 import pygame
-from src.classes.menu import Menu  # Certifique-se de que o código foi refatorado em uma classe chamada Menu
-#  TODO
-# Ver uma forma de testar sme parte visual
+from src.classes.menu import Menu, Button, get_font
+
+class TestGetFont(unittest.TestCase):
+    """Testa a função get_font para retornar uma fonte válida do pygame."""
+    
+    def test_get_font(self):
+        """Verifica se a função retorna uma fonte válida."""
+        font = get_font(30)
+        self.assertIsInstance(font, pygame.font.Font)  # Verifica se é uma fonte válida
+        # Testa se a função consegue renderizar texto sem erros
+        rendered_text = font.render("Test", True, (0, 0, 0))
+        self.assertIsInstance(rendered_text, pygame.Surface)  # Verifica se renderiza corretamente
+
+class TestButton(unittest.TestCase):
+    """Testa a funcionalidade da classe Button."""
+    
+    def setUp(self):
+        """Configura um botão para os testes."""
+        pygame.init()
+        self.font = pygame.font.Font(None, 30)
+        self.button = Button(
+            image=None,
+            pos=(100, 100),
+            text_input="Test",
+            font=self.font,
+            base_color="Black",
+            hovering_color="White"
+        )
+
+    def test_check_for_input_inside(self):
+        """Testa se o clique dentro do botão retorna True."""
+        self.assertTrue(self.button.check_for_input((100, 100)))
+
+    def test_check_for_input_outside(self):
+        """Testa se o clique fora do botão retorna False."""
+        self.assertFalse(self.button.check_for_input((200, 200)))
 
 class TestMenu(unittest.TestCase):
+    """Testa a funcionalidade da classe Menu."""
+    
     def setUp(self):
-        """Executa antes de cada teste."""
+        """Configura um objeto Menu para os testes."""
         pygame.init()
-        self.menu = Menu()
+        self.mock_level = Mock()  # Cria um mock para substituir a dependência de level
+        self.menu = Menu(level=self.mock_level)
 
-    def tearDown(self):
-        """Executa após cada teste."""
-        pygame.quit()
-
-    def test_initialization(self):
-        """Testa a inicialização básica do menu."""
-        self.assertEqual(self.menu.screen_width, 800)
-        self.assertEqual(self.menu.screen_height, 600)
-        self.assertIsNotNone(self.menu.sprite_sheet_path, "O caminho da sprite sheet não deve ser None.")
-        self.assertIsNotNone(self.menu.audio_path, "O caminho do áudio não deve ser None.")
-
-    def test_audio_load(self):
-        """Testa o carregamento do áudio."""
-        self.menu.load_audio()
-        self.assertTrue(pygame.mixer.get_init(), "O mixer não foi inicializado corretamente.")
-
-    def test_audio_play(self):
-        """Testa a reprodução do áudio."""
-        self.menu.load_audio()
-        self.menu.play_audio()
-        self.assertTrue(pygame.mixer.music.get_busy(), "O áudio não está tocando.")
-
-    def test_sprite_sheet_load(self):
-        """Testa o carregamento da sprite sheet."""
-        sprite_sheet = self.menu.load_sprite_sheet()
-        self.assertIsNotNone(sprite_sheet, "A sprite sheet não foi carregada.")
-        self.assertEqual(sprite_sheet.get_width(), 2048, "A largura da sprite sheet está incorreta.")
-        self.assertEqual(sprite_sheet.get_height(), 1920, "A altura da sprite sheet está incorreta.")
-
-    def test_frame_extraction(self):
-        """Testa a extração de frames da sprite sheet."""
-        sprite_sheet = self.menu.load_sprite_sheet()
-        frames = self.menu.extract_frames(sprite_sheet, columns=12, rows=20)
-        self.assertEqual(len(frames), 12 * 20, "O número de frames extraídos está incorreto.")
-        self.assertEqual(frames[0].get_width(), self.menu.screen_width, "A largura dos frames está incorreta.")
-        self.assertEqual(frames[0].get_height(), self.menu.screen_height, "A altura dos frames está incorreta.")
-
-    def test_frame_animation(self):
-        """Testa a animação de frames."""
-        initial_frame = self.menu.current_frame
-        self.menu.current_frame += 0.7
-        if self.menu.current_frame >= len(self.menu.frames):
-            self.menu.current_frame = 0
-        self.assertNotEqual(initial_frame, self.menu.current_frame, "O frame atual não foi atualizado corretamente.")
+    @patch("src.classes.menu.pygame.image.load")
+    def test_extract_frames(self, mock_load):
+        """
+        Testa a extração de frames de uma sprite sheet.
+        
+        Verifica se a quantidade de frames extraídos corresponde ao esperado
+        com base no número de colunas e linhas da sprite sheet.
+        """
+        mock_load.return_value = pygame.Surface((200, 100))
+        self.menu.columns = 2
+        self.menu.rows = 1
+        frames = self.menu.extract_frames()
+        self.assertEqual(len(frames), 2)  # Deve haver 2 frames: 2 colunas x 1 linha
 
 if __name__ == "__main__":
     unittest.main()

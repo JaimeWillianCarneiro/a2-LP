@@ -2,15 +2,10 @@
 This module contains the class that abstrain a menu. This class have a lot of
 utility functions to handle buttons and their events.
 """
-
 from settings import  SCREEN_DIMENSIONS, START_SOUND_MENU, START_BACKGROUND_MENU, START_COLUMNS_MENU, START_ROWS_MENU
 from classes.background import Background
 import pygame
 import sys
-
-# class InterfaceElements:
-#     def 
-
 
 
 screen = pygame.display.set_mode((0,0))
@@ -489,7 +484,8 @@ class Menu:
 
 
             pygame.display.update()
-            
+
+
     def dialogue(self):
 
         def draw_dialog_box(speaker, screen, x, y, width, height, bg_color=(50, 50, 50), border_color=(255, 255, 255), border_width=2):
@@ -599,3 +595,4 @@ class Menu:
 
             pygame.display.update()
             self.level.current_dialogue = None
+            pygame.display.update()
