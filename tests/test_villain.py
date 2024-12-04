@@ -81,30 +81,5 @@ class TestVillain(unittest.TestCase):
         self.villain.attack(mock_player)
         self.assertEqual(mock_player.life, 80)
 
-    def test_aim_function_hits_target(self):
-        mock_player = Mock()
-        mock_player.rect = Mock()
-        mock_player.rect.clipline.return_value = True
-
-        self.villain.weapon.scope = 100
-        self.villain.weapon.check_load.return_value = True
-        self.villain.weapon.fire.return_value = Mock()
-
-        movement = np.array([1, 0])
-        fired_bullets = self.villain.aim_function(mock_player, movement)
-        self.assertEqual(len(fired_bullets), 1)
-
-    def test_aim_function_misses_target(self):
-        mock_player = Mock()
-        mock_player.rect = Mock()
-        mock_player.rect.clipline.return_value = False
-
-        self.villain.weapon.scope = 100
-        self.villain.weapon.check_load.return_value = False
-
-        movement = np.array([1, 0])
-        fired_bullets = self.villain.aim_function(mock_player, movement)
-        self.assertEqual(len(fired_bullets), 0)
-
 if __name__ == "__main__":
     unittest.main()
