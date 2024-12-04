@@ -483,8 +483,9 @@ class Interface():
             elif self.phase_atual.player.name == "Shaggy":
                 player_image = pg.image.load(self.shaggy_profile)
             
+            
             if player_image:
-                player_image = pg.transform.sczale(player_image, (100, 100))  # Redimensiona para caber na interface
+                player_image = pg.transform.scale(player_image, (100, 100))  # Redimensiona para caber na interface
                 self.screen.blit(player_image, (10, 10))            
         
         except KeyError as e:
