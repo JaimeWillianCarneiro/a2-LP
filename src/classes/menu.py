@@ -7,7 +7,6 @@ from classes.background import Background
 import pygame
 import sys
 
-
 screen = pygame.display.set_mode((0,0))
 
 def get_font(size):

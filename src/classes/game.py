@@ -122,15 +122,6 @@ class Game:
                             self.menu.current_screen = "pause"
                             self.menu.pause()
 
-
-
-
-                    # Pause the game
-                    # if event.type == pygame.KEYDOWN:
-                    #     if event.key == pygame.K_ESCAPE:  # 'ESC' key to pause the game
-                    #         self.menu.current_screen = "pause"
-                    #         self.menu.pause()
-
                 # print("SAIU DO FOR")
                 if self.menu.current_screen == "main_menu":
                     self.menu.main_menu()

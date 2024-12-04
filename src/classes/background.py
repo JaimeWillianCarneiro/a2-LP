@@ -5,11 +5,181 @@ import numpy as np
 
 
 class Background(pg.sprite.Sprite):
+    """
+    Represents a scrolling background in the game, including its position, dimensions, and music control.
+
+    Parameters
+    ----------
+    screen : pygame.Surface
+        The game screen where the background is rendered.
+    sprite : str
+        Path to the image file used as the background sprite.
+    x_position : int
+        Initial x-coordinate of the background.
+    y_position : int
+        Initial y-coordinate of the background.
+    width : int
+        Width of the background image.
+    height : int
+        Height of the background image.
+    music : str
+        Path to the music file played for this background.
+    volume : float
+        Volume level for the background music (0.0 to 1.0).
+    sounds : list
+        List of sound effects associated with the background.
+
+    Attributes
+    ----------
+    screen : pygame.Surface
+        The game screen for rendering.
+    sprite : pygame.Surface
+        The scaled image surface of the background.
+    x_position : int
+        Current x-coordinate of the background's top-left corner.
+    y_position : int
+        Current y-coordinate of the background's top-left corner.
+    width : int
+        Width of the background.
+    height : int
+        Height of the background.
+    music : str
+        Path to the background music file.
+    volume : float
+        Volume of the background music.
+    sounds : list
+        Sound effects linked to the background.
+    image : pygame.Surface
+        The subsurface of the sprite displayed as the visible area.
+    rect : pygame.Rect
+        The rectangle defining the position and dimensions of the visible background.
+    x_limit_sup : int
+        Maximum x-coordinate for scrolling.
+    y_limit_sup : int
+        Maximum y-coordinate for scrolling.
+
+    Methods
+    -------
+    get_origin():
+        Returns the coordinates of the background's origin.
+    get_shape():
+        Returns the dimensions of the background.
+    get_position():
+        Returns the current top-left position of the background.
+    set_position(x_new, y_new):
+        Updates the top-left position of the background.
+    center(x_player, y_player):
+        Centers the camera on the player's position.
+    play_music():
+        Starts playing the background music.
+    stop_music():
+        Stops the background music.
+    set_volume(volume):
+        Sets the volume level of the background music.
+    draw_background_image():
+        Draws the current view of the background onto the screen.
+    update(x_player, y_player):
+        Updates the background's position and renders it on the screen.
+    """
+
     def __init__(self, screen, sprite, x_position, y_position, width, height, music, volume, sounds):
+        """
+        Inicializa a classe que gerencia o background e os recursos do jogo, como sprite, música e sons.
+
+        Parâmetros
+        ----------
+        screen : pygame.Surface
+            A superfície da tela onde o jogo será renderizado.
+
+        sprite : str
+            O caminho para o arquivo de imagem que será usado como o sprite da câmera.
+
+        x_position : int
+            A posição inicial da câmera no eixo x.
+
+        y_position : int
+            A posição inicial da câmera no eixo y.
+
+        width : int
+            A largura da câmera.
+
+        height : int
+            A altura da câmera.
+
+        music : str
+            O caminho para o arquivo de música que será reproduzido no fundo.
+
+        volume : float
+            O volume da música, variando de 0.0 (silencioso) a 1.0 (volume máximo).
+
+        sounds : list
+            Lista de sons que serão usados no jogo (não utilizado diretamente no construtor, mas armazenado).
+
+        Exceções
+        ---------
+        pg.error
+            Levantada caso ocorra um erro ao carregar a imagem ou a música.
+
+        ValueError
+            Levantada se houver erro ao criar a subsuperfície da imagem.
+
+        Atributos
+        ---------
+        screen : pygame.Surface
+            A superfície da tela onde a câmera será renderizada.
+
+        sprite : pygame.Surface
+            A imagem do sprite redimensionada ou um placeholder caso o carregamento falhe.
+
+        position_controller : PositionController
+            O controlador de posição que gerencia os limites de movimentação da câmera.
+
+        x_position : int
+            A posição ajustada da câmera no eixo x, levando em consideração as dimensões da tela.
+
+        y_position : int
+            A posição ajustada da câmera no eixo y, levando em consideração as dimensões da tela.
+
+        width : int
+            A largura da câmera.
+
+        height : int
+            A altura da câmera.
+
+        music : str
+            O caminho para o arquivo de música que será tocado.
+
+        volume : float
+            O volume da música.
+
+        sounds : list
+            Lista de sons que podem ser usados no jogo.
+
+        image : pygame.Surface
+            A imagem que será usada para renderizar a visão da câmera (subsuperfície).
+
+        rect : pygame.Rect
+            O retângulo delimitador da imagem da câmera, usado para colisões e posicionamento.
+
+        x_limit_sup : int
+            O limite superior de movimentação da câmera no eixo x.
+
+        y_limit_sup : int
+            O limite superior de movimentação da câmera no eixo y.
+        """
+
         super().__init__()
         self.screen = screen
-        self.sprite = pg.image.load(sprite)
-        self.sprite = pg.transform.scale(self.sprite, (width, height))
+        
+        # Tratamento de exceção no carregamento da imagem
+        try:
+            self.sprite = pg.image.load(sprite)
+            self.sprite = pg.transform.scale(self.sprite, (width, height))
+        except pg.error as e:
+            print(f"Erro ao carregar a imagem: {sprite}. Detalhes: {e}")
+            self.sprite = pg.Surface((width, height))  # Usar um "placeholder" se falhar
+
+    
         self.position_controller = PositionController([width, height], SCREEN_DIMENSIONS[0], SCREEN_DIMENSIONS[1])
         self.x_position = x_position - SCREEN_DIMENSIONS[0]//2
         self.y_position = y_position - SCREEN_DIMENSIONS[1]//2
@@ -18,11 +188,22 @@ class Background(pg.sprite.Sprite):
         self.music = music
         self.volume = volume
         self.sounds = sounds
-        self.image = self.sprite.subsurface((self.x_position, self.y_position, *SCREEN_DIMENSIONS))
-        self.rect = self.image.get_rect()
-        pg.mixer.music.load(self.music)
-        pg.mixer.music.set_volume(self.volume)
         
+        try:
+            pg.mixer.music.load(self.music)
+            pg.mixer.music.set_volume(self.volume)
+        except pg.error as e:
+            print(f"Erro ao carregar a música: {self.music}. Detalhes: {e}")
+        
+        
+        try:
+            self.image = self.sprite.subsurface((self.x_position, self.y_position, *SCREEN_DIMENSIONS))
+        except ValueError as e:
+            print(f"Erro ao criar subsurface da imagem. Detalhes: {e}")
+            self.image = pg.Surface(SCREEN_DIMENSIONS)  # Usar uma superfície em branco
+    
+        self.rect = self.image.get_rect()
+
         # Limites, ate aonde a camera vai
         self.x_limit_sup = self.width - SCREEN_DIMENSIONS[0]
         self.y_limit_sup = self.height - SCREEN_DIMENSIONS[1]
@@ -41,13 +222,16 @@ class Background(pg.sprite.Sprite):
         self.y_position = y_new
         
     def center(self, x_player, y_player):
-        # Centraliza a camera no personagem
-        x_new, y_new = self.position_controller.to_frame(x_player, y_player)
-        x_new -= SCREEN_DIMENSIONS[0]/2
-        y_new -= SCREEN_DIMENSIONS[1]/2
-        self.set_position(x_new, y_new)
-        self.image = self.sprite.subsurface((*self.get_position(), *SCREEN_DIMENSIONS))
-        
+       # Centraliza a câmera no personagem
+        try:
+            x_new, y_new = self.position_controller.to_frame(x_player, y_player)
+            x_new -= SCREEN_DIMENSIONS[0] // 2
+            y_new -= SCREEN_DIMENSIONS[1] // 2
+            self.set_position(x_new, y_new)
+            self.image = self.sprite.subsurface((*self.get_position(), *SCREEN_DIMENSIONS))
+        except Exception as e:
+            print(f"Erro ao centralizar a câmera: {e}")
+            
     def play_music(self):
         pg.mixer.music.play(-1)
     
@@ -68,14 +252,20 @@ class Background(pg.sprite.Sprite):
         
 
 class Interface():
+    
     def __init__(self, screen, phase_atual, interface_elements):
         self.screen = screen
         self.phase_atual = phase_atual
         self.interface_elements = interface_elements
-        self.player_name = Fonts.PLAYER_NAME.value.render('Player :'+str(self.phase_atual.player.name), True, (123, 173, 123))
-        # self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(self.phase_atual.player.life), True, (123, 173, 223))
+        
+        # Tratamento de exceção na criação do nome do player
+        try:
+            self.player_name = Fonts.PLAYER_NAME.value.render('Player :' + str(self.phase_atual.player.name), True, (123, 173, 123))
+        except AttributeError as e:
+            print(f"Erro ao acessar o nome do player: {e}")
+            self.player_name = Fonts.PLAYER_NAME.value.render('Player :Unknown', True, (123, 173, 123))
+        
         self.event_warning =  Fonts.EVENT_WARNING.value.render('Volte para a Zona!', True, (255, 255, 255))
-        # self.event_time = Fonts.EVENT_TIME.value.render('Time: '+str(self.phase_atual.current_mandatory_event.time), True, (123, 173, 223))
         
         #  Localizações
         self.player_name_location = (50, 50)
@@ -84,13 +274,19 @@ class Interface():
         self.event_time_location = (SCREEN_DIMENSIONS[0]//2-50, 50)
         
         # Sprite de Vida do Personagem  
-        self.full_heart_image = pg.image.load(FULL_HEART)
-        self.full_heart_image = pg.transform.scale(self.full_heart_image, (50, 50)) 
-        self.empty_heart_image = pg.image.load(EMPTY_HEART)
-        self.empty_heart_image = pg.transform.scale(self.empty_heart_image, (50, 50)) 
-        self.half_heart_image = pg.image.load(HALF_HEART)
-        self.half_heart_image = pg.transform.scale(self.half_heart_image, (50, 50))
-        
+        try:
+            self.full_heart_image = pg.image.load(FULL_HEART)
+            self.full_heart_image = pg.transform.scale(self.full_heart_image, (50, 50)) 
+            self.empty_heart_image = pg.image.load(EMPTY_HEART)
+            self.empty_heart_image = pg.transform.scale(self.empty_heart_image, (50, 50)) 
+            self.half_heart_image = pg.image.load(HALF_HEART)
+            self.half_heart_image = pg.transform.scale(self.half_heart_image, (50, 50))
+        except pg.error as e:
+            print(f"Erro ao carregar as imagens de coração: {e}")
+            self.full_heart_image = pg.Surface((50, 50))
+            self.empty_heart_image = pg.Surface((50, 50))
+            self.half_heart_image = pg.Surface((50, 50))
+            
         self.heart_location = (115, 45)  # Local inicial para os corações
 
         # Sprite de Foto de Perfil do personagem
@@ -108,28 +304,32 @@ class Interface():
         # Desenha os atributos do player no canto superior esquerdo
         # self.screen.blit(self.player_name, self.player_name_location)
         # self.screen.blit(self.player_life, self.player_life_location)
-
-        if self.phase_atual.player.name == "Scooby":
-            player_image = pg.image.load(self.scooby_profile)  # Carrega a imagem de perfil do Scooby
-        
-             # Desenha a imagem no canto superior esquerdo (10, 10)
-        elif self.phase_atual.player.name =="Velma":
-            player_image = pg.image.load(self.velma_profile)  # Carrega a imagem de perfil do Scooby
-        
-        elif self.phase_atual.player.name == "Daphne":
-            player_image = pg.image.load(self.dapnhe_proflle)
-           
-        elif self.phase_atual.player.name == "Fred":
-            player_image = pg.image.load(self.fred_profile)
-           
-        elif self.phase_atual.player.name == "Shaggy":
-            player_image = pg.image.load(self.shaggy_profile)
-           
-        if player_image:
-            player_image = pg.transform.scale(player_image, (100, 100))  # Redimensiona para caber na interface
-            self.screen.blit(player_image, (10, 10))            
+        try:
+                
+            if self.phase_atual.player.name == "Scooby":
+                player_image = pg.image.load(self.scooby_profile)  # Carrega a imagem de perfil do Scooby
             
-                # Desenha a quantidade de vidas como corações
+                # Desenha a imagem no canto superior esquerdo (10, 10)
+            elif self.phase_atual.player.name =="Velma":
+                player_image = pg.image.load(self.velma_profile)  # Carrega a imagem de perfil do Scooby
+            
+            elif self.phase_atual.player.name == "Daphne":
+                player_image = pg.image.load(self.dapnhe_proflle)
+            
+            elif self.phase_atual.player.name == "Fred":
+                player_image = pg.image.load(self.fred_profile)
+            
+            elif self.phase_atual.player.name == "Shaggy":
+                player_image = pg.image.load(self.shaggy_profile)
+            
+            if player_image:
+                player_image = pg.transform.sczale(player_image, (100, 100))  # Redimensiona para caber na interface
+                self.screen.blit(player_image, (10, 10))            
+        
+        except KeyError as e:
+                print(f"Erro ao carregar a imagem de perfil do personagem: {e}")
+        
+        # Desenha a quantidade de vidas como corações
         for num in range(1, 6):
             x = self.heart_location[0] + (num-1) * 60  # Espaçamento entre corações
             y = self.heart_location[1]
@@ -154,8 +354,11 @@ class Interface():
         # Desenha o minimapa e as configuracoes no canto superior direito
         
     def update(self):
-        self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(int(self.phase_atual.player.life)), True, (123, 173, 223))
-        self.draw_interface()
+        try:
+            self.player_life = Fonts.PLAYER_LIFE.value.render('Life: '+str(int(self.phase_atual.player.life)), True, (123, 173, 223))
+            self.draw_interface()
+        except Exception as e:
+            print(f"Erro ao atualizar a interface: {e}")
     
 class PositionController:
     x_origin = 0
@@ -174,7 +377,9 @@ class PositionController:
 
     @staticmethod
     def normalize_movement(movement, speed):
+        movement = np.array(movement, dtype=float) 
         norma = np.linalg.norm(movement)
+        
         if norma:
             movement /= norma
         movement *= speed
