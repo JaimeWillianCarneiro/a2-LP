@@ -62,7 +62,7 @@ def random_data(background):
         optional_events.append(Event(1, player=player, start_zone=(x, y, 50, 25), event_zone=(x, y, 150, 50), end_zone=(x+50, y, 50, 25), is_mandatory=False, map_limits_sup=map_limits_sup))
         
     return npcs, collectibles, mandatory_events, optional_events, player, monster, scooby_snacks
-
+    
 class Event(pg.sprite.Sprite):
     """
     Representa um evento no jogo que pode ser iniciado e concluído pelo jogador. O evento possui uma zona de início, 
