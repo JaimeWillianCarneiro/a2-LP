@@ -4,7 +4,7 @@
   <img width="460" height="300" src="assets/menus/gif_example_read_me.gif">
 </p>
 
-Repositorio com A2 de Linguagens de Programação
+Repository with A2 of Programming Languages
 
 ## Introduction
 This game is our work for the second evaluation in the Programming Languages subject, lectioned at the second semester of the course Data Science in FGV - EMAp.
