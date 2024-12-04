@@ -311,8 +311,8 @@ class Menu:
         except pygame.error as e:
             print(f"Erro ao carregar o áudio: {e}")
 
-    def play_music(self):
-        pygame.mixer.music.play(-1)
+    def play_music(self, x = -1):
+        pygame.mixer.music.play(x)
     
     def stop_music(self):
         pygame.mixer.music.stop()
@@ -364,7 +364,7 @@ class Menu:
                             exit()
                         if event.key in (pygame.K_KP_ENTER, pygame.K_RETURN):
                                          
-                            self.current_screen = "start"
+                            self.current_screen = "initial_cutscene"
                             pygame.display.update()
                             print("POpular")
                             
@@ -485,16 +485,15 @@ class Menu:
             pygame.display.update()
 
 
-    def dialogue(self):
-        
+    def dialogue(self, i):
+
         def draw_dialog_box(speaker, screen, x, y, width, height, bg_color=(50, 50, 50), border_color=(255, 255, 255), border_width=2):
             """Desenha um retângulo padrão para o diálogo."""
             pygame.draw.rect(screen, bg_color, (x, y, width, height))
             pygame.draw.rect(screen, border_color, (x, y, width, height), border_width)
             picture = pygame.image.load(f'assets/spritesheets/{speaker}_dialogue.png')
             picture = pygame.transform.scale(picture, (100, 100))
-            screen.blit(picture, (x+20,SCREEN_DIMENSIONS[1] - height))
-
+            screen.blit(picture, (x + 20, y + (height - 120)))  # Ajustado para alinhar a imagem ao fundo
 
 
         def wrap_text(text, font, max_width):
@@ -504,73 +503,128 @@ class Menu:
             current_line = ""
 
             for word in words:
-                # Testa se a linha atual mais a próxima palavra cabe na largura
-                if font.size(current_line + word)[0] <= max_width:
+                if font.size(current_line + word)[0] + 100 <= max_width:
                     current_line += word + " "
                 else:
                     lines.append(current_line.strip())
                     current_line = word + " "
 
-            # Adiciona a última linha
             if current_line:
                 lines.append(current_line.strip())
 
             return lines
-        def display_dialog(dialog, screen, font, max_width, start_y, line_spacing, box_height=150):
-            """Renderiza o diálogo com altura fixa para o retângulo de fundo."""
 
-            # Largura fixa com margem
+
+        def display_dialog(dialog, screen, font, max_width, start_y, line_spacing, box_height=150, reveal_speed=50, start_time=0):
+            """Renderiza o diálogo e revela o texto aos poucos."""
             box_width = max_width + 40
-            box_x = 30  # Margem esquerda
-            box_y = start_y - 20  # Margem superior
+            box_x = 30
+            box_y = start_y - 20
 
-            # Desenha o retângulo de fundo com altura fixa
+            # Desenha o retângulo de fundo
             draw_dialog_box(dialog["speaker"], screen, box_x, box_y, box_width, box_height)
 
-            # Divide o texto em múltiplas linhas
-            wrapped_lines = wrap_text(dialog["text"], font, max_width)
-
-            # Renderiza o nome e a imagem do personagem
+            # Renderiza o nome do personagem
             speaker_text = font.render(dialog["speaker"] + ":", True, (255, 255, 255))
             screen.blit(speaker_text, (box_x + 130, start_y))
 
-            # Renderiza o texto dentro do retângulo, até a altura máxima
+            # Divide o texto em linhas
+            wrapped_lines = wrap_text(dialog["text"], font, max_width)
+
+            # Calcula o número de caracteres a serem exibidos
+            time_elapsed = pygame.time.get_ticks() - start_time
+            total_chars = time_elapsed // reveal_speed  # Calcula quantas letras mostrar com base no tempo
+
+            # Renderiza o texto progressivamente
             y_offset = start_y + 40
-            for i, line in enumerate(wrapped_lines):
-                # Limita as linhas para caberem no espaço fixo
+            char_count = 0
+            for line in wrapped_lines:
                 if y_offset + line_spacing > box_y + box_height:
+                    break  # Não exibe além da altura do box
+
+                if char_count + len(line) < total_chars:
+                    # Mostra a linha inteira se já passou do tempo
+                    rendered_line = font.render(line, True, (255, 255, 255))
+                    screen.blit(rendered_line, (box_x + 130, y_offset))
+                    char_count += len(line)
+                else:
+                    # Mostra apenas parte da linha
+                    visible_chars = total_chars - char_count
+                    rendered_line = font.render(line[:visible_chars], True, (255, 255, 255))
+                    screen.blit(rendered_line, (box_x + 130, y_offset))
                     break
-                rendered_line = font.render(line, True, (255, 255, 255))
-                screen.blit(rendered_line, (box_x + 130, y_offset))
+
                 y_offset += line_spacing
 
-            pygame.display.flip()
+            # Verifica se todas as letras já foram exibidas
+            return total_chars >= sum(len(line) for line in wrapped_lines)
 
+
+        # Loop principal
         current_dialog = 0
-
         running = True
+        dialog_done = False
+        dialog_start_time = pygame.time.get_ticks()  # Marca o início do diálogo
+
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:  # Avança com Enter
+                    if event.key == pygame.K_RETURN and dialog_done:  # Avança apenas se o texto estiver completo
                         current_dialog += 1
-                        if current_dialog >= len(self.level.dialogue):
+                        dialog_done = False
+                        if current_dialog >= len(self.level.dialogues[f"dialog_{i}"]):
                             running = False
+                        else:
+                            dialog_start_time = pygame.time.get_ticks()  # Reinicia o temporizador para o próximo diálogo
 
-            if current_dialog < len(self.level.dialogue):
-                display_dialog(
-                    dialog=self.level.dialogue[current_dialog],
+            if current_dialog < len(self.level.dialogues[f"dialog_{i}"]):
+                dialog_done = display_dialog(
+                    dialog=self.level.dialogues[f"dialog_{i}"][current_dialog],
                     screen=screen,
-                    font= pygame.font.Font("assets/font.ttf", 18),  # Fonte Arial,
-                    max_width=SCREEN_DIMENSIONS[0]-100,  # Largura máxima do texto
-                    start_y=SCREEN_DIMENSIONS[1]-150,  # Posição inicial do texto
-                    line_spacing=40,  # Espaçamento entre as linhas
-                    box_height=150  # Altura fixa do retângulo
+                    font=pygame.font.Font("assets/font.ttf", 18),
+                    max_width=SCREEN_DIMENSIONS[0] - 100,
+                    start_y=SCREEN_DIMENSIONS[1] - 150,
+                    line_spacing=40,
+                    box_height=150,
+                    reveal_speed=10,  # Controla a velocidade das letras
+                    start_time=dialog_start_time  # Passa o tempo de início
                 )
 
-            self.level.current_dialogue = None
+            
             pygame.display.update()
+        self.level.current_dialogue = None
 
+    def initial_cutscene(self):
+        background = pygame.image.load('assets/backgrounds/fachada_fgv.png')  # Caminho para sua imagem
+        background = pygame.transform.scale(background, SCREEN_DIMENSIONS)  
+        background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2)
+        screen.blit(background, background_rect.topleft)
+        pygame.time.delay(500)
 
+        self.dialogue(0)
+        pygame.time.delay(500)
+
+        background = pygame.image.load('assets/backgrounds/laboratorio.png')  # Caminho para sua imagem
+        background = pygame.transform.scale(background, SCREEN_DIMENSIONS)  
+        background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2)
+        screen.blit(background, background_rect.topleft)
+        pygame.time.delay(500)
+        
+        self.dialogue(1)
+        pygame.time.delay(500)
+
+        background = pygame.image.load('assets/backgrounds/botao.png')  # Caminho para sua imagem
+        background = pygame.transform.scale(background, SCREEN_DIMENSIONS) 
+        background_rect = background.get_rect(center=SCREEN_DIMENSIONS/2) 
+        screen.blit(background, background_rect.topleft)
+        pygame.time.delay(500)
+        
+        self.dialogue(2)
+        pygame.time.delay(500)
+
+        pygame.display.update()
+
+        self.current_screen = "play"
+        self.level.start_phase()

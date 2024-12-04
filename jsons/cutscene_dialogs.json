@@ -1,0 +1,25 @@
+{
+    "dialogs":{
+        "dialog_0":
+                [{"speaker": "Daphne", "text": "It's so impressive that Gustavo received a grant for his computer project."},
+                {"speaker": "Fred", "text": "Doesn't surprise me. In high school, he practically lived in the computer lab. Right, Velma?"},
+                {"speaker": "Velma", "text": "Yup. He's one smart cookie."},
+                {"speaker": "Scooby", "text": "Cookie? Cookie?"},
+                {"speaker": "Velma", "text": "Sorry, Scooby. Figure of speech."},
+                {"speaker": "Scooby", "text": "Awwwwwww."},
+                {"speaker": "Daphne", "text": "So, let's get inside."}],
+
+            "dialog_1":
+                [{"speaker": "Daphne", "text": "Wow, Eric, this lab is one groovy setup."},
+                {"speaker": "Gustavo", "text": "Yeah. Rico and I like it too. You'll meet him when we go to dinner after the tour."},
+                {"speaker": "Shaggy", "text": "But first, can you show us your new video game? Scooby and I have been dying to play it."},
+                {"speaker": "Gustavo", "text": "Sorry, but no one is playing the game until we get rid of our problem."},
+                {"speaker": "Scooby", "text": "What problem?"},
+                {"speaker": "Gustavo", "text": "We've been using a hyper-energy laser to break down actual objects and project them into cyberspace."},
+                {"speaker": "Velma", "text": "Jinkies! That 's fantastic."},
+                {"speaker": "Gustavo", "text": "It was, until the laser beamed a computer virus from my game right here into this lab. It was pretty scary."}],
+
+            "dialog_2":
+                [{"speaker": "Fred", "text": "Wait, what was that?"}]
+    }
+}
