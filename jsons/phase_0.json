@@ -62,11 +62,31 @@
     },
     "dialogs": {
         "dialog_0":
-            [{"speaker": "Velma", "text": "Guys, we've entered a new phase!!"},
-            {"speaker": "Daphne", "text": "Yeah, it seems like we're in some kind of garden?!"},
-            {"speaker": "Shaggy", "text": "But everything looks gigantic??"},
-            {"speaker": "Fred", "text": "Or rather... it seems like we're comically small"}],
+            [{"speaker": "Scooby", "text": "Huh?"},
+            {"speaker": "Velma", "text": "Jinkies! It looks like we've been beamed into Gustavo's computer game."},
+            {"speaker": "Fred", "text": "That laser must have been fired."},
+            {"speaker": "Daphne", "text": "So, what do we do now?"},
+            {"speaker": "Shaggy", "text": "Check this out! I'm like a superhero."},
+            {"speaker": "Velma", "text": "Be careful, Shaggy. There's less gravity on the moon."},
+            {"speaker": "Shaggy", "text": "Look. It's super Shaggy!"},
+            {"speaker": "Daphne", "text": "Scooby, could you get Shaggy back here before he hurts himself?"},
+            {"speaker": "Scooby", "text": "Okay. Scooby-Dooby-Doo!"},
+            {"speaker": "Shaggy", "text": "Catch me if you can!"}],
         "dialog_1":
-            [{"speaker": "Scooby", "text": "AHHHHHHHHHHHH"}]
+            [{"speaker": "Shaggy", "text": "Ouch, I've just made an important discovery."},
+            {"speaker": "Daphne", "text": "What 's that?"},
+            {"speaker": "Velma", "text": "Or worse. We'd better be careful."},
+            {"speaker": "Shaggy", "text": "Zoinks, Look Over There!"}],
+        "dialog_2":
+            [{"speaker": "Velma", "text": "It's the virus! He must have gotten beamed into the game too."},
+            {"speaker": "Virus", "text": "HEHEHEHEHEHE"},
+            {"speaker": "Fred", "text": "Oh no, and he's not alone. Let's get out of here."},
+            {"speaker": "Scooby", "text": "Look, a moon rover, and what a cool paint job."},
+            {"speaker": "Daphne", "text": "Come on, guys."}],
+        "dialog_3":
+            [{"speaker": "Velma", "text": "It's okay, guys. The Scooby Snacks are right there. Remember what Gustavo said? We need to find them in order to beat the game."},
+            {"speaker": "Scooby", "text": "Oh, boy! Scooby Snacks!"},
+            {"speaker": "Daphne", "text": "Go, Scooby, Go!!"},
+            {"speaker": "Scooby", "text": "Scooby-Dooby-Doo!"}]
     }
 }
