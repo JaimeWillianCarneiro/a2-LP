@@ -4,7 +4,7 @@ from src.classes.background import PositionController
 import numpy as np
 
 class GameObject(pg.sprite.Sprite):
-    def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity):
+    def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, is_static):
         super().__init__()
         self.position_controller = PositionController(map_limits_sup, width, height)
         self.x_position = x_position
@@ -18,6 +18,7 @@ class GameObject(pg.sprite.Sprite):
         self.sprite_actual_x = sprite_actual_x
         self.sprite_actual_y = sprite_actual_y
         self.sprites_quantity = sprites_quantity
+        self.is_static = is_static
         self.image = self.spritesheet.subsurface((self.sprite_actual_x*self.width, self.sprite_actual_y*self.height, width, height))
         self.image = pg.transform.scale(self.image, (self.width, self.height))
         self.rect = self.image.get_rect()
@@ -33,7 +34,7 @@ class GameObject(pg.sprite.Sprite):
     def set_position_rect(self, x_new, y_new):
         self.rect.center = (x_new, y_new)
         
-    def apply_movement(self, movement):
+    def apply_movement(self, movement, sla=True):
         x_new = self.x_position + movement[0]
         y_new = self.y_position + movement[1]
         x_new_corrected, y_new_corrected = self.position_controller.to_frame(x_new, y_new)
@@ -62,8 +63,8 @@ class GameObject(pg.sprite.Sprite):
 
 
 class Collectible(GameObject):
-    def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, visible, description):
-        super().__init__(x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity)
+    def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, is_static, visible, description):
+        super().__init__(x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, is_static)
         self._visible = visible
         self.description = description
     
@@ -76,8 +77,8 @@ class Collectible(GameObject):
         self._visible = new_value
         
 class Ammo(GameObject):
-    def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, damage, effects, direction, recochet, speed):
-        super().__init__(x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity)
+    def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, is_static, damage, effects, direction, recochet, speed):
+        super().__init__(x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, is_static)
         self._damage = damage
         self._effects = effects
         self.direction = direction
@@ -101,7 +102,7 @@ class Ammo(GameObject):
         self._bullets = bullets_new
         
     def copy(self):
-        return Ammo(self.x_position, self.y_position, self.width, self.height, self.position_controller.map_limits_sup, self.spritesheet_path, self.sprite_actual_x, self.sprite_actual_y, self.sprites_quantity, self.damage, self.effects, self.direction, self.recochet, self.speed)
+        return Ammo(self.x_position, self.y_position, self.width, self.height, self.position_controller.map_limits_sup, self.spritesheet_path, self.sprite_actual_x, self.sprite_actual_y, self.sprites_quantity, self.is_static, self.damage, self.effects, self.direction, self.recochet, self.speed)
         
     def update(self):
         position = np.array(self.get_position(), dtype=float)
@@ -124,9 +125,9 @@ class Ammo(GameObject):
     
 
 class Weapon(GameObject):
-    def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, damage, kind_damage, attack_field, reload_time, ammo, scope, special_effect = None):
+    def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, is_static, damage, kind_damage, attack_field, reload_time, ammo, scope, special_effect = None):
         # TODO tirar dano de personagens
-        super().__init__(x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity)
+        super().__init__(x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, is_static)
         self.damage = damage
         self.kind_damage = kind_damage
         self.special_effect = special_effect
