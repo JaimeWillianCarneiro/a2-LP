@@ -137,14 +137,13 @@ class Game:
                     
                 if self.menu.current_screen == "initial_cutscene":
                     self.menu.stop_music()
-                    self.menu.load_audio("assets\\sounds\\start.mp3")
                     pygame.time.delay(50)
-                    self.menu.play_music(1)
+                    self.menu.start_botao.play(0)
                     pygame.time.delay(1000)
+                    self.menu.start_botao.stop()
                     self.menu.initial_cutscene()
              
-                if self.menu.current_screen == "play":
-                    
+                if self.menu.current_screen == "play":                    
                     if pygame.key.get_pressed()[WASD_Keys.LEFT.value]:
                         self.movement[0] -= 1
                     if pygame.key.get_pressed()[WASD_Keys.RIGHT.value]:
