@@ -124,10 +124,6 @@ class TestCharacter(unittest.TestCase):
         self.character.animate()
         self.assertEqual(int(self.character.current_sprite_x), 0)
 
-    # def test_redefine_direction(self):
-    #     self.character.redefine_direction(1)
-    #     self.assertEqual(self.character.current_sprite_y, 1)
-
     def test_apply_movement(self):
         self.character.apply_movement([5, -5])
         self.assertEqual(self.character.x_position, 55)
