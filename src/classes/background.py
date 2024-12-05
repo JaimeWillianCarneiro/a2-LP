@@ -226,21 +226,13 @@ class CollideController:
         abs_distance = np.absolute(distance)
         abs_movement = np.absolute(sprite_1.movement)
         min_distance = np.array([sprite_1.width+sprite_2.width, sprite_1.height+sprite_2.height])/2
-        print(f'D: {distance}, Abs: {abs_distance}\nMin: {min_distance} - Abs_movement: {abs_movement}')
         
         min_distance -= abs_distance
-        
-        # Avalia se eles colidem nos eixos
-        # collide = abs_distance - min_distance
-        # print(f'C: {collide}')
-        # collide = collide < 0
-        # print(f'C pos: {collide}\n\n')
         
         # Angulo entre os vetores define em qual eixo foi a colisao
         e1 = np.array([1, 0])
         cos_movement = np.dot(e1, abs_movement)/np.linalg.norm(abs_movement)
         cos_min_distance = np.dot(e1, min_distance)/np.linalg.norm(min_distance)
-        print(f'Cos_mov: {cos_movement}, cos_min: {cos_min_distance}')
         
         # Retira parte do movimento que causou a colisao
         collide_x_axis  = cos_movement > cos_min_distance
@@ -336,7 +328,6 @@ class CollideController:
                 for each_character in character_hit_by_ammu[each_ammu]:
                     # Atinge o personagem
 
-                    print('Dano longo\n')
                     each_character.life -= each_ammu.damage
 
                     if not damage.get_num_channels():  # Verifica se o canal está livre
@@ -387,7 +378,6 @@ class CollideController:
         for each_villain in self.villains.sprites():
             if each_villain.aim.any():
                 if self.player.rect.clipline(each_villain.weapon.rect.center, np.array(each_villain.weapon.rect.center) + each_villain.aim*each_villain.weapon.scope/np.linalg.norm(each_villain.aim)) and each_villain.weapon.check_load():
-                    print('pow')
                     bullet = each_villain.weapon.fire(each_villain.aim)
                     fired.append(bullet)
                     

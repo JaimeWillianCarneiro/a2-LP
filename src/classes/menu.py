@@ -29,55 +29,6 @@ def get_font(size):
     return pygame.font.Font(r"assets/font.ttf", size)
 
 
-# class GameObject(pg.sprite.Sprite):
-#     def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity):
-#         super().__init__()
-#         self.position_controller = PositionController(map_limits_sup, width, height)
-#         self.x_position = x_position
-#         self.y_position = y_position
-#         self.width = width
-#         self.height = height
-#         self.spritesheet_path = spritesheet
-#         self.spritesheet = pg.image.load(spritesheet)
-#         self.spritesheet = pg.transform.scale(self.spritesheet, (self.width*sprites_quantity, self.height))
-#         self.sprite_dimensions = self.spritesheet.get_size()
-#         self.sprite_actual_x = sprite_actual_x
-#         self.sprite_actual_y = sprite_actual_y
-#         self.sprites_quantity = sprites_quantity
-#         self.image = self.spritesheet.subsurface((self.sprite_actual_x*self.width, self.sprite_actual_y*self.height, *self.sprite_dimensions))
-#         self.image = pg.transform.scale(self.image, (self.width, self.height))
-#         self.rect = self.image.get_rect()
-#         self.rect.center = self.x_position, self.y_position
-    
-#     def set_position(self, x_new, y_new):
-#         self.x_position = x_new
-#         self.y_position = y_new
-        
-#     def get_position(self):
-#         return self.x_position, self.y_position
-
-#     def set_position_rect(self, x_new, y_new):
-#         self.rect.center = (x_new, y_new)
-        
-#     def apply_movement(self, movement):
-#         x_new = self.x_position + movement[0]
-#         y_new = self.y_position + movement[1]
-#         x_new, y_new = self.position_controller.to_frame(x_new, y_new)
-#         self.set_position(x_new, y_new)     
-    
-#     def animate(self):
-#         if self.sprites_quantity > 1:
-#             self.sprite_actual_x += 0.2
-#             self.sprite_actual_x %= self.sprites_quantity
-#             self.image = self.spritesheet.subsurface((int(self.sprite_actual_x), self.sprite_actual_y, self.width, self.height))
-    
-#     def update(self):
-#         x_position, y_position = self.get_position()
-#         x_new, y_new = self.position_controller.apply_translation(x_position, y_position)
-#         self.set_position_rect(x_new, y_new)
-#         self.animate()
-
-
 class Button:
     """
     Represents a clickable button in the game.
@@ -265,9 +216,6 @@ class Menu:
         
         # Configurações do mixer (áudio)
         pygame.mixer.init()
-        # self.bg_music = pygame.mixer.Sound(START_SOUND_MENU)
-        # self.bg_music.set_volume(0.3)
-        # self.play_music()
 
         self.current_screen = "main_menu"
         self.level= level
@@ -362,7 +310,6 @@ class Menu:
         while self.current_screen == "main_menu":
                 
                 for event in pygame.event.get():
-                    # print("Evento do Menu")
                     if event.type == pygame.QUIT:
                         running = False
                         pygame.quit()
@@ -403,7 +350,6 @@ class Menu:
         """
         
         background = pygame.image.load('assets/menus/pause_screen.png')  # Caminho para sua imagem
-        # background = pygame.transform.scale(background, (1280, 720))  # Ajuste ao tamanho da tela
         background = pygame.transform.scale(background, (850, 600))  
         background_width, background_height = background.get_size()
         
@@ -416,12 +362,10 @@ class Menu:
         while self.current_screen == "pause":
             pause_mouse_pos = pygame.mouse.get_pos() #pegar a pos do mouse
 
-             # Desenhar a imagem de fundo
-          
+            # Desenhar a imagem de fundo
             screen.blit(background, background_rect.topleft)
 
             #  Texto botões
-            
             resume_button = Button(image=None, pos=(screen_width // 2, background_rect.topleft[1] + background_height*0.435),
                                text_input="RESUME", font=get_font(40), base_color="Black", hovering_color="White")
             menu_button = Button(image=None, pos=(screen_width // 2, background_rect.topleft[1] + background_height*0.62),
@@ -504,6 +448,13 @@ class Menu:
 
 
     def dialogue(self, i):
+        """
+        Displays the dialog in the json.
+
+        Returns
+        -------
+        None.
+        """
 
         def draw_dialog_box(speaker, screen, x, y, width, height, bg_color=(50, 50, 50), border_color=(255, 255, 255), border_width=2):
             """Desenha um retângulo padrão para o diálogo."""
@@ -623,6 +574,13 @@ class Menu:
         self.level.current_dialogue = None
 
     def initial_cutscene(self):
+        """
+        Displays the first cutscene of the game, introducing the players and it's premise.
+
+        Returns
+        -------
+        None.
+        """
         self.fgv.play(loops=-1)
         background = pygame.image.load('assets/backgrounds/fachada_fgv.png')  # Caminho para sua imagem
         background = pygame.transform.scale(background, SCREEN_DIMENSIONS)  
@@ -663,7 +621,7 @@ class Menu:
 
     def final_screen(self):
         """
-        Displays the inicial screen of the game, with the option to press enter to start it.
+        Displays the final screen of the the game, thanking the gamer for playing.
 
         Returns
         -------
@@ -699,7 +657,6 @@ class Menu:
         while self.current_screen == "final_screen":
                 
                 for event in pygame.event.get():
-                    # print("Evento da tela final")
                     if event.type == pygame.QUIT:
                         running = False
                         pygame.quit()

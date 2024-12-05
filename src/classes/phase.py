@@ -234,7 +234,6 @@ class Minigame(Event):
             self.pass_time()
             self.out_zone = False
             if self.check_lost():
-                print('Cabou tempo\n')
                 self.player.life = 0
             elif not pg.sprite.collide_rect(self, self.player):
                 self.player.life -= 0.005
