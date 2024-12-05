@@ -300,7 +300,8 @@ class Menu:
         self.typing = pygame.mixer.Sound('assets\sounds\som_dialogo.wav')
         self.fgv = pygame.mixer.Sound('assets\sounds\\frente_fgv.mp3')1
         self.laboratorio = pygame.mixer.Sound('assets\sounds\laboratorio.wav')
-        self.botao_3 = pygame.mixer.Sound('assets\sounds\\botao_cena3.mp3') 
+        self.botao_3 = pygame.mixer.Sound('assets\sounds\\botao_cena3.mp3')
+        self.start_botao =  pygame.mixer.Sound('assets\sounds\\start.mp3')
         
     def load_audio(self, audio_path):
         """
@@ -370,14 +371,12 @@ class Menu:
                     if event.type == pygame.KEYDOWN:
                         
                         if event.key == pygame.K_ESCAPE:
-                            print("ESCAPE")
                             pygame.quit()
                             exit()
                         if event.key in (pygame.K_KP_ENTER, pygame.K_RETURN):
                                          
                             self.current_screen = "initial_cutscene"
                             pygame.display.update()
-                            print("POpular")
                             
 
                 
@@ -436,17 +435,22 @@ class Menu:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.start_botao.play(0)
+                    pygame.time.delay(100)
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if resume_button.check_for_input(pause_mouse_pos):
-                        self.play_music()
+                        self.start_botao.play(0)
+                        pygame.time.delay(50)
                         self.current_screen = "play"
                     if menu_button.check_for_input(pause_mouse_pos):
                         self.current_screen = "main_menu"
                         self.level.quit_phase()
+                        self.start_botao.play(0)
+                        pygame.time.delay(50)
                         self.load_audio(START_SOUND_MENU)
-                        self.play_music()
+                        self.play_music(-1)
                     if quit_button.check_for_input(pause_mouse_pos):
                         pygame.quit()
                         sys.exit()
@@ -489,6 +493,8 @@ class Menu:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if try_again_button.check_for_input(pause_mouse_pos):
+                        self.start_botao.play(0)
+                        pygame.time.delay(50)
                         self.current_screen = "play"
                         self.level.start_phase()
 
@@ -549,7 +555,6 @@ class Menu:
             # Renderiza o texto progressivamente
             y_offset = start_y + 40
             char_count = 0
-            # self.typing.play(loops=-1)
             for line in wrapped_lines:
                 if y_offset + line_spacing > box_y + box_height:
                     break  # Não exibe além da altura do box
@@ -648,6 +653,7 @@ class Menu:
         
         self.dialogue(2)
         pygame.time.delay(500)
+        self.botao_3.stop()
 
         pygame.display.update()
 
