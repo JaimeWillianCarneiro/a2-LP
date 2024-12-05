@@ -5,6 +5,7 @@ from src.classes.menu import Menu
 from src.classes.background import Interface
 import os
 import numpy as np
+from settings import START_SOUND_MENU
 
 class Game:
     """
@@ -122,7 +123,9 @@ class Game:
                             self.menu.current_screen = "pause"
                             self.menu.pause()
 
-                # print("SAIU DO FOR")
+                if self.menu.current_screen == "final_screen":
+                    self.menu.final_screen()
+
                 if self.menu.current_screen == "main_menu":
                     self.menu.main_menu()
                     
@@ -164,6 +167,15 @@ class Game:
                 if self.level._current_phase.check_lost():
                     self.menu.current_screen = "game_over"
                     self.menu.selascou()
+
+                # if self.level.phase_counter == 1:
+                #     self.menu.current_screen = "main_menu"
+                #     self.menu.load_audio(START_SOUND_MENU)
+                #     self.menu.play_music()
+                #     self.menu.main_menu()
+
+                if self.level.phase_counter == 1:
+                    self.menu.current_screen = "final_screen"
 
         
         # Handle errors

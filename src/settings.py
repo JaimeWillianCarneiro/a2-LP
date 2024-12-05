@@ -11,6 +11,10 @@ START_BACKGROUND_MENU= 'assets/menus/title_screen.png'
 START_COLUMNS_MENU = 12
 START_ROWS_MENU = 20
 
+FINAL_SOUND_MENU =  'audios/backmusic.mp3'
+FINAL_SCREEN_MENU= 'assets/menus/final_screen.png'
+FINAL_COLUMNS_MENU = 7
+FINAL_ROWS_MENU = 14
 
 SHAGGY_PROFILE = 'assets/spritesheets/Shaggy_dialogue.png' 
 DAPHNE_PROFILE = 'assets/spritesheets/Dapnhe_dialogue.png'
