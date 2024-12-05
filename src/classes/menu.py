@@ -298,7 +298,7 @@ class Menu:
         self.first_dialogue = False
         
         self.typing = pygame.mixer.Sound('assets\sounds\som_dialogo.wav')
-        self.fgv = pygame.mixer.Sound('assets\sounds\\frente_fgv.mp3')
+        self.fgv = pygame.mixer.Sound('assets\sounds\\frente_fgv.mp3')1
         self.laboratorio = pygame.mixer.Sound('assets\sounds\laboratorio.wav')
         self.botao_3 = pygame.mixer.Sound('assets\sounds\\botao_cena3.mp3') 
         
