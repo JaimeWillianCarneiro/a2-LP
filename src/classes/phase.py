@@ -404,8 +404,8 @@ class PhaseManager:
         
         # Verifica a passagem de fase
         if self.current_phase.check_end():
-            self.phase_counter += 1
-            self.start_phase()
+            self.phase_counter = 1
+            # self.start_phase()
          
         # Atualiza a interface
         self.interface.update()

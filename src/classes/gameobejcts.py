@@ -3,6 +3,8 @@ from src.settings import SCREEN_DIMENSIONS, FRAME_RATE
 from src.classes.background import PositionController
 import numpy as np
 
+fired_sound = pg.mixer.Sound('assets\sounds\laser.wav')
+
 class GameObject(pg.sprite.Sprite):
     def __init__(self, x_position, y_position, width, height, map_limits_sup, spritesheet, sprite_actual_x, sprite_actual_y, sprites_quantity, is_static):
         super().__init__()
@@ -178,6 +180,11 @@ class Weapon(GameObject):
         Returns:
             Ammo: Nova instancia de municao disparada.
         """
+
+        if not fired_sound.get_num_channels():  # Verifica se o canal está livre
+            # self.steps.stop()
+            fired_sound.play(0)
+
         fired = None
         # Condicoes do disparo
         if self.check_load():

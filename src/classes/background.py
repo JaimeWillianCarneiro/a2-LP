@@ -3,6 +3,7 @@ from src.settings import SCREEN_DIMENSIONS, Fonts, FULL_HEART, HALF_HEART, EMPTY
 from src.settings import SHAGGY_PROFILE, DAPHNE_PROFILE, SCOOBY_PROFILE, VELMA_PROFILE, FRED_PROFILE
 import numpy as np
 
+damage = pg.mixer.Sound('assets\sounds\dano.wav')
 
 class Background(pg.sprite.Sprite):
     def __init__(self, screen, sprite, x_position, y_position, width, height, music, volume, sounds):
@@ -206,7 +207,8 @@ class PositionController:
     
     
 class CollideController:
-    @staticmethod
+    @staticmethod 
+
     def locate_collide(sprite_1: pg.sprite.Sprite, sprite_2: pg.sprite.Sprite) -> np.array:
         """ Identifica a posicao relativa da sprite_2 em relacao a sprite 1.
 
@@ -333,8 +335,14 @@ class CollideController:
             for each_ammu in character_hit_by_ammu.keys():
                 for each_character in character_hit_by_ammu[each_ammu]:
                     # Atinge o personagem
+
                     print('Dano longo\n')
                     each_character.life -= each_ammu.damage
+
+                    if not damage.get_num_channels():  # Verifica se o canal está livre
+                        # self.steps.stop()
+                        damage.play(0)
+
                     # Remove todas as referencias
                     each_ammu.kill()
 
@@ -414,6 +422,8 @@ class CollideController:
         self.npcs_collide_with()
         fired.extend(fired_by_villains)
         
+
+
         if fired:
             phase_elements.add(fired)
         

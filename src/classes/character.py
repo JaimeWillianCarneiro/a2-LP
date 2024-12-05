@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from src.classes.background import PositionController
 import numpy as np
 
+
 class Character(pg.sprite.Sprite, ABC):
     def __init__(self, name, speed, perception, x_position, y_position, width, height, direction, skin, life, sprites_quantity, map_limits_sup, bullets, weapon):
         super().__init__()
@@ -27,6 +28,7 @@ class Character(pg.sprite.Sprite, ABC):
         self._bullets = bullets
         self._aim = np.zeros(2, dtype=float)
         self._weapon = weapon
+        self.steps = pg.mixer.Sound('assets\sounds\passos.wav')
 
     @property
     def name(self):

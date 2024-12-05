@@ -2,7 +2,7 @@
 This module contains the class that abstrain a menu. This class have a lot of
 utility functions to handle buttons and their events.
 """
-from settings import  SCREEN_DIMENSIONS, START_SOUND_MENU, START_BACKGROUND_MENU, START_COLUMNS_MENU, START_ROWS_MENU
+from settings import  SCREEN_DIMENSIONS, START_SOUND_MENU, START_BACKGROUND_MENU, START_COLUMNS_MENU, START_ROWS_MENU, FINAL_SOUND_MENU, FINAL_SCREEN_MENU, FINAL_ROWS_MENU, FINAL_COLUMNS_MENU
 from classes.background import Background
 import pygame
 import sys
@@ -263,37 +263,12 @@ class Menu:
         
         self.clock = pygame.time.Clock()
         
-        
-        #  Configurações de tela
-        self.screen_width = SCREEN_DIMENSIONS[0]
-        self.screen_height = SCREEN_DIMENSIONS[1]
-        
         # Configurações do mixer (áudio)
         pygame.mixer.init()
         # self.bg_music = pygame.mixer.Sound(START_SOUND_MENU)
         # self.bg_music.set_volume(0.3)
         # self.play_music()
 
-        self.load_audio(START_SOUND_MENU)
-        
-        # Configurações dos frames
-        self.columns = START_COLUMNS_MENU
-        self.rows = START_ROWS_MENU
-        
-            #  Carregar  a imagem com os frames
-        self.sprite_sheet = pygame.image.load(START_BACKGROUND_MENU).convert_alpha()
-        self.dimensions = (self.sprite_sheet.get_width(), self.sprite_sheet.get_height())
-        self.frame_width = self.dimensions[0] // self.columns
-        self.frame_height = self.dimensions[1] // self.rows
-        
-        # Extrair frames da sprite sheet
-        self.frames = self.extract_frames()
-        
-        #  Controle da animação
-        self.current_frame = 0
-        self.frame_delay = 100  # Tempo entre frames em milissegundos
-        self.last_update_time = pygame.time.get_ticks()
-        
         self.current_screen = "main_menu"
         self.level= level
         self.first_dialogue = False
@@ -346,13 +321,38 @@ class Menu:
     
     def main_menu(self):  
         """
-        Displays the pause screen with options to resume, go to the main menu, or quit the game.
+        Displays the inicial screen of the game, with the option to press enter to start it.
 
         Returns
         -------
         None.
         """
         running = True
+
+        #  Configurações de tela
+        self.screen_width = SCREEN_DIMENSIONS[0]
+        self.screen_height = SCREEN_DIMENSIONS[1]
+
+        self.load_audio(START_SOUND_MENU)
+        
+        # Configurações dos frames
+        self.columns = START_COLUMNS_MENU
+        self.rows = START_ROWS_MENU
+        
+        #  Carregar  a imagem com os frames
+        self.sprite_sheet = pygame.image.load(START_BACKGROUND_MENU).convert_alpha()
+        self.dimensions = (self.sprite_sheet.get_width(), self.sprite_sheet.get_height())
+        self.frame_width = self.dimensions[0] // self.columns
+        self.frame_height = self.dimensions[1] // self.rows
+        
+        # Extrair frames da sprite sheet
+        self.frames = self.extract_frames()
+        
+        #  Controle da animação
+        self.current_frame = 0
+        self.frame_delay = 100  # Tempo entre frames em milissegundos
+        self.last_update_time = pygame.time.get_ticks()
+        
 
         with open(f"jsons\\cutscene_dialogs.json", "r") as file:
             cutscene = json.load(file)
@@ -660,3 +660,69 @@ class Menu:
 
         self.current_screen = "play"
         self.level.start_phase()
+
+    def final_screen(self):
+        """
+        Displays the inicial screen of the game, with the option to press enter to start it.
+
+        Returns
+        -------
+        None.
+        """
+        running = True
+
+        #  Configurações de tela
+        self.screen_width = SCREEN_DIMENSIONS[0]
+        self.screen_height = SCREEN_DIMENSIONS[1]
+        
+        # Configurações dos frames
+        self.columns = FINAL_COLUMNS_MENU
+        self.rows = FINAL_ROWS_MENU
+        
+        #  Carregar  a imagem com os frames
+        self.sprite_sheet = pygame.image.load(FINAL_SCREEN_MENU).convert_alpha()
+        self.dimensions = (self.sprite_sheet.get_width(), self.sprite_sheet.get_height())
+        self.frame_width = self.dimensions[0] // self.columns
+        self.frame_height = self.dimensions[1] // self.rows
+        
+        # Extrair frames da sprite sheet
+        self.frames = self.extract_frames()
+        
+        #  Controle da animação
+        self.current_frame = 0
+        self.frame_delay = 100  # Tempo entre frames em milissegundos
+        self.last_update_time = pygame.time.get_ticks()
+
+        final_music = pygame.mixer.Sound('audios\\backmusic.mp3')
+        final_music.play(-1)
+            
+        while self.current_screen == "final_screen":
+                
+                for event in pygame.event.get():
+                    # print("Evento da tela final")
+                    if event.type == pygame.QUIT:
+                        running = False
+                        pygame.quit()
+                        exit()
+                    
+                    
+                    if event.type == pygame.KEYDOWN:
+                        if event.key in (pygame.K_KP_ENTER, pygame.K_RETURN):
+                            self.level.phase_counter = 0
+                            self.current_screen = "main_menu"
+                            final_music.stop()
+                            pygame.display.update()
+                            
+
+                
+                # Atualizar o frame da animação
+                self.current_frame += 0.12
+                if self.current_frame >= len(self.frames):
+                    self.current_frame = 0
+
+                # Desenhar na tela
+                screen.blit(self.frames[int(self.current_frame)], (0, 0))
+                pygame.display.flip()
+                
+                pygame.display.update()
+                

@@ -70,6 +70,11 @@ class Group1Protagonist(Protagonist):
         x_new, y_new = self.position_controller.apply_translation(self.x_position, self.y_position)
         self.set_position_rect(x_new, y_new)
         self.animate()
+        if not self.movement.any():
+            self.steps.stop()
+        elif not self.steps.get_num_channels():  # Verifica se o canal está livre
+            # self.steps.stop()
+            self.steps.play(0)
 
 
 class Group2Protagonist(Protagonist):
